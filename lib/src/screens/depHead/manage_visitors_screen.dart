@@ -4,14 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
-import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
+// import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
 
 class ManageVisitorsScreen extends StatefulWidget {
+  //final String? visitorLogs;
+  final List<Map<String, dynamic>>? visitorLogs;
+
+  const ManageVisitorsScreen({super.key, this.visitorLogs});
   @override
-  _ManageVisitorsScreenState createState() => _ManageVisitorsScreenState();
+  ManageVisitorsScreenState createState() => ManageVisitorsScreenState();
 }
 
-class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
+class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   // var editUserData = {
   //   'name': ['Visitor 1'],
   //   'purpose': 'meeting',
@@ -52,23 +56,32 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   }
 
   void setVisitorData(Map<String, dynamic> userData) {
+    print("setVisitorData(widget.visitorLogs![0]); is setted $userData");
     setState(() {
-      numberOfVisitors = userData['name'].length;
+      numberOfVisitors = 3;//userData['name'].length;
       updateVisitorNameFields(); // Update the number of visitor name fields
 
       for (int i = 0; i < numberOfVisitors; i++) {
-        visitorControllers[i].text = userData['name'][i];
+      if (i >= visitorControllers.length) {
+        visitorControllers.add(TextEditingController());
       }
+      visitorControllers[i].text = userData['name'][i];
+    }
 
       purposeController.text = userData['purpose'];
       selectedHostName = userData['selectedHostName'];
       startDate = DateTime.parse(userData['startDate']);
       endDate = DateTime.parse(userData['endDate']);
-      bringCar = userData['bringCar'];
-      selectedPlateNumbers =
-          List<String>.from(userData['selectedPlateNumbers']);
-      possessionQuantities = List<int>.from(
-          userData['possessionQuantities'].map((item) => item['quantity']));
+      bringCar = userData['bringCar']== "true"?true:false;
+      // selectedPlateNumbers =
+      //     List<String>.from(userData['selectedPlateNumbers']);
+      // possessionCheckedState = List<bool>.from(
+      //     userData['possessions'].map((item) => item['checked']));
+      // possessionQuantities = List<int>.from(
+      //     userData['possessions'].map((item) => item['quantity']));
+
+    
+     
       updatePlateNumberFields();
     });
     print("visitor data is set");
@@ -98,6 +111,13 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     startDate = DateTime.now();
     endDate = DateTime.now();
     loadData();
+    print("widget.visitorLogs: ") ;
+    print(widget.visitorLogs) ;
+    if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
+      //setVisitorData(widget.visitorLogs![0]);
+      print("widget.visitorLogs![0]: ") ;
+      print(widget.visitorLogs![0]) ;
+    }
     // If editing existing visitor, load the data
     // if (editUserData.isNotEmpty) {
     //   setVisitorData(editUserData);
@@ -264,10 +284,11 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
         possessions: possessions,
         approved: false,
         declined: false,
-        //declineReason: ' ',
+        declineReason: ' ',
       );
-
-      if (visitor != null) {
+        var vid = visitor.id;
+        print("visitorID: , $vid");
+      if (visitor.id != null) {
         print("visitor: , $visitor");
         // Update existing visitor
         await visitorService.updateVisitor(
@@ -284,7 +305,7 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           numberOfVisitors: numberOfVisitors,
           approved: visitor.approved,
           declined: visitor.declined,
-          //declineReason: visitor.declineReason,
+          declineReason: visitor.declineReason,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -306,10 +327,10 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           numberOfVisitors: numberOfVisitors,
           approved: false, // Default value for approved
           declined: false,
-          //declineReason: 'kevin', // Default value for declined
+          declineReason: '', // Default value for declined
         );
 
-        print("visitor: , $visitor");
+        print("visitorsss: , $visitor");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Request sent')),
         );
@@ -339,6 +360,10 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   }
 
   Widget build(BuildContext context) {
+    print("widget vistor logs");
+    print(widget.visitorLogs);
+    if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
+      setVisitorData(widget.visitorLogs![0]);}
     return Scaffold(
       appBar: AppBar(
         title: const Text(

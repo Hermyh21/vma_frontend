@@ -30,6 +30,22 @@ class ApiService {
       throw Exception('Failed to fetch visitor logs: $e');
     }
   }
+static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
+  try {
+    final response = await _dio.get(
+      '/api/getapprovedVisitors',
+      queryParameters: {'approved': approved.toString()},
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> data = response.data;
+      return data.map((json) => Visitor.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load approved visitors');
+    }
+  } catch (e) {
+    throw Exception('Failed to fetch approved visitors: $e');
+  }
+}
 
   static Future<Visitor> getVisitorById(String visitorId) async {
     try {
@@ -71,7 +87,7 @@ class ApiService {
           'id': id,
           'approved': approved,
           'declined': declined,
-          'declineReason': declineReason,
+          //'declineReason': declineReason,
         },
         options: Options(
           headers: {'Content-Type': 'application/json'},

@@ -32,10 +32,11 @@ class VisitorProvider extends ChangeNotifier {
   }
 
   void declineVisitor(String visitorId) {
-    final index = _visitors.indexWhere((visitor) => visitor.id == visitorId);
-    if (index != -1) {
-      _visitors[index] = _visitors[index].copyWith(declined: true);
-      notifyListeners();
-    }
+  final index = _visitors.indexWhere((visitor) => visitor.id == visitorId);
+  if (index != -1) {
+    _visitors[index] = _visitors[index].copyWith(declined: true);
+    notifyListeners();
   }
+}
+
 }

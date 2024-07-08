@@ -2,17 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
 
-class ApprovedRequests extends StatelessWidget {
+class ApprovedRequests extends StatefulWidget {
+  @override
+  _ApprovedRequestsState createState() => _ApprovedRequestsState();
+}
+
+class _ApprovedRequestsState extends State<ApprovedRequests> {
+  List<Map<String, String?>> visitorLogs = [];
+  List<Map<String, String?>> filteredVisitorLogs = [];
+  List<Map<String, String?>> fullVisitorLogs = [];
+
+  Future<void> _showApprovedVisitors(bool approved) async {
+    try {
+      final visitors = await ApiService.fetchApprovedVisitors(approved);
+
+      setState(() {
+        visitorLogs = visitors.map((visitor) {
+          return {
+            'id': visitor.id.toString(),
+            'name': visitor.names.join(', '),
+          };
+        }).toList();
+        filteredVisitorLogs = visitorLogs;
+      });
+
+      setState(() {
+        fullVisitorLogs = visitors.map((visitor) {
+          return {
+            'id': visitor.id.toString(),
+            'name': visitor.names.join(', '),
+            'purpose': visitor.purpose,
+            'hostName': visitor.selectedHostName,
+            'startDate': visitor.startDate.toString(),
+            'endDate': visitor.endDate.toString(),
+            'bringCar': visitor.bringCar.toString(),
+            'plateNumbers': visitor.selectedPlateNumbers?.join(', '),
+            'possessions': visitor.possessions.map((p) => '${p.item} (${p.quantity})').join(', '),
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print('Error fetching approved visitors: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _showApprovedVisitors(true); // Fetch approved visitors when the widget initializes
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Use Provider.of or context.watch to access the provider
-    final visitorProvider = context
-        .watch<VisitorProvider>(); // Use context.watch to listen for changes
-    final approvedVisitors =
-        visitorProvider.visitors.where((visitor) => visitor.approved).toList();
+    final visitorProvider = context.watch<VisitorProvider>(); // Replace with your provider
 
     return Scaffold(
+      
       body: Column(
         children: [
           const Padding(
@@ -32,19 +79,20 @@ class ApprovedRequests extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: approvedVisitors.isEmpty
+            child: visitorLogs.isEmpty
                 ? const Center(
                     child: Text('No approved requests'),
                   )
                 : ListView.builder(
-                    itemCount: approvedVisitors.length,
+                    itemCount: visitorLogs.length,
                     itemBuilder: (context, index) {
-                      final visitor = approvedVisitors[index];
+                      final visitor = visitorLogs[index];
                       return ListTile(
                         leading: const Icon(Icons.person),
-                        title: Text(visitor.names.join(', ')),
+                        title: Text(visitor['name'] ?? ''),
                         subtitle: Text(
-                            "${visitor.startDate.toIso8601String()} - ${visitor.endDate.toIso8601String()}"),
+                          "${fullVisitorLogs[index]['startDate']} - ${fullVisitorLogs[index]['endDate']}",
+                        ),
                       );
                     },
                   ),

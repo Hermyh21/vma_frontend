@@ -19,7 +19,7 @@ class VisitorService {
     required int numberOfVisitors,
     required bool approved,
     required bool declined,
-    //required String declineReason,
+    required String declineReason,
   }) async {
     try {
       Visitor visitor = Visitor(
@@ -34,7 +34,7 @@ class VisitorService {
         possessions: possessions,
         approved: approved,
         declined: declined,
-        //declineReason: declineReason,
+        declineReason: declineReason,
       );
 
       Dio dio = Dio();
@@ -80,11 +80,11 @@ class VisitorService {
     required int numberOfVisitors,
     required bool approved,
     required bool declined,
-    //required String declineReason,
+    required String declineReason,
   }) async {
     try {
       Visitor visitor = Visitor(
-        id: 1234,
+        id: visitorId,
         numberOfVisitors: numberOfVisitors,
         names: names,
         purpose: purpose,
@@ -96,7 +96,7 @@ class VisitorService {
         possessions: possessions,
         approved: approved,
         declined: declined,
-        //declineReason: declineReason,
+        declineReason: declineReason,
       );
 
       Dio dio = Dio();

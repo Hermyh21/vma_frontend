@@ -23,7 +23,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final List<String> _roles = [
     'Admin',
     'Security',
-    'Approval Division',
+    'ApprovalDivision',
     'Head of Department'
   ];
 

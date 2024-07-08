@@ -11,8 +11,9 @@ class Visitor {
   final List<Possession> possessions;
   final bool approved;
   final bool declined;
-  //final String declineReason;
+  final String declineReason;
   Visitor({
+    
     this.id,
     required this.names,
     required this.purpose,
@@ -25,8 +26,10 @@ class Visitor {
     required this.possessions,
     required this.approved,
     required this.declined,
-    //required this.declineReason,
+    required this.declineReason,
   });
+
+  // get declineReason => null;
 
   Visitor copyWith({
     Object? id,
@@ -41,7 +44,7 @@ class Visitor {
     List<Possession>? possessions,
     bool? approved,
     bool? declined,
-    //String? declineReason,
+    String? declineReason,
   }) {
     return Visitor(
       id: id ?? this.id,
@@ -56,7 +59,7 @@ class Visitor {
       possessions: possessions ?? this.possessions,
       approved: approved ?? this.approved,
       declined: declined ?? this.declined,
-      //declineReason: declineReason ?? this.declineReason,
+      declineReason: declineReason ?? this.declineReason,
     );
   }
 
@@ -77,7 +80,7 @@ class Visitor {
           .toList(),
       approved: json['approved'] ?? false,
       declined: json['declined'] ?? false,
-      //declineReason: json['declineReason'],
+      declineReason: json['declineReason'],
     );
   }
 

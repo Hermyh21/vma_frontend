@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:vma_frontend/src/screens/login.dart';
 class DefaultScreen extends StatelessWidget {
   const DefaultScreen({Key? key}) : super(key: key);
 
@@ -7,7 +7,7 @@ class DefaultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome'),
+        title: const Text('Welcome'),
         centerTitle: true,
       ),
       body: Center(
@@ -20,17 +20,19 @@ class DefaultScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Unauthorized Access: Your user role has not been recognized or is pending approval.',
+              'Unauthorized Access: Your user role has not been recognized.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Perhaps add a logout or contact admin feature
-                Navigator.of(context)
-                    .pop(); // Go back to the login screen or home page
+                
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignInApp()),
+                );
               },
-              child: Text('Return to Home'),
+              child: const Text('Return to Home'),
             )
           ],
         ),

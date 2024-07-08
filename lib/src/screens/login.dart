@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/utils/utils.dart' as utils; // Add a prefix
-import 'admin/admin_dashboard.dart';
+import 'package:vma_frontend/src/screens/admin/admin_dashboard.dart';
 import '../constants/constants.dart';
 import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/approval_div_screen.dart';
@@ -123,6 +123,7 @@ class SignInScreen extends StatelessWidget {
               ),
             ),
           ),
+          const Footer(), // Add the Footer widget here
         ],
       ),
     );
@@ -247,8 +248,62 @@ class _SignInFormState extends State<SignInForm> {
   }
 }
 
-// Utility function to show SnackBar
-// void showSnackBar(BuildContext context, String message) {
-//   final snackBar = SnackBar(content: Text(message));
-//   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-// }
+
+class Footer extends StatelessWidget {
+  const Footer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 30, bottom: 10, left: 50, right: 50),
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const SizedBox(width: 10),
+          IconButton(
+            icon: Container(
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: Color.fromARGB(255, 25, 25, 112),
+    ),
+    padding: const EdgeInsets.all(8),
+    child: const Icon(
+      Icons.help_outline,
+      color: Colors.white,
+    ),
+  ),
+            tooltip: 'Get Help',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Page Guide'),
+                    content: const SingleChildScrollView(
+                      child: ListBody(
+                        children: <Widget>[
+                          Text('Option 1: Enter your email and password , then hit signin.'),
+                          Text("Option 2: If you forgot your password, hit 'forgot password' , and enter your email. Then you'll receive an email on how to reset your password"),
+                          Text('Option 3: If none of the above works, please contact the admin.'),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Got it'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

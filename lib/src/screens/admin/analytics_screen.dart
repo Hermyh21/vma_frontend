@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart'; // Import DateFormat for date formatting
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/analytics.dart';
 
@@ -13,6 +14,7 @@ class AnalyticsScreen extends StatefulWidget {
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   late Analytics analytics;
+  late DateTime currentDate;
 
   @override
   void initState() {
@@ -20,6 +22,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     analytics =
         Analytics(visitorCount: 0, userCount: 0); // Initialize analytics here
     fetchData();
+    currentDate = DateTime.now();
   }
 
   Future<void> fetchData() async {
@@ -42,30 +45,44 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Analytics'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnalyticsCard(
-              title: 'Visitor Count Today',
-              count: analytics.visitorCount,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              DateFormat.yMMMMd().format(currentDate), // Format date as desired
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 25, 25, 112),
+              ),
             ),
-            AnalyticsCard(
-              title: 'User Count',
-              count: analytics.userCount,
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnalyticsCard(
+                  title: 'Visitor Count Today',
+                  count: analytics.visitorCount,
+                ),
+                AnalyticsCard(
+                  title: 'User Count',
+                  count: analytics.userCount,
+                ),
+                const SizedBox(height: 32.0),
+                ElevatedButton(
+                  onPressed: () {
+                    // View Detailed Analytics Functionality
+                  },
+                  child: const Text('View Detailed Analytics'),
+                ),
+              ],
             ),
-            SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: () {
-                // View Detailed Analytics Functionality
-              },
-              child: Text('View Detailed Analytics'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

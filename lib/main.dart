@@ -58,10 +58,8 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const Scaffold(
-              body: SignInApp(),
-              bottomNavigationBar: Footer(),
-            ),
+        '/': (context) =>const SignInApp(),
+             
         '/about': (context) => AboutPage(),
         '/settings': (context) => const SettingsPage(),
         '/admin': (context) => AdminDashboard(),

@@ -6,7 +6,7 @@ import 'package:vma_frontend/src/components/header.dart';
 import 'package:vma_frontend/src/providers/socket_service.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
-
+import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 class DepartmentHeadsPage extends StatefulWidget {
   @override
   _DepartmentHeadsPageState createState() => _DepartmentHeadsPageState();
@@ -115,26 +115,37 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
 
       setState(() {
         editVisitorLogs = [visitor].map((log) {
+        final List<Map<String, dynamic>> possessions = log.possessions.map((possession) {
+          return {
+            'item': possession.item,
+            'quantity': possession.quantity,
+          };
+        }).toList();
+        print("Mapped possessions");
+        print(possessions);
+
           return {
             'id': log.id.toString(),
-            'name': log.names.join(', '),
+            'name': log.names.toString(),
             'purpose': log.purpose,
-            'hostName': log.selectedHostName,
+            'selectedHostName': log.selectedHostName,
             'startDate': log.startDate.toString(),
             'endDate': log.endDate.toString(),
             'bringCar': log.bringCar.toString(),
-            'plateNumbers': log.selectedPlateNumbers.toString(),
-            'possessions':
-                log.possessions.map((possession) => possession.item).join(', '),
+            'selectedPlateNumbers': log.selectedPlateNumbers.toString(),
+            'possessions': possessions.join(', '),
+
           };
         }).toList();
       });
       print("edit $editVisitorLogs");
-      Navigator.pushNamed(
-        context,
-        '/manage_visitors',
-        arguments: editVisitorLogs,
-      );
+      Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
+  ),
+);
+
     } catch (e) {
       print('Failed to fetch visitor details: $e');
       // Handle the error appropriately
@@ -150,7 +161,49 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       }).toList();
     });
   }
+void _requestStatus() {
+  // print("Visitor name tapped: $visitor");
+  // IconData iconData;
+  // Color iconColor;
+  // String dialogTitle;
+  // String dialogContent;
 
+  // if (visitor.approved == true) {
+  //   iconData = Icons.check;
+  //   iconColor = Colors.green;
+  //   dialogTitle = 'Visitor Approved';
+  //   dialogContent = 'This visitor is approved.';
+  // } else if (visitor.approved == false) {
+  //   iconData = Icons.cancel;
+  //   iconColor = Colors.red;
+  //   dialogTitle = 'Visitor Declined';
+  //   dialogContent = 'Reason for Decline: {visitor.declineReason}';
+  // } else {
+  //   iconData = Icons.pending_actions;
+  //   iconColor = Color.fromARGB(255, 25, 25, 112);
+  //   dialogTitle = 'Visitor Status';
+  //   dialogContent = 'Visitor status is pending.';
+  // }
+
+  // showDialog(
+  //   context: context,
+  //   builder: (BuildContext context) {
+  //     return AlertDialog(
+  //       title: Text(dialogTitle),
+  //       content: Text(dialogContent),
+  //       actions: <Widget>[
+  //         TextButton(
+  //           child: const Text('OK'),
+  //           onPressed: () {
+  //             Navigator.of(context).pop();
+  //           },
+  //         ),
+  //       ],
+  //     );
+  //   },
+  // );
+}
+  
   void _onDeleteVisitor(String visitorId) {
     showDialog(
       context: context,
@@ -196,6 +249,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
 
   @override
   Widget build(BuildContext context) {
+  
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -378,6 +432,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                 ],
               ),
             ),
+            
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
@@ -385,6 +440,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                 color: Colors.white,
                 child: Column(
                   children: fullVisitorLogs.map((log) {
+                    print('Log: $log');
+                    Visitor visitor = Visitor.fromJson(log);
+                    print('Visitor: ${visitor.names}');
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 6.0),
                       decoration: BoxDecoration(
@@ -399,7 +457,8 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                         title: GestureDetector(
                           onTap: () => _onVisitorNameTap(log['name']!),
                           child: Text(
-                            log['name']!,
+                            visitor.names.join(', '),
+                            //log['name']!,
                             style: const TextStyle(
                               color: Color.fromARGB(255, 25, 25, 112),
                             ),
@@ -420,7 +479,17 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                                 Icons.delete,
                                 color: Color.fromARGB(255, 25, 25, 112),
                               ),
-                              onPressed: () => _onDeleteVisitor(log['name']!),
+                              onPressed: () => _onDeleteVisitor(log['id']!),
+                            ),
+                             
+
+                            IconButton(
+                              icon: const Icon(
+                                Icons.pending_actions,
+                                color: Color.fromARGB(255, 25, 25, 112),
+                              ),
+                              
+                              onPressed: () => _requestStatus(),
                             ),
                           ],
                         ),
@@ -430,6 +499,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                 ),
               ),
             ),
+          
           ],
         ),
       ),

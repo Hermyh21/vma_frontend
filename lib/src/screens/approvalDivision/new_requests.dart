@@ -1,13 +1,13 @@
-// new_requests_screen.dart
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/providers/socket_service.dart';
-
+import 'package:vma_frontend/src/constants/constants.dart';
+import 'package:dio/dio.dart';
 class NewRequestsScreen extends StatefulWidget {
   @override
   _NewRequestsScreenState createState() => _NewRequestsScreenState();
@@ -126,75 +126,112 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   //   });
   // }
 
-  void _onApproveVisitor(String visitorId) {
-    final visitorProvider = context.read<VisitorProvider>();
+  void _onApproveVisitor(String visitorId) async {
+  final visitorProvider = context.read<VisitorProvider>();
+  Visitor? visitor;
+  try {
+    visitor = visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
+  } catch (e) {
+    visitor = null;
+  }
 
-    // Use the approveVisitor method from VisitorProvider
-    visitorProvider.approveVisitor(visitorId);
+  if (visitor == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Visitor not found')),
+    );
+    return;
+  }
 
-    // Optionally, if you need to update a selected visitor
-    final visitor =
-        visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
+  try {
+    // Create an instance of Dio
+    final dio = Dio();
 
-    if (visitor != null) {
-      setState(() {
-        visitorProvider.setVisitorFromModel(
-          visitor.copyWith(approved: true),
-        );
+    // Send the approval request to the backend
+    final response = await dio.put(
+      '${Constants.uri}/approve/$visitorId',
+    );
 
-        // Remove the visitor from the list after approval
-        visitorProvider.removeVisitor(visitorId);
-      });
+    if (response.statusCode == 200) {
+      // Update the visitor's approved status locally
+      visitorProvider.setVisitorFromModel(visitor!.copyWith(
+        approved: true,
+      ));
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Visitor approved')),
       );
     } else {
-      // Handle case where visitor is not found
+      // Handle error response
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor not found')),
+        const SnackBar(content: Text('Failed to approve visitor')),
       );
     }
+  } catch (e) {
+    // Handle network error
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Network error')),
+    );
+  }
+}
+  
+  void _onDeclineVisitor(String visitorId) {
+  final visitorProvider = context.read<VisitorProvider>();
+  Visitor? visitor;
+  try {
+    visitor = visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
+  } catch (e) {
+    visitor = null;
   }
 
-  void _onDeclineVisitor(String visitorId) {
-    final visitorProvider = context.read<VisitorProvider>();
+  if (visitor == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Visitor not found')),
+    );
+    return;
+  }
 
-    // Find the visitor by ID
-    final visitor =
-        visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      String declineReason = '';
+      return AlertDialog(
+        title: const Text('Reason to Decline'),
+        content: TextField(
+          onChanged: (value) {
+            declineReason = value;
+          },
+          decoration: const InputDecoration(
+            hintText: 'Enter reason for declining',
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Send'),
+            onPressed: () async {
+              if (declineReason.isNotEmpty) {
+                try {
+                  // Create an instance of Dio
+                  final dio = Dio();
 
-    if (visitor != null) {
-      // Show a dialog to get the reason for declining
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          String declineReason = '';
-          return AlertDialog(
-            title: const Text('Reason to Decline'),
-            content: TextField(
-              onChanged: (value) {
-                declineReason = value;
-              },
-              decoration: const InputDecoration(
-                hintText: 'Enter reason for declining',
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text('Send'),
-                onPressed: () {
-                  if (declineReason.isNotEmpty) {
-                    // Update the visitor's declined status and reason
-                    visitorProvider.setVisitorFromModel(visitor.copyWith(
+                  // Send the decline reason to the backend
+                  final response = await dio.put(
+                    '${Constants.uri}/$visitorId',
+                    data: {
+                      'declineReason': declineReason,
+                    },
+                  );
+
+                  if (response.statusCode == 200) {
+                    // Update the visitor's declined status and reason locally
+                    visitorProvider.setVisitorFromModel(visitor!.copyWith(
                       declined: true,
-                      //declineReason: declineReason),
+                      declineReason: declineReason,
                     ));
 
                     // Remove the visitor from the list
@@ -203,27 +240,33 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Visitor declined')),
                     );
+
+                    Navigator.of(dialogContext).pop();
                   } else {
-                    // Handle case where reason is empty
+                    // Handle error response
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Reason cannot be empty')),
+                      const SnackBar(content: Text('Failed to decline visitor')),
                     );
                   }
-
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+                } catch (e) {
+                  // Handle network error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Network error')),
+                  );
+                }
+              } else {
+                // Handle case where reason is empty
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Reason cannot be empty')),
+                );
+              }
+            },
+          ),
+        ],
       );
-    } else {
-      // Handle case where visitor is not found
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor not found')),
-      );
-    }
-  }
+    },
+  );
+}
 
   void _onVisitorNameTap(String visitorName) {
     // Implement visitor name tap logic here
@@ -306,7 +349,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
                             ),
                             IconButton(
                               icon: const Icon(
-                                Icons.delete,
+                                Icons.cancel,
                                 color: Color.fromARGB(255, 25, 25, 112),
                               ),
                               onPressed: () => _onDeclineVisitor(log['id']!),
