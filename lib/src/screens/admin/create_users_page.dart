@@ -23,18 +23,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final List<String> _roles = [
     'Admin',
     'Security',
-    'ApprovalDivision',
+    'Approval Division',
     'Head of Department'
   ];
-
-  // void _showSuccessMessage() {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(
-  //       content: Text('User created successfully'),
-  //       duration: Duration(seconds: 2),
-  //     ),
-  //   );
-  // }
 
   void _clearFormFields() {
     _emailController.clear();
@@ -194,7 +185,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 try {
-                                  await authService.createUser(
+                                  final response = await authService.createUser(
                                     context: context,
                                     email: _emailController.text,
                                     password: _passwordController.text,
@@ -204,13 +195,16 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     phonenumber: _phonenumberController.text,
                                     department: _departmentController.text,
                                   );
-                                  // _showSuccessMessage();
+                                  if (response != null) {
+                                    print('Server response data: $response');
+                                    // Handle the successful response here
+                                  }
                                   _clearFormFields();
                                 } catch (error) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content:
-                                          Text('Failed to create user: $error'),
+                                      Text('Failed to create user: $error'),
                                       duration: const Duration(seconds: 2),
                                     ),
                                   );
@@ -263,11 +257,11 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                 ),
                 enabledBorder: hasFocus || Focus.of(context).hasPrimaryFocus
                     ? OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.5),
-                        ),
-                      )
+                  borderSide: BorderSide(
+                    color:
+                    Theme.of(context).primaryColor.withOpacity(0.5),
+                  ),
+                )
                     : InputBorder.none,
               ),
               validator: validator,

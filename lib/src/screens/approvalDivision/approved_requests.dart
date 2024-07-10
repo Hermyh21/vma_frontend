@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
-
+import 'package:vma_frontend/src/constants/constants.dart';
 class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
@@ -16,10 +16,10 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
 
   Future<void> _showApprovedVisitors(bool approved) async {
     try {
-      final visitors = await ApiService.fetchApprovedVisitors(approved);
+      final logs = await ApiService.fetchApprovedVisitors(approved);
 
       setState(() {
-        visitorLogs = visitors.map((visitor) {
+        visitorLogs = logs.map((visitor) {
           return {
             'id': visitor.id.toString(),
             'name': visitor.names.join(', '),
@@ -29,7 +29,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
       });
 
       setState(() {
-        fullVisitorLogs = visitors.map((visitor) {
+        fullVisitorLogs = logs.map((visitor) {
           return {
             'id': visitor.id.toString(),
             'name': visitor.names.join(', '),
@@ -54,12 +54,16 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
     _showApprovedVisitors(true); // Fetch approved visitors when the widget initializes
   }
 
+  void _onVisitorNameTap(String name) {
+    // Implement the logic for what happens when a visitor name is tapped
+    print('Visitor name tapped: $name');
+  }
+
   @override
   Widget build(BuildContext context) {
     final visitorProvider = context.watch<VisitorProvider>(); // Replace with your provider
-
+    print("check this out ${visitorLogs}");
     return Scaffold(
-      
       body: Column(
         children: [
           const Padding(
@@ -83,18 +87,39 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                 ? const Center(
                     child: Text('No approved requests'),
                   )
-                : ListView.builder(
-                    itemCount: visitorLogs.length,
-                    itemBuilder: (context, index) {
-                      final visitor = visitorLogs[index];
-                      return ListTile(
-                        leading: const Icon(Icons.person),
-                        title: Text(visitor['name'] ?? ''),
-                        subtitle: Text(
-                          "${fullVisitorLogs[index]['startDate']} - ${fullVisitorLogs[index]['endDate']}",
-                        ),
-                      );
-                    },
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                    child: ListView.builder(
+                      itemCount: fullVisitorLogs.length,
+                      itemBuilder: (context, index) {
+                        final log = fullVisitorLogs[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6.0),
+                          decoration: BoxDecoration(
+                            color:Constants.customColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons.person,
+                              color: Color.fromARGB(255, 25, 25, 112),
+                            ),
+                            title: GestureDetector(
+                              onTap: () => _onVisitorNameTap(log['name']!),
+                              child: Text(
+                                log['name']!,
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 25, 25, 112),
+                                ),
+                              ),
+                            ),
+                            subtitle: Text(
+                              "${log['startDate']} - ${log['endDate']}",
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
           ),
         ],

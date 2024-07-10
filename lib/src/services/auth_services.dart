@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/models/user.dart';
 import 'package:vma_frontend/src/utils/utils.dart';
@@ -16,7 +15,7 @@ import 'package:vma_frontend/src/default_screen.dart';
 import 'package:vma_frontend/src/screens/login.dart';
 
 class AuthService {
-  Future<void> createUser({
+  Future<Map<String, dynamic>?> createUser({
     required BuildContext context,
     required String email,
     required String password,
@@ -51,13 +50,22 @@ class AuthService {
           },
         ),
       );
-      handleDioResponse(
-        context: context,
-        response: response,
-        onSuccess: () {
-          showSnackBar(context, "Account Created!");
-        },
-      );
+      // Debug print the response data
+      print("Server response data: ${response.data}");
+
+      // Assuming the response data is a JSON object
+      if (response.data is Map<String, dynamic>) {
+        handleDioResponse(
+          context: context,
+          response: response,
+          onSuccess: () {
+            showSnackBar(context, "Account Created!");
+          },
+        );
+        return response.data;
+      } else {
+        throw Exception('Expected a JSON object as response data');
+      }
     } catch (e) {
       if (e is DioError) {
         handleDioError(context, e);
@@ -66,6 +74,7 @@ class AuthService {
         print('Unexpected Error: $e');
       }
     }
+    return null;
   }
 
   void signinUser({
@@ -92,52 +101,47 @@ class AuthService {
           print("user signing response.data ${response.data}");
           final data = response.data;
 
-          final token = data['token'];
-          final userId = data['_id'];
-          final userRole = data['role'].toLowerCase();
+          if (data is Map<String, dynamic>) {
+            final token = data['token'];
+            final userId = data['_id'];
+            final userRole = data['role'].toLowerCase();
 
-          print("extracted user data${token}:, ${userId}:, ${userRole}");
+            print("extracted user data: token=$token, userId=$userId, userRole=$userRole");
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', data['token']);
-          await prefs.setString('user', json.encode(data));
-          //var decodedResponse = jsonDecode(response.data);
-          //print("user signing response ${decodedResponse}");
-          //userProvider.setUser(decodedResponse);
-          //await prefs.setString('x-auth-token', decodedResponse['token']);
-          /*await prefs.setString(
-              'user-role', decodedResponse['role']); // Store the role locally
-          print("user role; ${decodedResponse['role']}");*/
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', data['token']);
+            await prefs.setString('user', json.encode(data));
 
-          // Conditional navigation based on roles
-          switch (userRole) {
-            case 'admin':
-              navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => AdminDashboard()),
-                  (route) => false);
-              break;
-            case 'departmenthead':
-              navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (context) => DepartmentHeadsPage()),
-                  (route) => false);
-              break;
-            case 'approvaldivision':
-              navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => ApprovalDivision()),
-                  (route) => false);
-              break;
-            case 'security':
-              navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => SecurityScreen()),
-                  (route) => false);
-              break;
-            default:
-              navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (context) => const DefaultScreen()),
-                  (route) => false);
-              break;
+            // Conditional navigation based on roles
+            switch (userRole) {
+              case 'admin':
+                navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => AdminDashboard()),
+                        (route) => false);
+                break;
+              case 'head of department':
+                navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => DepartmentHeadsPage()),
+                        (route) => false);
+                break;
+              case 'approval division':
+                navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => ApprovalDivision()),
+                        (route) => false);
+                break;
+              case 'security':
+                navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => SecurityScreen()),
+                        (route) => false);
+                break;
+              default:
+                navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const DefaultScreen()),
+                        (route) => false);
+                break;
+            }
+          } else {
+            throw Exception('Expected a JSON object as response data');
           }
         },
       );
@@ -192,19 +196,20 @@ class AuthService {
 
         var userDetails = jsonDecode(getResponse.data);
         // Redirect based on user role
-        switch (userDetails['role']) {
+        switch (userDetails['role'].toLowerCase()) {
           case 'admin':
             Navigator.of(context).pushReplacementNamed('/admin');
             break;
-          case 'departmentHead':
-            Navigator.of(context).pushReplacementNamed('/depHead');
+          case 'head of department':
+            Navigator.of(context).pushReplacementNamed('/head of department');
             break;
-          case 'approvalDivision':
-            Navigator.of(context).pushReplacementNamed('/approvalDivision');
+          case 'approval division':
+            Navigator.of(context).pushReplacementNamed('/approval division');
             break;
-          // Add cases for other roles as needed
+          case 'security':
+            Navigator.of(context).pushReplacementNamed('/security');
+            break;
           default:
-            // Redirect to default page
             Navigator.of(context).pushReplacementNamed('/');
             break;
         }
@@ -228,7 +233,7 @@ class AuthService {
         MaterialPageRoute(
           builder: (context) => const SignInApp(),
         ),
-        (route) => false);
+            (route) => false);
   }
 
   void handleDioError(BuildContext context, DioError e) {
@@ -250,16 +255,16 @@ class AuthService {
       case DioErrorType.response:
         if (e.response != null && e.response?.data != null) {
           errorMessage =
-              "Error: ${e.response?.statusCode} - ${e.response?.data['message'] ?? e.response?.statusMessage}";
+          "Error: ${e.response?.statusCode} - ${e.response?.data['message'] ?? e.response?.statusMessage}";
           print('Response data: ${e.response?.data}');
         } else {
           errorMessage =
-              "Received invalid status code: ${e.response?.statusCode}";
+          "Received invalid status code: ${e.response?.statusCode}";
         }
         break;
       case DioErrorType.other:
         errorMessage =
-            "Connection to server failed due to internet connection.";
+        "Connection to server failed due to internet connection.";
         break;
       default:
         errorMessage = "Unexpected error occurred.";
@@ -324,7 +329,8 @@ class AuthService {
         context: context,
         response: response,
         onSuccess: () {
-          showSnackBar(context, "Password has been reset successfully!");
+          showSnackBar(context, "Password has been reset!");
+          Navigator.of(context).pushReplacementNamed('/login');
         },
       );
     } catch (e) {
@@ -334,6 +340,19 @@ class AuthService {
         showSnackBar(context, 'Unexpected Error: $e');
         print('Unexpected Error: $e');
       }
+    }
+  }
+
+  void handleDioResponse({
+    required BuildContext context,
+    required Response response,
+    required Function onSuccess,
+  }) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      onSuccess();
+    } else {
+      showSnackBar(context, response.data.toString());
+      print('Response Error: ${response.data.toString()}');
     }
   }
 }
