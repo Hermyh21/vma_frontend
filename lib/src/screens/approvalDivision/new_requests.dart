@@ -43,7 +43,6 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
             'id': log.id.toString(),
             'name': log.names.join(', '),
             'purpose': log.purpose,
-            'hostName': log.selectedHostName,
             'startDate': log.startDate.toString(),
             'endDate': log.endDate.toString(),
             'bringCar': log.bringCar.toString(),
@@ -135,12 +134,12 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
     visitor = null;
   }
 
-  if (visitor == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Visitor not found')),
-    );
-    return;
-  }
+  // if (visitor == null) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Visitor not found')),
+  //   );
+  //   return;
+  // }
 
   try {
     // Create an instance of Dio
@@ -169,7 +168,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   } catch (e) {
     // Handle network error
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Network error')),
+      const SnackBar(content: Text("Network error")),
     );
   }
 }

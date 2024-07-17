@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
-import 'package:vma_frontend/src/components/header.dart';
+import 'package:vma_frontend/src/screens/admin/visitor_detail_page.dart'; // Import VisitorDetailPage
+
 import 'package:vma_frontend/src/providers/socket_service.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
-import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 
-class DepartmentHeadsPage extends StatefulWidget {
+class VisitorsInfo extends StatefulWidget {
   @override
-  _DepartmentHeadsPageState createState() => _DepartmentHeadsPageState();
+  _VisitorsInfoState createState() => _VisitorsInfoState();
 }
 
-class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
+class _VisitorsInfoState extends State<VisitorsInfo> {
   final ScrollController _scrollController = ScrollController(
     initialScrollOffset: 120.0 * 7,
   );
@@ -21,8 +21,6 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
   late DateTime _selectedDate;
   final now = DateTime.now();
   late List<DateTime> days;
-
-  int _selectedIndex = 0;
 
   List<Map<String, String>> visitorLogs = [];
   List<Map<String, String?>> fullVisitorLogs = [];
@@ -54,26 +52,11 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
     super.dispose();
   }
 
-  void _onNavigate(String route) {
-    switch (route) {
-      case '/':
-        _setSelectedIndex(0);
-        break;
-      case '/about':
-      case '/settings':
-        Navigator.pushNamed(context, route);
-        break;
-      case '/logout':
-      // Handle logout here
-        break;
-    }
-  }
-
-  void _setSelectedIndex(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  // void _setSelectedIndex(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //   });
+  // }
 
   Future<void> _showVisitorLogs(DateTime day) async {
     try {
@@ -94,7 +77,6 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
             'id': log.id.toString(),
             'name': log.names.join(', '),
             'purpose': log.purpose,
-            
             'startDate': log.startDate.toString(),
             'endDate': log.endDate.toString(),
             'bringCar': log.bringCar.toString(),
@@ -107,53 +89,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       print('Error fetching visitor logs: $e');
     }
   }
-
-  void _onEditVisitor(String visitorId) async {
-    try {
-      final visitor = await ApiService.getVisitorById(visitorId);
-
-      setState(() {
-        editVisitorLogs = [visitor].map((log) {
-          final List<Map<String, dynamic>> possessions = log.possessions.map((possession) {
-            return {
-              'item': possession.item,
-              
-            };
-          }).toList();
-
-          return {
-            'id': log.id.toString(),
-            'name': log.names.toString(),
-            'purpose': log.purpose,
-
-            'startDate': log.startDate.toString(),
-            'endDate': log.endDate.toString(),
-            'bringCar': log.bringCar.toString(),
-            'selectedPlateNumbers': log.selectedPlateNumbers.toString(),
-            'possessions': possessions.join(', '),
-          };
-        }).toList();
-      });
-
-      final editedLog = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
-        ),
-      );
-
-      // Handle the edited visitor log if needed
-      if (editedLog != null) {
-        // Refresh the visitor logs list
-        _showVisitorLogs(_selectedDate);
-      }
-
-    } catch (e) {
-      print('Failed to fetch visitor details: $e');
-      // Handle the error appropriately
-    }
-  }
-
+void _visitorStatus(){
+  
+}
   void _filterVisitors() {
     final query = searchController.text.toLowerCase();
     setState(() {
@@ -164,51 +102,25 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
     });
   }
 
-  void _requestStatus() {
-    // Implement your logic for request status here
-  }
-
-  void _onDeleteVisitor(String visitorId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm Delete"),
-          content: const Text("Are you sure you want to remove this visitor?"),
-          actions: [
-            TextButton(
-              child: const Text("No"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text("Yes"),
-              onPressed: () async {
-                try {
-                  // Call API to delete the visitor by ID
-                  await ApiService.deleteVisitorById(visitorId);
-
-                  // Remove the visitor from local state
-                  setState(() {
-                    visitorLogs.removeWhere((log) => log['id'] == visitorId);
-                  });
-
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  print('Failed to delete visitor: $e');
-                  // Handle the error appropriately, e.g., show an error message
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _onVisitorNameTap(List<String> visitorName) {
+  void _onVisitorNameTap(String visitorName) {
     print("Visitor name tapped: $visitorName");
+    // Find the visitor object by name
+    final visitor = visitors.firstWhere(
+    (visitor) => visitor.names.contains(visitorName),
+   
+  );
+    try{
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => VisitorDetailPage(visitor: visitor),
+    ),
+  );
+} catch (e, stackTrace) {
+  print("Error navigating to VisitorDetailPage: $e");
+  print(stackTrace);
+}
+
   }
 
   @override
@@ -217,7 +129,6 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Header(onNavigate: _onNavigate),
             ClipPath(
               clipper: MyClip(),
               child: Container(
@@ -229,7 +140,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       const Text(
-                        "Head of Department Screen",
+                        "Visitor Logs",
                         style: TextStyle(
                             fontSize: 22.0,
                             color: Colors.white,
@@ -283,28 +194,6 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                       fontSize: 22.0,
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ManageVisitorsScreen(visitorLogs: []),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      Constants.customColor, // Background color
-                    ),
-                    child: const Text(
-                      "Add Visitors",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // Text color
-                        fontSize: 14.0,
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),
@@ -396,7 +285,6 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                 ],
               ),
             ),
-
             Padding(
               padding:
               const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
@@ -417,9 +305,11 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                         ),
                         title: GestureDetector(
                           onTap: () {
-   
-    final names = log['names']!.split(',').map((name) => name.trim()).toList();
-    _onVisitorNameTap(names);
+    // Assuming log['name'] contains multiple names separated by commas
+    final names = log['name']!.split(', ').map((name) => name.trim()).toList();
+    for (var name in names) {
+      _onVisitorNameTap(name);
+    }
   },
                           child: Text(
                             log['name']!,
@@ -433,24 +323,10 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                           children: [
                             IconButton(
                               icon: const Icon(
-                                Icons.edit,
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
-                              onPressed: () => _onEditVisitor(log['id']!),
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
-                              onPressed: () => _onDeleteVisitor(log['id']!),
-                            ),
-                            IconButton(
-                              icon: const Icon(
                                 Icons.pending_actions,
                                 color: Color.fromARGB(255, 25, 25, 112),
                               ),
-                              onPressed: () => _requestStatus(),
+                              onPressed: () => _visitorStatus(),
                             ),
                           ],
                         ),

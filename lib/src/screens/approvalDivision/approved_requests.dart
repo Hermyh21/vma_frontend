@@ -8,12 +8,10 @@ class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
 }
-
 class _ApprovedRequestsState extends State<ApprovedRequests> {
   List<Map<String, String?>> visitorLogs = [];
   List<Map<String, String?>> filteredVisitorLogs = [];
   List<Map<String, String?>> fullVisitorLogs = [];
-
   Future<void> _showApprovedVisitors(bool approved) async {
     try {
       final logs = await ApiService.fetchApprovedVisitors(approved);
@@ -22,7 +20,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
         visitorLogs = logs.map((visitor) {
           return {
             'id': visitor.id.toString(),
-            'name': visitor.names.join(', '),
+            'names': visitor.names.join(', '),
           };
         }).toList();
         filteredVisitorLogs = visitorLogs;
@@ -32,14 +30,13 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
         fullVisitorLogs = logs.map((visitor) {
           return {
             'id': visitor.id.toString(),
-            'name': visitor.names.join(', '),
+            'names': visitor.names.join(', '),
             'purpose': visitor.purpose,
-            'hostName': visitor.selectedHostName,
             'startDate': visitor.startDate.toString(),
             'endDate': visitor.endDate.toString(),
             'bringCar': visitor.bringCar.toString(),
             'plateNumbers': visitor.selectedPlateNumbers?.join(', '),
-            'possessions': visitor.possessions.map((p) => '${p.item} (${p.quantity})').join(', '),
+            'possessions': visitor.possessions.map((p) => '${p.item}').join(', '),
           };
         }).toList();
       });
@@ -54,9 +51,9 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
     _showApprovedVisitors(true); // Fetch approved visitors when the widget initializes
   }
 
-  void _onVisitorNameTap(String name) {
+  void _onVisitorNameTap(String names) {
     // Implement the logic for what happens when a visitor name is tapped
-    print('Visitor name tapped: $name');
+    print('Visitor name tapped: $names');
   }
 
   @override

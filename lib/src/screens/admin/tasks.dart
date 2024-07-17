@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vma_frontend/src/screens/admin/assign_hosts.dart';
+
 class TasksPage extends StatelessWidget {
   const TasksPage({Key? key}) : super(key: key);
 
@@ -18,12 +18,6 @@ class TasksPage extends StatelessWidget {
           mainAxisSpacing: 16.0,
           children: [
             TaskCard(
-              title: 'Assign Hosts',
-              icon: Icons.person_add,
-              color: Colors.white,
-              onTap: () => _onNavigate(context, '/assignHosts'),
-            ),
-            TaskCard(
               title: 'Allowed Plate Numbers',
               icon: Icons.car_rental,
               color: Colors.white,
@@ -36,10 +30,16 @@ class TasksPage extends StatelessWidget {
               onTap: () => _onNavigate(context, '/allowedPossessions'),
             ),
             TaskCard(
-              title: 'New Regulations',
-              icon: Icons.rule,
+              title: 'Visitors Log',
+              icon: Icons.group,
               color: Colors.white,
-              onTap: () => _onNavigate(context, '/newRegulations'),
+              onTap: () => _onNavigate(context, '/visitorsInfo'),
+            ),
+            TaskCard(
+              title: 'Users Information',
+              icon: Icons.person,
+              color: Colors.white,
+              onTap: () => _onNavigate(context, '/userCount'),
             ),
           ],
         ),
@@ -77,7 +77,7 @@ class TaskCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 50,
-                color: Color.fromARGB(
+                color: const Color.fromARGB(
                     255, 25, 25, 112), // Adjust icon color if needed
               ),
               const SizedBox(height: 16),
@@ -96,49 +96,4 @@ class TaskCard extends StatelessWidget {
       ),
     );
   }
-}
-
-// Dummy pages for navigation (replace these with your actual pages)
-
-
-class AllowedPlateNumbersPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Allowed Plate Numbers')),
-      body: const Center(child: Text('Allowed Plate Numbers Page')),
-    );
-  }
-}
-
-class AllowedPossessionsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Allowed Possessions')),
-      body: const Center(child: Text('Allowed Possessions Page')),
-    );
-  }
-}
-
-class NewRegulationsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('New Regulations')),
-      body: const Center(child: Text('New Regulations Page')),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: TasksPage(),
-    routes: {
-      '/assignHosts': (context) => AssignHostsPage(),
-      '/allowedPlateNumberes': (context) => AllowedPlateNumbersPage(),
-      '/allowedPossessions': (context) => AllowedPossessionsPage(),
-      '/newRegulations': (context) => NewRegulationsPage(),
-    },
-  ));
 }

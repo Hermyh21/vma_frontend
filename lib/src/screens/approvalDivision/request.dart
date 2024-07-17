@@ -8,7 +8,6 @@ class Requests {
     required List<String> visitorNames,
     required bool bringCar,
     required List<String> selectedPlateNumbers,
-    required String selectedHostName,
     required List<bool> possessionCheckedState,
     required List<int> possessionQuantities,
   }) {
@@ -22,7 +21,6 @@ class Requests {
         'visitorNames': visitorNames.join(','),
         'bringCar': bringCar.toString(),
         'selectedPlateNumbers': selectedPlateNumbers.join(','),
-        'selectedHostName': selectedHostName,
         'possessionCheckedState': possessionCheckedState.join(','),
         'possessionQuantities': possessionQuantities.join(','),
       },

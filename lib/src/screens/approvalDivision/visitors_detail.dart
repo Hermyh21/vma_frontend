@@ -31,15 +31,8 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<Widget> plateNumberFields = [];
   int numberOfCars = 0;
 
-  String selectedHostName = '';
-  void handleHostChange(String? newValue) {
-    if (newValue != null) {
-      setState(() {
-        selectedHostName = newValue;
-      });
-    }
-  }
-
+  
+  
   List<bool> possessionCheckedState = [false, false, false, false, false];
   List<int> possessionQuantities = [0, 0, 0, 0, 0];
   final TextEditingController _flashDriveController = TextEditingController();
@@ -386,37 +379,14 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                 ),
                 Row(
                   children: [
-                    const Text(
-                      'Name of Host: ',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                      ),
-                    ),
+                    
                     const SizedBox(width: 12.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        DropdownButton<String>(
-                          value: selectedHostName,
-                          onChanged: handleHostChange,
-                          items: [
-                            '',
-                            'Mr X',
-                            'Mr Y',
-                            'Mr Z',
-                          ].map((value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value.isNotEmpty ? value : 'Select Host',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w100,
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                        
+                        
+                        
                         if (showHostError)
                           const Text(
                             "This field can't be empty",
@@ -454,46 +424,7 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Flash drive'),
                                 ],
                               ),
-                              if (possessionCheckedState[0])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 5
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 5) {
-                                            quantity = 5;
-                                            _flashDriveController.text = '5';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[0] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _flashDriveController,
-                                        maxLength: 1,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Hard Disk row
@@ -512,46 +443,7 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Hard Disk'),
                                 ],
                               ),
-                              if (possessionCheckedState[1])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 5
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 5) {
-                                            quantity = 5;
-                                            _hardDiskController.text = '5';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[1] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _hardDiskController,
-                                        maxLength: 1,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Laptop row
@@ -570,46 +462,47 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Mobile Phones'),
                                 ],
                               ),
-                              if (possessionCheckedState[4])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _mobilePhonesController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[4] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _mobilePhonesController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              // if (possessionCheckedState[4])
+                              //   SizedBox(
+                              //     width: 100,
+                              //     child: Column(
+                              //       crossAxisAlignment:
+                              //           CrossAxisAlignment.start,
+                              //       children: [
+                              //         const SizedBox(height: 4),
+                              //         const Text(
+                              //           'Quantity:',
+                              //           style: TextStyle(fontSize: 14),
+                              //         ),
+                              //         TextFormField(
+                              //           keyboardType: TextInputType.number,
+                              //           onChanged: (value) {
+                              //             // Limit the quantity to 15
+                              //             int? quantity = int.tryParse(value);
+                              //             if (quantity != null &&
+                              //                 quantity > 15) {
+                              //               quantity = 15;
+                              //               _mobilePhonesController.text = '15';
+                              //             }
+                              //             // Update the possession quantity
+                              //             possessionQuantities[4] =
+                              //                 quantity ?? 0;
+                              //           },
+                              //           controller: _mobilePhonesController,
+                              //           maxLength: 2,
+                              //           decoration: const InputDecoration(
+                              //             border: OutlineInputBorder(),
+                              //             isDense: true,
+                              //             contentPadding: EdgeInsets.symmetric(
+                              //               vertical: 4,
+                              //               horizontal: 8,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ),
+                           
                             ],
                           ),
                         ],
@@ -635,46 +528,7 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Tablet'),
                                 ],
                               ),
-                              if (possessionCheckedState[3])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _tabletController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[3] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _tabletController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Mobile Phones row
@@ -693,46 +547,7 @@ class _ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Laptop'),
                                 ],
                               ),
-                              if (possessionCheckedState[2])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _laptopController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[2] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _laptopController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                         ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../../constants/constants.dart';
+import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
@@ -79,7 +79,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         return ListTile(
           title: Text(visitor.names.join(', ')),
           subtitle: Text(
-              'Purpose: ${visitor.purpose}\nHost: ${visitor.selectedHostName}'),
+              'Purpose: ${visitor.purpose}'),
           // onTap: () => _onNavigate(visitor
           //     .selectedHostName), // Assuming visitor has a unique host ID or name
         );

@@ -4,10 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
-// import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
 
 class ManageVisitorsScreen extends StatefulWidget {
-  //final String? visitorLogs;
+ 
   final List<Map<String, dynamic>>? visitorLogs;
 
   const ManageVisitorsScreen({super.key, this.visitorLogs});
@@ -16,18 +15,7 @@ class ManageVisitorsScreen extends StatefulWidget {
 }
 
 class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
-  // var editUserData = {
-  //   'name': ['Visitor 1'],
-  //   'purpose': 'meeting',
-  //   'selectedHostName': 'Mr X',
-  //   'startDate': '2023-05-28',
-  //   'endDate': '2023-05-28',
-  //   'bringCar': true,
-  //   'selectedPlateNumbers': ['1 AA', '1 BB'],
-  //   'possessionQuantities': [
-  //     {'item': 'Mobile Phones', 'quantity': 15}
-  //   ],
-  // };
+  
   late DateTime startDate;
   late DateTime endDate;
   int numberOfVisitors = 1;
@@ -46,49 +34,54 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<Widget> plateNumberFields = [];
   int numberOfCars = 0;
   List<Map<String, dynamic>>? editVisitorLogs;
-  String selectedHostName = '';
-  void handleHostChange(String? newValue) {
-    if (newValue != null) {
-      setState(() {
-        selectedHostName = newValue;
-      });
-    }
-  }
-
+  
+  
   void setVisitorData(Map<String, dynamic> userData) {
-    print("setVisitorData(widget.visitorLogs![0]); is setted $userData");
-    setState(() {
-      numberOfVisitors = 3;//userData['name'].length;
-      updateVisitorNameFields(); // Update the number of visitor name fields
+  print("setVisitorData(widget.visitorLogs![0]); is setted $userData");
+  setState(() {
+
+    if (userData['names'] != null && userData['names'] is List) {
+      numberOfVisitors = userData['name'].length;
+      updateVisitorNameFields(); 
 
       for (int i = 0; i < numberOfVisitors; i++) {
-      if (i >= visitorControllers.length) {
-        visitorControllers.add(TextEditingController());
+        if (i >= visitorControllers.length) {
+          visitorControllers.add(TextEditingController());
+        }
+        visitorControllers[i].text = userData['names'][i];
       }
-      visitorControllers[i].text = userData['name'][i];
+    } else {
+      // Handle the case where userData['names'] is null or not a List
+      numberOfVisitors = 1;
+      visitorControllers.clear();
     }
 
-      purposeController.text = userData['purpose'];
-      selectedHostName = userData['selectedHostName'];
-      startDate = DateTime.parse(userData['startDate']);
-      endDate = DateTime.parse(userData['endDate']);
-      bringCar = userData['bringCar']== "true"?true:false;
-      // selectedPlateNumbers =
-      //     List<String>.from(userData['selectedPlateNumbers']);
-      // possessionCheckedState = List<bool>.from(
-      //     userData['possessions'].map((item) => item['checked']));
-      // possessionQuantities = List<int>.from(
-      //     userData['possessions'].map((item) => item['quantity']));
-
+    purposeController.text = userData['purpose'] ?? '';
     
-     
-      updatePlateNumberFields();
-    });
-    print("visitor data is set");
-  }
+    startDate = DateTime.tryParse(userData['startDate']) ?? DateTime.now();
+    endDate = DateTime.tryParse(userData['endDate']) ?? DateTime.now();
+    bringCar = userData['bringCar'] == "true" ? true : false;
+
+    if (userData['selectedPlateNumbers'] != null && userData['selectedPlateNumbers'] is List) {
+      selectedPlateNumbers = List<String>.from(userData['selectedPlateNumbers']);
+    } else {
+      selectedPlateNumbers.clear();
+    }
+
+    if (userData['possessions'] != null && userData['possessions'] is List) {
+  possessionCheckedState = List<bool>.from(userData['possessions'].map((item) => item['checked']));
+} else {
+  possessionCheckedState = List.filled(5, false);
+}
+
+
+    updatePlateNumberFields();
+  });
+  print("visitor data is set");
+}
 
   List<bool> possessionCheckedState = [false, false, false, false, false];
-  List<int> possessionQuantities = [0, 0, 0, 0, 0];
+  
   final TextEditingController _flashDriveController = TextEditingController();
   final TextEditingController _hardDiskController = TextEditingController();
   final TextEditingController _laptopController = TextEditingController();
@@ -99,9 +92,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     setState(() {
       possessionCheckedState[index] = newValue;
 
-      if (!newValue) {
-        possessionQuantities[index] = 0;
-      }
+      
     });
   }
 
@@ -118,19 +109,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
       print("widget.visitorLogs![0]: ") ;
       print(widget.visitorLogs![0]) ;
     }
-    // If editing existing visitor, load the data
-    // if (editUserData.isNotEmpty) {
-    //   setVisitorData(editUserData);
-    // } else {
-    //   visitorNameFields.add(TextField(
-    //     decoration: InputDecoration(
-    //       labelText: 'Visitor Name',
-    //       border: UnderlineInputBorder(
-    //         borderSide: BorderSide(color: Constants.customColor),
-    //       ),
-    //     ),
-    //   ));
-    // }
+    
   }
 
   Future<void> loadData() async {
@@ -267,7 +246,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           .where((entry) => entry.value)
           .map((entry) => Possession(
                 item: items[entry.key],
-                quantity: possessionQuantities[entry.key],
+                
               ))
           .toList();
 
@@ -276,7 +255,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
         numberOfVisitors: numberOfVisitors,
         names: names,
         purpose: purposeController.text,
-        selectedHostName: selectedHostName,
+
         startDate: startDate,
         endDate: endDate,
         bringCar: bringCar,
@@ -285,6 +264,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
         approved: false,
         declined: false,
         declineReason: ' ',
+        isInside: false,
+        hasLeft: false,
       );
         var vid = visitor.id;
         print("visitorID: , $vid");
@@ -296,7 +277,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           visitorId: visitor.id as String,
           names: names,
           purpose: purposeController.text,
-          selectedHostName: selectedHostName,
+          
           startDate: startDate,
           endDate: endDate,
           bringCar: bringCar,
@@ -306,6 +287,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           approved: visitor.approved,
           declined: visitor.declined,
           declineReason: visitor.declineReason,
+          isInside: visitor.isInside,
+          hasLeft: visitor.hasLeft,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -318,7 +301,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 
           names: names,
           purpose: purposeController.text,
-          selectedHostName: selectedHostName,
+
           startDate: startDate,
           endDate: endDate,
           bringCar: bringCar,
@@ -327,7 +310,9 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
           numberOfVisitors: numberOfVisitors,
           approved: false, // Default value for approved
           declined: false,
-          declineReason: '', // Default value for declined
+          declineReason: '',
+          hasLeft: false,
+          isInside: false
         );
 
         print("visitorsss: , $visitor");
@@ -343,9 +328,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
         endDate = DateTime.now();
         numberOfVisitors = 1;
         bringCar = false;
-        selectedHostName = '';
         possessionCheckedState = List.filled(5, false);
-        possessionQuantities = List.filled(5, 0);
+        
         visitorControllers.forEach((controller) => controller.clear());
         _flashDriveController.clear();
         _hardDiskController.clear();
@@ -361,7 +345,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 
   Widget build(BuildContext context) {
     print("widget vistor logs");
-    print(widget.visitorLogs);
+    print("widget vistor logs ${widget.visitorLogs}");
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
       setVisitorData(widget.visitorLogs![0]);}
     return Scaffold(
@@ -515,48 +499,49 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                     ],
                   ),
                 ),
-                Row(
-                  children: [
-                    const Text(
-                      'Name of Host: ',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    const SizedBox(width: 12.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DropdownButton<String>(
-                          value: selectedHostName,
-                          onChanged: handleHostChange,
-                          items: [
-                            '',
-                            'Mr X',
-                            'Mr Y',
-                            'Mr Z',
-                          ].map((value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value.isNotEmpty ? value : 'Select Host',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w100,
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        if (showHostError)
-                          const Text(
-                            "This field can't be empty",
-                            style: TextStyle(color: Colors.red, fontSize: 12.0),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     const Text(
+                //       'Name of Host: ',
+                //       style: TextStyle(
+                //         fontSize: 16.0,
+                //       ),
+                //     ),
+                //     const SizedBox(width: 12.0),
+                //     Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         DropdownButton<String>(
+                //           value: selectedHostName,
+                //           onChanged: handleHostChange,
+                //           items: [
+                //             '',
+                //             'Mr X',
+                //             'Mr Y',
+                //             'Mr Z',
+                //           ].map((value) {
+                //             return DropdownMenuItem<String>(
+                //               value: value,
+                //               child: Text(
+                //                 value.isNotEmpty ? value : 'Select Host',
+                //                 style: const TextStyle(
+                //                   fontWeight: FontWeight.w100,
+                //                   fontSize: 14.0,
+                //                 ),
+                //               ),
+                //             );
+                //           }).toList(),
+                //         ),
+                //         if (showHostError)
+                //           const Text(
+                //             "This field can't be empty",
+                //             style: TextStyle(color: Colors.red, fontSize: 12.0),
+                //           ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
+                
                 const SizedBox(height: 16.0),
                 Center(
                   child: Row(
@@ -585,46 +570,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Flash drive'),
                                 ],
                               ),
-                              if (possessionCheckedState[0])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 5
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 5) {
-                                            quantity = 5;
-                                            _flashDriveController.text = '5';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[0] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _flashDriveController,
-                                        maxLength: 1,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Hard Disk row
@@ -643,46 +589,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Hard Disk'),
                                 ],
                               ),
-                              if (possessionCheckedState[1])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 5
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 5) {
-                                            quantity = 5;
-                                            _hardDiskController.text = '5';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[1] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _hardDiskController,
-                                        maxLength: 1,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Laptop row
@@ -701,46 +608,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Mobile Phones'),
                                 ],
                               ),
-                              if (possessionCheckedState[4])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _mobilePhonesController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[4] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _mobilePhonesController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                             
                             ],
                           ),
                         ],
@@ -766,46 +634,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Tablet'),
                                 ],
                               ),
-                              if (possessionCheckedState[3])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _tabletController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[3] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _tabletController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                           // Mobile Phones row
@@ -824,50 +653,12 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                   const Text('Laptop'),
                                 ],
                               ),
-                              if (possessionCheckedState[2])
-                                SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Quantity:',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          // Limit the quantity to 15
-                                          int? quantity = int.tryParse(value);
-                                          if (quantity != null &&
-                                              quantity > 15) {
-                                            quantity = 15;
-                                            _laptopController.text = '15';
-                                          }
-                                          // Update the possession quantity
-                                          possessionQuantities[2] =
-                                              quantity ?? 0;
-                                        },
-                                        controller: _laptopController,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              
                             ],
                           ),
                         ],
                       ),
+                   
                     ],
                   ),
                 ),

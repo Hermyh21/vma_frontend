@@ -83,7 +83,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             color: Colors.white,
           ),
           Icon(Icons.person_add, size: 30, color: Colors.white),
-          Icon(Icons.analytics, size: 30, color: Colors.white),
+          
         ],
         onTap: _setSelectedIndex,
       ),

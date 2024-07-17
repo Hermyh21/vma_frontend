@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
@@ -10,7 +9,6 @@ class VisitorService {
     required BuildContext context,
     required List<String> names,
     required String? purpose,
-    required String? selectedHostName,
     required DateTime startDate,
     required DateTime endDate,
     required bool bringCar,
@@ -20,13 +18,15 @@ class VisitorService {
     required bool approved,
     required bool declined,
     required String declineReason,
+    required bool isInside,
+    required bool hasLeft,
   }) async {
     try {
       Visitor visitor = Visitor(
         numberOfVisitors: numberOfVisitors,
         names: names,
         purpose: purpose,
-        selectedHostName: selectedHostName,
+
         startDate: startDate,
         endDate: endDate,
         bringCar: bringCar,
@@ -35,6 +35,8 @@ class VisitorService {
         approved: approved,
         declined: declined,
         declineReason: declineReason,
+        isInside: isInside,
+        hasLeft: hasLeft,
       );
 
       Dio dio = Dio();
@@ -71,7 +73,7 @@ class VisitorService {
     required String? visitorId,
     required List<String> names,
     required String? purpose,
-    required String? selectedHostName,
+
     required DateTime startDate,
     required DateTime endDate,
     required bool bringCar,
@@ -81,6 +83,9 @@ class VisitorService {
     required bool approved,
     required bool declined,
     required String declineReason,
+    required bool isInside,
+    required bool hasLeft,
+    required 
   }) async {
     try {
       Visitor visitor = Visitor(
@@ -88,7 +93,7 @@ class VisitorService {
         numberOfVisitors: numberOfVisitors,
         names: names,
         purpose: purpose,
-        selectedHostName: selectedHostName,
+        
         startDate: startDate,
         endDate: endDate,
         bringCar: bringCar,
@@ -97,6 +102,8 @@ class VisitorService {
         approved: approved,
         declined: declined,
         declineReason: declineReason,
+        isInside: isInside,
+        hasLeft: hasLeft,
       );
 
       Dio dio = Dio();
@@ -127,7 +134,20 @@ class VisitorService {
       }
     }
   }
+Future<void> deleteVisitorById(String visitorId) async {
+    final Dio _dio = Dio();
 
+    try {
+
+      final response = await _dio.delete('${Constants.uri}/visitors/$visitorId');
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete visitor');
+      }
+    } catch (error) {
+      throw Exception('Failed to delete visitor: $error');
+    }
+  }
   void handleDioError(BuildContext context, DioError e) {
     String errorMessage;
 

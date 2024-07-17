@@ -1,17 +1,18 @@
 class Visitor {
-  final Object? id; // id can be of type Object to accommodate different types
+  final Object? id; 
   final List<String> names;
   final String? purpose;
   final DateTime startDate;
   final DateTime endDate;
   final int numberOfVisitors;
   final bool bringCar;
-  final List<String> selectedPlateNumbers;
-  final String? selectedHostName;
+  final List<String> selectedPlateNumbers;  
   final List<Possession> possessions;
   final bool approved;
   final bool declined;
   final String declineReason;
+  final bool isInside;
+  final bool hasLeft;
   Visitor({
     
     this.id,
@@ -21,12 +22,13 @@ class Visitor {
     required this.endDate,
     required this.numberOfVisitors,
     required this.bringCar,
-    required this.selectedPlateNumbers,
-    required this.selectedHostName,
+    required this.selectedPlateNumbers,    
     required this.possessions,
     required this.approved,
     required this.declined,
     required this.declineReason,
+    required this.isInside,
+    required this.hasLeft,
   });
 
   // get declineReason => null;
@@ -40,11 +42,13 @@ class Visitor {
     int? numberOfVisitors,
     bool? bringCar,
     List<String>? selectedPlateNumbers,
-    String? selectedHostName,
+
     List<Possession>? possessions,
     bool? approved,
     bool? declined,
     String? declineReason,
+    bool? isInside,
+    bool? hasLeft,
   }) {
     return Visitor(
       id: id ?? this.id,
@@ -55,11 +59,13 @@ class Visitor {
       numberOfVisitors: numberOfVisitors ?? this.numberOfVisitors,
       bringCar: bringCar ?? this.bringCar,
       selectedPlateNumbers: selectedPlateNumbers ?? this.selectedPlateNumbers,
-      selectedHostName: selectedHostName ?? this.selectedHostName,
+      
       possessions: possessions ?? this.possessions,
       approved: approved ?? this.approved,
       declined: declined ?? this.declined,
       declineReason: declineReason ?? this.declineReason,
+      isInside: isInside ?? this.isInside,
+      hasLeft: hasLeft ?? this.hasLeft,
     );
   }
 
@@ -74,13 +80,15 @@ class Visitor {
       bringCar: json['bringCar'],
       selectedPlateNumbers:
           List<String>.from(json['selectedPlateNumbers'] ?? []),
-      selectedHostName: json['selectedHostName'],
+      
       possessions: (json['possessions'] as List)
           .map((possessionJson) => Possession.fromJson(possessionJson))
           .toList(),
       approved: json['approved'] ?? false,
       declined: json['declined'] ?? false,
       declineReason: json['declineReason'],
+      isInside: json['isInside'] ?? false,
+      hasLeft: json['hasLeft'] ?? false,
     );
   }
 
@@ -93,7 +101,7 @@ class Visitor {
       'numberOfVisitors': numberOfVisitors,
       'bringCar': bringCar,
       'selectedPlateNumbers': selectedPlateNumbers,
-      'selectedHostName': selectedHostName,
+      
       'possessions':
           possessions.map((possession) => possession.toJson()).toList(),
       'approved': approved,
@@ -109,19 +117,19 @@ class Visitor {
 
 class Possession {
   final String item;
-  final int quantity;
+  
 
-  Possession({required this.item, required this.quantity});
+  Possession({required this.item});
 
   Map<String, dynamic> toJson() => {
         'item': item,
-        'quantity': quantity,
+        
       };
 
   factory Possession.fromJson(Map<String, dynamic> json) {
     return Possession(
       item: json['item'],
-      quantity: json['quantity'],
+      
     );
   }
 }

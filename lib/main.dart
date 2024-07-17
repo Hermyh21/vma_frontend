@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/about.dart';
-import 'package:vma_frontend/src/components/footer.dart';
+
 import 'package:vma_frontend/src/providers/user_provider.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/screens/admin/admin_dashboard.dart';
@@ -15,7 +15,10 @@ import 'package:vma_frontend/src/screens/securityDivision/security_screen.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/settings_page.dart';
 import 'package:vma_frontend/src/providers/socket_service.dart';
-
+import 'package:vma_frontend/src/screens/admin/plate_numbers.dart';
+import 'package:vma_frontend/src/screens/admin/possessions.dart';
+import 'package:vma_frontend/src/screens/admin/user_count.dart';
+import 'package:vma_frontend/src/screens/admin/visitors_info.dart';
 void main() {
   runApp(MultiProvider(
     providers: [
@@ -70,6 +73,12 @@ class _MyAppState extends State<MyApp> {
         '/security': (context) => SecurityScreen(),
         '/check_visitors': (context) =>
             CheckVisitorScreen(visitorId: visitorId),
+       
+      
+      '/allowedPlateNumbers': (context) => AllowedPlateNumbersPage(),
+      '/allowedPossessions': (context) => AllowedPossessionsPage(),
+      '/visitorsInfo': (context) => VisitorsInfo(),
+      '/userCount': (context) =>  UserCount(),
       },
     );
   }

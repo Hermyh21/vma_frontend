@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:convert/convert.dart';
-
+import 'package:vma_frontend/src/models/region.dart';
+import 'package:vma_frontend/src/models/plate_code.dart';
 class ApiService {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -12,7 +12,6 @@ class ApiService {
       receiveTimeout: 5000,
     ),
   );
-
   static Future<List<Visitor>> fetchVisitorLogs(DateTime date) async {
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
@@ -62,21 +61,7 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
       throw Exception('Failed to load visitor: $e');
     }
   }
-  // static Future<Map<String, dynamic>> fetchVisitorData(String visitorId) async {
-  //   try {
-  //     final response = await _dio.get(
-  //       '/api/visitors/$visitorId',
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return response.data;
-  //     } else {
-  //       throw Exception('Failed to load visitor data');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Failed to fetch visitor data: $e');
-  //   }
-  // }
+  
 
   static Future<void> updateVisitorStatus(String id,
       {bool? approved, bool? declined, String? declineReason}) async {
@@ -113,6 +98,63 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
       }
     } catch (e) {
       throw Exception('Failed to delete visitor: $e');
+    }
+  }
+  Future<List<Region>> fetchRegions(String token) async {
+    try {
+      final response = await _dio.get(
+        '/api/Plate/PlateRegion',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      List jsonResponse = response.data;
+      return jsonResponse.map((region) => Region.fromJson(region)).toList();
+    } catch (error) {
+      throw Exception('Failed to load regions: $error');
+    }
+  }
+
+  Future<List<PlateCode>> fetchPlateCodes(String token) async {
+    try {
+      final response = await _dio.get(
+        '/api/Plate/PlateCode',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      List jsonResponse = response.data;
+      return jsonResponse.map((plateCode) => PlateCode.fromJson(plateCode)).toList();
+    } catch (error) {
+      throw Exception('Failed to load plate codes: $error');
+    }
+  }
+
+  Future<void> deleteRegion(String id, String token) async {
+    try {
+      await _dio.delete(
+        '/api/Plate/plate-regions/$id',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (error) {
+      throw Exception('Failed to delete region: $error');
+    }
+  }
+
+  Future<void> deletePlateCode(String id, String token) async {
+    try {
+      await _dio.delete(
+        '/api/Plate/plate-code/$id',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (error) {
+      throw Exception('Failed to delete plate code: $error');
     }
   }
 }
