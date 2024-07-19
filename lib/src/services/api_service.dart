@@ -29,6 +29,7 @@ class ApiService {
       throw Exception('Failed to fetch visitor logs: $e');
     }
   }
+  
 static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
   try {
     final response = await _dio.get(

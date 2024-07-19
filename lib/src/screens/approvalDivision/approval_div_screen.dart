@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/components/header.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/approved_requests.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/declined_requests.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/new_requests.dart';
-
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
@@ -13,7 +11,6 @@ class ApprovalDivision extends StatefulWidget {
   @override
   _ApprovalDivisionState createState() => _ApprovalDivisionState();
 }
-
 class _ApprovalDivisionState extends State<ApprovalDivision> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
@@ -53,7 +50,7 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
     return Scaffold(
       body: Column(
         children: [
-          Header(onNavigate: _onNavigate), // Header widget
+          Header(onNavigate: _onNavigate), 
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollController,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
-import '../../components/header.dart';
-
+import 'package:vma_frontend/src/components/header.dart';
+import 'package:vma_frontend/src/screens/securityDivision/yet_to_arrive.dart';
+import 'package:vma_frontend/src/screens/securityDivision/already_left.dart';
+import 'package:vma_frontend/src/screens/securityDivision/inside_the_compound.dart';
 class SecurityScreen extends StatefulWidget {
   @override
   _SecurityScreenState createState() => _SecurityScreenState();
@@ -14,27 +14,23 @@ class SecurityScreen extends StatefulWidget {
 
 class _SecurityScreenState extends State<SecurityScreen> {
   int _selectedIndex = 0;
+  final ScrollController _scrollController = ScrollController();
+
   List<Visitor> visitorsYetToArrive = [];
+final List<Widget> _screens = [
+  YetToArrive(),
+  const InsideTheCompound(),
+  const AlreadyLeft(),
+  
+];
 
   @override
   void initState() {
     super.initState();
-    fetchVisitorsYetToArrive();
+    
   }
 
-  Future<void> fetchVisitorsYetToArrive() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:4000/api/visitors/:id'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-        visitorsYetToArrive =
-            data.map((json) => Visitor.fromJson(json)).toList();
-      });
-    } else {
-      throw Exception('Failed to load visitors');
-    }
-  }
+ 
 
   void _setSelectedIndex(int index) {
     setState(() {
@@ -57,46 +53,26 @@ class _SecurityScreenState extends State<SecurityScreen> {
     }
   }
 
-  void _onVisitorNavigate(String visitorId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => CheckVisitorScreen(visitorId: visitorId)),
-    );
-  }
-
-  final List<Widget> _screens = <Widget>[
-    const Center(child: Text('List of visitors yet to arrive')),
-    const Center(child: Text('List of visitors currently in the compound')),
-    const Center(child: Text('List of Visitors who have left the compound')),
-  ];
-
-  Widget _buildVisitorsList() {
-    return ListView.builder(
-      itemCount: visitorsYetToArrive.length,
-      itemBuilder: (context, index) {
-        final visitor = visitorsYetToArrive[index];
-        return ListTile(
-          title: Text(visitor.names.join(', ')),
-          subtitle: Text(
-              'Purpose: ${visitor.purpose}'),
-          // onTap: () => _onNavigate(visitor
-          //     .selectedHostName), // Assuming visitor has a unique host ID or name
-        );
-      },
-    );
-  }
+  // void _onVisitorNavigate(String visitorId) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //         builder: (context) => CheckVisitorScreen(visitorId: visitorId)),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    _screens[0] =
-        _buildVisitorsList(); // update the first screen to show the visitors list
-
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Header(onNavigate: _onNavigate),
+          Expanded(
+            child: SingleChildScrollView(
+               controller: _scrollController,
+              child: Column(
+                children: [
           ClipPath(
             clipper: MyClip(),
             child: Container(
@@ -183,10 +159,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
               ],
             ),
           ),
-          Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _screens,
+          Container(
+                    height: 500, // Example height for the list of visitors
+                    child: IndexedStack(
+                      index: _selectedIndex,
+                      children: _screens,
+                    ),
+                  ),
+        ],
+      ),
             ),
           ),
         ],

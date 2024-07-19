@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/about.dart';
-
 import 'package:vma_frontend/src/providers/user_provider.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/screens/admin/admin_dashboard.dart';
@@ -10,6 +9,7 @@ import 'package:vma_frontend/src/screens/approvalDivision/approval_div_screen.da
 import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
 import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 import 'package:vma_frontend/src/screens/login.dart';
+import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
 import 'package:vma_frontend/src/screens/securityDivision/security_screen.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
@@ -24,7 +24,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
       ChangeNotifierProvider(
-          create: (_) => VisitorProvider()), // Add VisitorProvider
+          create: (_) => VisitorProvider()), 
       Provider<SocketService>(
         create: (_) => SocketService()..initializeSocket(),
       ),
@@ -57,29 +57,26 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Your App Title',
+      title: 'Secure Gate',
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) =>const SignInApp(),
-             
+        '/': (context) =>const SignInApp(),             
         '/about': (context) => AboutPage(),
         '/settings': (context) => const SettingsPage(),
         '/admin': (context) => AdminDashboard(),
         '/approval_div': (context) => ApprovalDivision(),
         '/dep_head': (context) => DepartmentHeadsPage(),
-        '/manage_visitors': (context) => ManageVisitorsScreen(),
+        '/manage_visitors': (context) => const ManageVisitorsScreen(),
         '/create_users': (context) => const CreateUserScreen(),
         '/security': (context) => SecurityScreen(),
-        '/check_visitors': (context) =>
-            CheckVisitorScreen(visitorId: visitorId),
-       
-      
+                     
       '/allowedPlateNumbers': (context) => AllowedPlateNumbersPage(),
       '/allowedPossessions': (context) => AllowedPossessionsPage(),
       '/visitorsInfo': (context) => VisitorsInfo(),
       '/userCount': (context) =>  UserCount(),
       },
+      
     );
   }
 }
