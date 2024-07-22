@@ -60,12 +60,12 @@ class UserDetailPage extends StatelessWidget {
         children: [
           Text(
             '$label: ',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           Flexible(
             child: Text(
               value,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               overflow: TextOverflow.ellipsis,
             ),
           ),

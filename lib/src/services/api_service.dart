@@ -2,8 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:vma_frontend/src/models/region.dart';
+import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
+
 class ApiService {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -12,6 +13,8 @@ class ApiService {
       receiveTimeout: 5000,
     ),
   );
+
+  // Fetch Visitor Logs
   static Future<List<Visitor>> fetchVisitorLogs(DateTime date) async {
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
@@ -29,30 +32,31 @@ class ApiService {
       throw Exception('Failed to fetch visitor logs: $e');
     }
   }
-  
-static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
-  try {
-    final response = await _dio.get(
-      '/api/getapprovedVisitors',
-      queryParameters: {'approved': approved.toString()},
-    );
-    if (response.statusCode == 200) {
-      List<dynamic> data = response.data;
-      return data.map((json) => Visitor.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load approved visitors');
-    }
-  } catch (e) {
-    throw Exception('Failed to fetch approved visitors: $e');
-  }
-}
 
+  // Fetch Approved Visitors
+  static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
+    try {
+      final response = await _dio.get(
+        '/api/getapprovedVisitors',
+        queryParameters: {'approved': approved.toString()},
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load approved visitors');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch approved visitors: $e');
+    }
+  }
+
+  // Get Visitor by ID
   static Future<Visitor> getVisitorById(String visitorId) async {
     try {
       final response = await _dio.get(
         '/api/getVisitor/$visitorId',
       );
-
       if (response.statusCode == 200) {
         return Visitor.fromJson(response.data);
       } else {
@@ -62,8 +66,8 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
       throw Exception('Failed to load visitor: $e');
     }
   }
-  
 
+  // Update Visitor Status
   static Future<void> updateVisitorStatus(String id,
       {bool? approved, bool? declined, String? declineReason}) async {
     try {
@@ -79,7 +83,6 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-
       if (response.statusCode != 200) {
         throw Exception('Failed to update visitor status');
       }
@@ -88,12 +91,12 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
     }
   }
 
+  // Delete Visitor by ID
   static Future<void> deleteVisitorById(String visitorId) async {
     try {
       final response = await _dio.delete(
         '/api/deleteVisitor/$visitorId',
       );
-
       if (response.statusCode != 200) {
         throw Exception('Failed to delete visitor');
       }
@@ -101,39 +104,34 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
       throw Exception('Failed to delete visitor: $e');
     }
   }
-  Future<List<Region>> fetchRegions(String token) async {
+
+  // Fetch Regions
+  static Future<PlateRegion> addRegion(String region) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.post(
         '/api/Plate/PlateRegion',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        data: {'region': region},
       );
-
-      List jsonResponse = response.data;
-      return jsonResponse.map((region) => Region.fromJson(region)).toList();
-    } catch (error) {
-      throw Exception('Failed to load regions: $error');
+      return PlateRegion.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to add region: $e');
     }
   }
 
-  Future<List<PlateCode>> fetchPlateCodes(String token) async {
+  static Future<PlateCode> addPlateCode(String code, String description) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.post(
         '/api/Plate/PlateCode',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        data: {'code': code, 'description': description},
       );
-
-      List jsonResponse = response.data;
-      return jsonResponse.map((plateCode) => PlateCode.fromJson(plateCode)).toList();
-    } catch (error) {
-      throw Exception('Failed to load plate codes: $error');
+      return PlateCode.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to add plate code: $e');
     }
   }
 
-  Future<void> deleteRegion(String id, String token) async {
+  // Delete Region
+  static Future<void> deleteRegion(String id, String token) async {
     try {
       await _dio.delete(
         '/api/Plate/plate-regions/$id',
@@ -146,7 +144,8 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
     }
   }
 
-  Future<void> deletePlateCode(String id, String token) async {
+  // Delete Plate Code
+  static Future<void> deletePlateCode(String id, String token) async {
     try {
       await _dio.delete(
         '/api/Plate/plate-code/$id',
@@ -156,6 +155,26 @@ static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
       );
     } catch (error) {
       throw Exception('Failed to delete plate code: $error');
+    }
+  }
+  static Future<List<PlateRegion>> fetchRegions() async {
+    try {
+      final response = await _dio.get('/api/Plate/PlateRegion');
+      List<dynamic> data = response.data;
+      return data.map((json) => PlateRegion.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch regions: $e');
+    }
+  }
+
+  // Fetch all plate codes
+  static Future<List<PlateCode>> fetchPlateCodes() async {
+    try {
+      final response = await _dio.get('/api/Plate/PlateCode');
+      List<dynamic> data = response.data;
+      return data.map((json) => PlateCode.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch plate codes: $e');
     }
   }
 }

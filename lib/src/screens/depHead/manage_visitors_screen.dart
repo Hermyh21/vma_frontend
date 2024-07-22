@@ -21,6 +21,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   int numberOfVisitors = 1;
   List<TextEditingController> visitorControllers = [];
   List<Widget> visitorNameFields = [];
+  Map<String, dynamic>? _visitorLog;
   bool bringCar = false;
   String? errorMessage;
   late List<String> selectedPlateNumbers = List.filled(numberOfCars, '1 AA');
@@ -36,26 +37,25 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<Map<String, dynamic>>? editVisitorLogs;
   
   
-  void setVisitorData(Map<String, dynamic> userData) {
-  print("setVisitorData(widget.visitorLogs![0]); is setted $userData");
+  void setVisitorData(Map<String, dynamic> userData) {  
   setState(() {
 
     if (userData['names'] != null && userData['names'] is List) {
-      numberOfVisitors = userData['name'].length;
+      numberOfVisitors = 
+      (userData['name'] as List).length;
       updateVisitorNameFields(); 
 
       for (int i = 0; i < numberOfVisitors; i++) {
         if (i >= visitorControllers.length) {
           visitorControllers.add(TextEditingController());
         }
-        visitorControllers[i].text = userData['names'][i];
+        visitorControllers[i].text = userData['names'][i] ?? '';
       }
-    } else {
-      // Handle the case where userData['names'] is null or not a List
+    } else {     
       numberOfVisitors = 1;
       visitorControllers.clear();
     }
-
+_visitorLog = {};
     purposeController.text = userData['purpose'] ?? '';
     
     startDate = DateTime.tryParse(userData['startDate']) ?? DateTime.now();
@@ -63,10 +63,10 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     bringCar = userData['bringCar'] == "true" ? true : false;
 
     if (userData['selectedPlateNumbers'] != null && userData['selectedPlateNumbers'] is List) {
-      selectedPlateNumbers = List<String>.from(userData['selectedPlateNumbers']);
-    } else {
-      selectedPlateNumbers.clear();
-    }
+        _visitorLog?['selectedPlateNumbers'] = List<String>.from(userData['selectedPlateNumbers']);
+      } else {
+        _visitorLog?['selectedPlateNumbers'] = [];
+      }
 
     if (userData['possessions'] != null && userData['possessions'] is List) {
   possessionCheckedState = List<bool>.from(userData['possessions'].map((item) => item['checked']));
@@ -77,6 +77,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 
     updatePlateNumberFields();
   });
+  
   print("visitor data is set");
 }
 
@@ -102,12 +103,10 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     startDate = DateTime.now();
     endDate = DateTime.now();
     loadData();
-    print("widget.visitorLogs: ") ;
-    print(widget.visitorLogs) ;
+   
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
-      //setVisitorData(widget.visitorLogs![0]);
-      print("widget.visitorLogs![0]: ") ;
-      print(widget.visitorLogs![0]) ;
+      
+      
     }
     
   }
@@ -228,7 +227,6 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   void addVisitor({Visitor? visitor}) async {
     try {
       final visitorService = VisitorService();
-
       final List<String> items = [
         'Flash Drive',
         'Hard Disk',
@@ -236,10 +234,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
         'Tablet',
         'Mobile Phones'
       ];
-
       final List<String> names =
           visitorControllers.map((controller) => controller.text).toList();
-
       final List<Possession> possessions = possessionCheckedState
           .asMap()
           .entries
@@ -344,8 +340,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   }
 
   Widget build(BuildContext context) {
-    print("widget vistor logs");
-    print("widget vistor logs ${widget.visitorLogs}");
+    
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
       setVisitorData(widget.visitorLogs![0]);}
     return Scaffold(
@@ -385,10 +380,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                                 initialDate: startDate,
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2100),
-                              );
-                              print('date is selected ${selectedDate}');
-                              if (selectedDate != null) {
-                                print('date is selected ${selectedDate}');
+                              );                              
+                              if (selectedDate != null) {                                
                                 setState(() {
                                   startDate = selectedDate;
                                 });
@@ -499,48 +492,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
                     ],
                   ),
                 ),
-                // Row(
-                //   children: [
-                //     const Text(
-                //       'Name of Host: ',
-                //       style: TextStyle(
-                //         fontSize: 16.0,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12.0),
-                //     Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         DropdownButton<String>(
-                //           value: selectedHostName,
-                //           onChanged: handleHostChange,
-                //           items: [
-                //             '',
-                //             'Mr X',
-                //             'Mr Y',
-                //             'Mr Z',
-                //           ].map((value) {
-                //             return DropdownMenuItem<String>(
-                //               value: value,
-                //               child: Text(
-                //                 value.isNotEmpty ? value : 'Select Host',
-                //                 style: const TextStyle(
-                //                   fontWeight: FontWeight.w100,
-                //                   fontSize: 14.0,
-                //                 ),
-                //               ),
-                //             );
-                //           }).toList(),
-                //         ),
-                //         if (showHostError)
-                //           const Text(
-                //             "This field can't be empty",
-                //             style: TextStyle(color: Colors.red, fontSize: 12.0),
-                //           ),
-                //       ],
-                //     ),
-                //   ],
-                // ),
+                      
                 
                 const SizedBox(height: 16.0),
                 Center(

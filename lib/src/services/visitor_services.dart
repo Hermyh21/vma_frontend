@@ -92,8 +92,7 @@ class VisitorService {
         id: visitorId,
         numberOfVisitors: numberOfVisitors,
         names: names,
-        purpose: purpose,
-        
+        purpose: purpose,        
         startDate: startDate,
         endDate: endDate,
         bringCar: bringCar,
@@ -105,9 +104,7 @@ class VisitorService {
         isInside: isInside,
         hasLeft: hasLeft,
       );
-
       Dio dio = Dio();
-
       Response response = await dio.put(
         '${Constants.uri}/api/visitors/$visitorId',
         data: visitor.toJson(),
@@ -130,7 +127,7 @@ class VisitorService {
         handleDioError(context, e);
       } else {
         showSnackBar(context, 'Unexpected Error: $e');
-        print('Unexpected Error: $e');
+        
       }
     }
   }

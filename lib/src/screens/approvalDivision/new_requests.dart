@@ -6,7 +6,7 @@ import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/providers/socket_service.dart';
-import 'package:vma_frontend/src/constants/constants.dart';
+import 'package:vma_frontend/src/screens/approvalDivision/visitors_detail.dart';
 import 'package:dio/dio.dart';
 class NewRequestsScreen extends StatefulWidget {
   @override
@@ -268,8 +268,23 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
 }
 
   void _onVisitorNameTap(String visitorName) {
-    // Implement visitor name tap logic here
     print("Visitor name tapped: $visitorName");
+    // Find the visitor object by name
+    final visitor = visitors.firstWhere(
+    (visitor) => visitor.names.contains(visitorName),
+   
+  );
+    try{
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => VisitorDetailScreen(visitor: visitor),
+    ),
+  );
+} catch (e, stackTrace) {
+  print("Error navigating to VisitorDetailPage: $e");
+  print(stackTrace);
+}
   }
 
   bool isToday(String dateString) {
