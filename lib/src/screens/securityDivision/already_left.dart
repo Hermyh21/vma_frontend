@@ -13,10 +13,7 @@ class AlreadyLeft extends StatelessWidget {
     final visitorsLeft = visitorProvider.visitorsLeft;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visitors Left'),
-        backgroundColor: Constants.customColor,
-      ),
+      
       body: ListView.builder(
         itemCount: visitorsLeft.length,
         itemBuilder: (context, index) {

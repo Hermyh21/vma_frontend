@@ -1,5 +1,5 @@
 class Visitor {
-  final Object? id; 
+  final String? id; 
   final List<String> names;
   final String? purpose;
   final DateTime startDate;
@@ -34,7 +34,7 @@ class Visitor {
   // get declineReason => null;
 
   Visitor copyWith({
-    Object? id,
+    String? id,
     List<String>? names,
     String? purpose,
     DateTime? startDate,

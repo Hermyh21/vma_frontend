@@ -125,21 +125,24 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   //   });
   // }
 
-  void _onApproveVisitor(String visitorId) async {
+ void _onApproveVisitor(String visitorId) async {
   final visitorProvider = context.read<VisitorProvider>();
   Visitor? visitor;
+  
   try {
+    
     visitor = visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
   } catch (e) {
     visitor = null;
   }
 
-  // if (visitor == null) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text('Visitor not found')),
-  //   );
-  //   return;
-  // }
+  // If the visitor is not found locally, notify the user
+  if (visitor == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Visitor not found locally')),
+    );
+    return;
+  }
 
   try {
     // Create an instance of Dio
@@ -152,28 +155,31 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
 
     if (response.statusCode == 200) {
       // Update the visitor's approved status locally
-      visitorProvider.setVisitorFromModel(visitor!.copyWith(
+      visitorProvider.setVisitorFromModel(visitor.copyWith(
         approved: true,
+        declined: false,
+        declineReason: '',
       ));
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Visitor approved')),
       );
     } else {
-      // Handle error response
+      // Handle error response from server
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to approve visitor')),
+        SnackBar(content: Text('Failed to approve visitor: ${response.statusMessage}')),
       );
     }
   } catch (e) {
     // Handle network error
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Network error")),
+      const SnackBar(content: Text('Network error')),
     );
+    print('Network error: $e');
   }
 }
-  
-  void _onDeclineVisitor(String visitorId) {
+
+   void _onDeclineVisitor(String visitorId) {
   final visitorProvider = context.read<VisitorProvider>();
   Visitor? visitor;
   try {

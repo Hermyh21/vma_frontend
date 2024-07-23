@@ -13,14 +13,7 @@ class InsideTheCompound extends StatelessWidget {
     final visitorsInside = visitorProvider.visitorsInside;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Inside the Compound',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Constants.customColor,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: visitorsInside.length,

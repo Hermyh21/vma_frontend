@@ -24,61 +24,33 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   Map<String, dynamic>? _visitorLog;
   bool bringCar = false;
   String? errorMessage;
-  late List<String> selectedPlateNumbers = List.filled(numberOfCars, '1 AA');
+  late List<String> selectedPlateNumbers = List.filled(numberOfCars, '');
   TextEditingController purposeController = TextEditingController();
-
   bool showVisitorError = false;
   bool showPurposeError = false;
-  bool showHostError = false;
+ 
   List<String> plateRegions = [];
   List<String> plateCodes = [];
   List<Widget> plateNumberFields = [];
+  List<String> visitorNames = [];
   int numberOfCars = 0;
-  List<Map<String, dynamic>>? editVisitorLogs;
-  
-  
-  void setVisitorData(Map<String, dynamic> userData) {  
+  List<Map<String, dynamic>>? editVisitorLogs; 
+  void setVisitorData(Map<String, dynamic> visitorData) {
+  Visitor visitor = Visitor.fromJson(visitorData);
+
   setState(() {
-
-    if (userData['names'] != null && userData['names'] is List) {
-      numberOfVisitors = 
-      (userData['name'] as List).length;
-      updateVisitorNameFields(); 
-
-      for (int i = 0; i < numberOfVisitors; i++) {
-        if (i >= visitorControllers.length) {
-          visitorControllers.add(TextEditingController());
-        }
-        visitorControllers[i].text = userData['names'][i] ?? '';
-      }
-    } else {     
-      numberOfVisitors = 1;
-      visitorControllers.clear();
-    }
-_visitorLog = {};
-    purposeController.text = userData['purpose'] ?? '';
-    
-    startDate = DateTime.tryParse(userData['startDate']) ?? DateTime.now();
-    endDate = DateTime.tryParse(userData['endDate']) ?? DateTime.now();
-    bringCar = userData['bringCar'] == "true" ? true : false;
-
-    if (userData['selectedPlateNumbers'] != null && userData['selectedPlateNumbers'] is List) {
-        _visitorLog?['selectedPlateNumbers'] = List<String>.from(userData['selectedPlateNumbers']);
-      } else {
-        _visitorLog?['selectedPlateNumbers'] = [];
-      }
-
-    if (userData['possessions'] != null && userData['possessions'] is List) {
-  possessionCheckedState = List<bool>.from(userData['possessions'].map((item) => item['checked']));
-} else {
-  possessionCheckedState = List.filled(5, false);
-}
-
+    startDate = visitor.startDate;
+    endDate = visitor.endDate;
+    numberOfVisitors = visitor.numberOfVisitors;
+    visitorNames = visitor.names;
+    purposeController.text = visitor.purpose ?? '';
+    bringCar = visitor.bringCar;
+    selectedPlateNumbers = visitor.selectedPlateNumbers;
+    updateVisitorNameFields();
+    updatePossessionCheckboxes();
 
     updatePlateNumberFields();
   });
-  
-  print("visitor data is set");
 }
 
   List<bool> possessionCheckedState = [false, false, false, false, false];
@@ -88,7 +60,7 @@ _visitorLog = {};
   final TextEditingController _laptopController = TextEditingController();
   final TextEditingController _tabletController = TextEditingController();
   final TextEditingController _mobilePhonesController = TextEditingController();
-
+List<Possession> possessions = [];
   void handlePossessionCheckboxChange(int index, bool newValue) {
     setState(() {
       possessionCheckedState[index] = newValue;
@@ -96,7 +68,30 @@ _visitorLog = {};
       
     });
   }
-
+void updatePossessionCheckboxes() {
+    possessions = [];
+    for (int i = 0; i < possessionCheckedState.length; i++) {
+      if (possessionCheckedState[i]) {
+        possessions.add(Possession(item: getPossessionName(i)));
+      }
+    }
+  }
+  String getPossessionName(int index) {
+    switch (index) {
+      case 0:
+        return 'Flash Drive';
+      case 1:
+        return 'Hard Disk';
+      case 2:
+        return 'Laptop';
+      case 3:
+        return 'Tablet';
+      case 4:
+        return 'Mobile Phones';
+      default:
+        return '';
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -340,390 +335,376 @@ _visitorLog = {};
   }
 
   Widget build(BuildContext context) {
-    
-    if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
-      setVisitorData(widget.visitorLogs![0]);}
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Manage Visitors',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Constants.customColor,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.chevron_left,
-            color: Colors.white,
-            size: 30,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Start Date:'),
-                          TextButton(
-                            onPressed: () async {
-                              final selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate: startDate,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );                              
-                              if (selectedDate != null) {                                
-                                setState(() {
-                                  startDate = selectedDate;
-                                });
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: Constants.customColor,
-                            ),
-                            child: Text(
-                              '${startDate.year}-${startDate.month}-${startDate.day}',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('End Date:'),
-                          TextButton(
-                            onPressed: () async {
-                              final selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate: endDate,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (selectedDate != null) {
-                                setState(() {
-                                  endDate = selectedDate;
-                                });
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: Constants.customColor,
-                            ),
-                            child: Text(
-                              '${endDate.year}-${endDate.month}-${endDate.day}',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                Row(
-                  children: [
-                    const Text('Number of Visitors:'),
-                    const SizedBox(width: 8.0),
-                    DropdownButton<int>(
-                      value: numberOfVisitors,
-                      onChanged: (newValue) {
-                        setState(() {
-                          numberOfVisitors = newValue!;
-                          updateVisitorNameFields();
-                        });
-                      },
-                      items: List.generate(
-                        15,
-                        (index) => DropdownMenuItem<int>(
-                          value: index + 1,
-                          child: Text('${index + 1}'),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                ...visitorNameFields,
-                const SizedBox(height: 16.0),
-                const Text(
-                  'Purpose of Visit: ',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: purposeController,
-                        decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Constants.customColor),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Constants.customColor),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Constants.customColor),
-                          ),
-                          errorText: showPurposeError
-                              ? "This field can't be empty"
-                              : null,
-                        ),
-                        maxLines: null,
-                      ),
-                    ],
-                  ),
-                ),
-                      
-                
-                const SizedBox(height: 16.0),
-                Center(
-                  child: Row(
-                    children: [
-                      // Column for possessions checkboxes and quantity fields
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Possessions:',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          // Flash drive row
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: possessionCheckedState[0],
-                                    onChanged: (newValue) {
-                                      handlePossessionCheckboxChange(
-                                          0, newValue ?? false);
-                                    },
-                                  ),
-                                  const Text('Flash drive'),
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                          // Hard Disk row
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: possessionCheckedState[1],
-                                    onChanged: (newValue) {
-                                      handlePossessionCheckboxChange(
-                                          1, newValue ?? false);
-                                    },
-                                  ),
-                                  const Text('Hard Disk'),
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                          // Laptop row
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: possessionCheckedState[4],
-                                    onChanged: (newValue) {
-                                      handlePossessionCheckboxChange(
-                                          4, newValue ?? false);
-                                    },
-                                  ),
-                                  const Text('Mobile Phones'),
-                                ],
-                              ),
-                             
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 32.0),
+  if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
+    setVisitorData(widget.visitorLogs![0]);
+  }
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Tablet row
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: possessionCheckedState[3],
-                                    onChanged: (newValue) {
-                                      handlePossessionCheckboxChange(
-                                          3, newValue ?? false);
-                                    },
-                                  ),
-                                  const Text('Tablet'),
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                          // Mobile Phones row
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: possessionCheckedState[2],
-                                    onChanged: (newValue) {
-                                      handlePossessionCheckboxChange(
-                                          2, newValue ?? false);
-                                    },
-                                  ),
-                                  const Text('Laptop'),
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                        ],
-                      ),
-                   
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    'Will they bring in a car?',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30.0),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: [
-                          Radio<bool>(
-                            value: false,
-                            groupValue: bringCar,
-                            onChanged: (value) {
-                              setState(() {
-                                bringCar = value ?? false;
-                              });
-                            },
-                          ),
-                          const Text('No'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Radio<bool>(
-                            value: true,
-                            groupValue: bringCar,
-                            onChanged: (value) {
-                              setState(() {
-                                bringCar = value ?? false;
-                              });
-                            },
-                          ),
-                          const Text('Yes'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                if (bringCar)
-                  Center(
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(
+        'Manage Visitors',
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Constants.customColor,
+      leading: IconButton(
+        icon: const Icon(
+          Icons.chevron_left,
+          color: Colors.white,
+          size: 30,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+    ),
+    body: Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 16.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 55.0),
-                          child: Row(
-                            children: [
-                              const Text('How many?'),
-                              const SizedBox(width: 8.0),
-                              SizedBox(
-                                width: 100.0, // Set the width of the text box
-                                child: TextFormField(
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      numberOfCars = int.tryParse(value) ?? 0;
-                                      print("number of cars: ${numberOfCars}");
-                                      updatePlateNumberFields();
-                                    });
-                                  },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 8.0,
-                                      horizontal: 12.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        const Text('Start Date:'),
+                        TextButton(
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: startDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                startDate = selectedDate;
+                              });
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Constants.customColor,
+                          ),
+                          child: Text(
+                            '${startDate.year}-${startDate.month}-${startDate.day}',
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        if (numberOfCars > 0) ...plateNumberFields,
                       ],
                     ),
                   ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: addVisitor,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.customColor,
-
-                    elevation: 3,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0), // Button padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Button border radius
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('End Date:'),
+                        TextButton(
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: endDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                endDate = selectedDate;
+                              });
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Constants.customColor,
+                          ),
+                          child: Text(
+                            '${endDate.year}-${endDate.month}-${endDate.day}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Text(
-                    'Add Visitor',
-                    style: TextStyle(color: Colors.white),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  const Text('Number of Visitors:'),
+                  const SizedBox(width: 8.0),
+                  DropdownButton<int>(
+                    value: numberOfVisitors,
+                    onChanged: (newValue) {
+                      setState(() {
+                        numberOfVisitors = newValue!;
+                        updateVisitorNameFields();
+                      });
+                    },
+                    items: List.generate(
+                      15,
+                      (index) => DropdownMenuItem<int>(
+                        value: index + 1,
+                        child: Text('${index + 1}'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+              ...visitorNameFields,
+              const SizedBox(height: 16.0),
+              const Text(
+                'Purpose of Visit: ',
+                style: TextStyle(
+                  fontSize: 16.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: purposeController,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Constants.customColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Constants.customColor),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Constants.customColor),
+                        ),
+                        errorText: showPurposeError
+                            ? "This field can't be empty"
+                            : null,
+                      ),
+                      maxLines: null,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Center(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Possessions:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: possessionCheckedState[0],
+                                  onChanged: (newValue) {
+                                    handlePossessionCheckboxChange(
+                                        0, newValue ?? false);
+                                  },
+                                ),
+                                const Text('Flash drive'),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: possessionCheckedState[1],
+                                  onChanged: (newValue) {
+                                    handlePossessionCheckboxChange(
+                                        1, newValue ?? false);
+                                  },
+                                ),
+                                const Text('Hard Disk'),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: possessionCheckedState[4],
+                                  onChanged: (newValue) {
+                                    handlePossessionCheckboxChange(
+                                        4, newValue ?? false);
+                                  },
+                                ),
+                                const Text('Mobile Phones'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 32.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: possessionCheckedState[3],
+                                  onChanged: (newValue) {
+                                    handlePossessionCheckboxChange(
+                                        3, newValue ?? false);
+                                  },
+                                ),
+                                const Text('Tablet'),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: possessionCheckedState[2],
+                                  onChanged: (newValue) {
+                                    handlePossessionCheckboxChange(
+                                        2, newValue ?? false);
+                                  },
+                                ),
+                                const Text('Laptop'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Text(
+                  'Will they bring in a car?',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 30.0),
+                child: Row(
+                  children: [
+                    Row(
+                      children: [
+                        Radio<bool>(
+                          value: false,
+                          groupValue: bringCar,
+                          onChanged: (value) {
+                            setState(() {
+                              bringCar = value ?? false;
+                            });
+                          },
+                        ),
+                        const Text('No'),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Radio<bool>(
+                          value: true,
+                          groupValue: bringCar,
+                          onChanged: (value) {
+                            setState(() {
+                              bringCar = value ?? false;
+                            });
+                          },
+                        ),
+                        const Text('Yes'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              if (bringCar)
+                Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16.0),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 55.0),
+                        child: Row(
+                          children: [
+                            const Text('How many?'),
+                            const SizedBox(width: 8.0),
+                            SizedBox(
+                              width: 100.0, // Set the width of the text box
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    numberOfCars = int.tryParse(value) ?? 0;
+                                    print("number of cars: ${numberOfCars}");
+                                    updatePlateNumberFields();
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                    horizontal: 12.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (numberOfCars > 0) ...plateNumberFields,
+                    ],
                   ),
                 ),
-              ],
-            ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: addVisitor,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Constants.customColor,
+                  elevation: 3,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0), // Button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(8.0), // Button border radius
+                  ),
+                ),
+                child: const Text(
+                  'Add Visitor',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
