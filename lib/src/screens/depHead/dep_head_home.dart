@@ -51,6 +51,8 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
   void dispose() {
     final socketService = Provider.of<SocketService>(context, listen: false);
     socketService.dispose();
+    searchController.dispose();
+    
     super.dispose();
   }
 
@@ -159,6 +161,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
     setState(() {
       filteredVisitorLogs = visitorLogs.where((log) {
         final name = log['name']!.toLowerCase();
+        print('Checking name: $name'); 
         return name.contains(query);
       }).toList();
     });

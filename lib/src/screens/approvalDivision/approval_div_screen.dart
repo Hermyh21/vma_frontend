@@ -11,6 +11,7 @@ class ApprovalDivision extends StatefulWidget {
   @override
   _ApprovalDivisionState createState() => _ApprovalDivisionState();
 }
+
 class _ApprovalDivisionState extends State<ApprovalDivision> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
@@ -50,111 +51,135 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
     return Scaffold(
       body: Column(
         children: [
-          Header(onNavigate: _onNavigate), 
+          Header(onNavigate: _onNavigate),
           Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                children: [
-                  ClipPath(
-                    clipper: MyClip(),
-                    child: Container(
-                      height: 200.0,
-                      color: Constants.customColor,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 150.0,
+                        color: Constants.customColor,
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Approval Division Screen",
+                                style: TextStyle(
+                                  fontSize: 22.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 75.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            const Text(
-                              "Approval Division Screen",
-                              style: TextStyle(
-                                fontSize: 22.0,
-                                color: Colors.white,
+                            Text(
+                              "${DateFormat('yyyy-MM-dd').format(DateTime.now())} ",
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 25, 25, 112),
+                                fontSize: 22.0,
                               ),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20.0),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/manage_visitors');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:const Color.fromARGB(255, 25, 25, 112), // Background color
                               ),
-                              height: 45.0,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 34.0,
-                                vertical: 30.0,
-                              ),
-                              child: TextField(
-                                controller: searchController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  hintText: "Search for Visitor's name",
-                                  hintStyle: TextStyle(
-                                    color: Constants.customColor,
-                                    fontWeight: FontWeight.w200,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 14.0,
-                                  ),
-                                  suffixIcon: const Icon(
-                                    Icons.search,
-                                    size: 20.0,
-                                    color: Color.fromARGB(255, 25, 25, 112),
-                                  ),
+                              child: const Text(
+                                "Add Visitors",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white, // Text color
+                                  fontSize: 14.0,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10.0),
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "${DateFormat('yyyy-MM-dd').format(DateTime.now())} ",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 25, 25, 112),
-                            fontSize: 22.0,
+                ),
+                Positioned(
+                  top: 120,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height - 120, // Adjust the height as necessary
+                    decoration:const  BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10.0,
+                          offset: Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                "${DateFormat('yyyy-MM-dd').format(DateTime.now())} ",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 22.0,
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/manage_visitors');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white, // Background color
+                                ),
+                                child: const Text(
+                                  "Add Visitors",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 25, 25, 112), // Text color
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/manage_visitors');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Constants.customColor, // Background color
-                          ),
-                          child: const Text(
-                            "Add Visitors",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, // Text color
-                              fontSize: 14.0,
-                            ),
+                        Expanded(
+                          child: IndexedStack(
+                            index: _selectedIndex,
+                            children: _screens,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    height: 500, // Example height for the list of visitors
-                    child: IndexedStack(
-                      index: _selectedIndex,
-                      children: _screens,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -185,23 +210,5 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
         onTap: _setSelectedIndex,
       ),
     );
-  }
-}
-
-class MyClip extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0, size.height - 30);
-    path.quadraticBezierTo(
-        size.width / 2, size.height, size.width, size.height - 30);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
   }
 }

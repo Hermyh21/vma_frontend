@@ -139,7 +139,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   // If the visitor is not found locally, notify the user
   if (visitor == null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Visitor not found locally')),
+      const SnackBar(content: Text('Visitor not found ')),
     );
     return;
   }

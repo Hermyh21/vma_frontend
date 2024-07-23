@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
-import 'package:vma_frontend/src/utils/utils.dart' as utils; // Add a prefix
+import 'package:vma_frontend/src/utils/utils.dart' as utils; 
 import 'package:vma_frontend/src/screens/admin/admin_dashboard.dart';
 import '../constants/constants.dart';
 import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';

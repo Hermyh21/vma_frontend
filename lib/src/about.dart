@@ -43,7 +43,14 @@ class _AboutPageState extends State<AboutPage>
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Constants.customColor,
-      ),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.chevron_left,
+          color: Colors.white,
+          size: 30,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),),
       body: SingleChildScrollView(
         child: Center(
           // Center the content horizontally
@@ -52,14 +59,14 @@ class _AboutPageState extends State<AboutPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Center(
-                  child: AnimatedOpacity(
-                    opacity: _visible ? 1.0 : 0.0,
-                    duration: const Duration(seconds: 1),
-                    child: Image.asset('assets/about_image.jpg',
-                        width: 400, height: 500),
-                  ),
-                ),
+                // Center(
+                //   child: AnimatedOpacity(
+                //     opacity: _visible ? 1.0 : 0.0,
+                //     duration: const Duration(seconds: 1),
+                //     child: Image.asset('assets/about.jpg',
+                //         width: 400, height: 500),
+                //   ),
+                // ),
                 const SizedBox(height: 20),
                 AnimatedPadding(
                   padding: EdgeInsets.only(top: _visible ? 0 : 50),

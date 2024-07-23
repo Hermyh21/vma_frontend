@@ -177,4 +177,24 @@ class ApiService {
       throw Exception('Failed to fetch plate codes: $e');
     }
   }
+  static Future<void> markVisitorAsInside(String visitorId) async {
+    try {
+      final response = await Dio().put('${Constants.uri}/visitor/$visitorId/enter');
+      if (response.statusCode != 200) {
+        throw Exception('Failed to mark visitor as inside');
+      }
+    } catch (e) {
+      print('Error marking visitor as inside: $e');
+    }
+  }
+  static Future<void> markVisitorAsLeft(String visitorId) async {
+    try {
+      final response = await Dio().put('${Constants.uri}/visitor/$visitorId/leave');
+      if (response.statusCode != 200) {
+        throw Exception('Failed to mark visitor as left');
+      }
+    } catch (e) {
+      print('Error marking visitor as left: $e');
+    }
+  }
 }
