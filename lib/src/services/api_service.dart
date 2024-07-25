@@ -68,10 +68,13 @@ class ApiService {
   }
 // Approve Visitor
   static Future<void> approveVisitor(String visitorId) async {
+
+  
     try {
-      final response = await _dio.put('${Constants.uri}/approveVisitor/$visitorId');
-      print('Response status: ${response.statusCode}');
-      print('Response data: ${response.data}');
+      
+      final response = await _dio.put('${Constants.uri}/api/approveVisitor/$visitorId');
+        print("uuuuuuuuuuuu");
+   print(response);
       return response.data;
     } catch (error) {
       print('Error in approveVisitor: $error');
@@ -83,7 +86,7 @@ class ApiService {
   static Future<void> declineVisitor(String visitorId, {String? declineReason}) async {
     try {
       final response = await _dio.put(
-        '${Constants.uri}/declineVisitor/$visitorId',
+        '${Constants.uri}/api/declineVisitor/$visitorId',
         data: {'declineReason': declineReason ?? ''},
       );
       print('Response status: ${response.statusCode}');

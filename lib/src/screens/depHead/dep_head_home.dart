@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/components/header.dart';
-import 'package:vma_frontend/src/providers/socket_service.dart';
+import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
@@ -110,10 +110,12 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
     }
   }
 
-  void _onEditVisitor(String visitorId) async {
+  void _onEditVisitor(String visitorId) async {    
     try {
       final visitor = await ApiService.getVisitorById(visitorId);
 
+      
+        
       setState(() {
         editVisitorLogs = [visitor].map((log) {
           final List<Map<String, dynamic>> possessions = log.possessions.map((possession) {
@@ -136,6 +138,8 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
           };
         }).toList();
       });
+      print("datattttt");
+print(editVisitorLogs);
 
       final editedLog = await Navigator.push(
         context,
@@ -143,7 +147,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
           builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
         ),
       );
-
+return;
       // Handle the edited visitor log if needed
       if (editedLog != null) {
         // Refresh the visitor logs list
@@ -439,7 +443,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
                                 Icons.edit,
                                 color: Color.fromARGB(255, 25, 25, 112),
                               ),
-                              onPressed: () => _onEditVisitor(log['id']!),
+                              onPressed: () { _onEditVisitor(log['id']!);}
                             ),
                             IconButton(
                               icon: const Icon(

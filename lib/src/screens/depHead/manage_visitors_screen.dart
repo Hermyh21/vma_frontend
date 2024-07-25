@@ -7,6 +7,7 @@ import 'package:vma_frontend/src/services/visitor_services.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
+
 class ManageVisitorsScreen extends StatefulWidget {
  
   final List<Map<String, dynamic>>? visitorLogs;
@@ -44,7 +45,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     startDate = visitor.startDate;
     endDate = visitor.endDate;
     numberOfVisitors = visitor.numberOfVisitors;
-    visitorNames = visitor.names;
+    // visitorNames = visitor.names;
     purposeController.text = visitor.purpose ?? '';
     bringCar = visitor.bringCar;
     selectedPlateNumbers = visitor.selectedPlateNumbers;
@@ -124,36 +125,39 @@ void updatePossessionCheckboxes() {
   }
 
   void updateVisitorNameFields() {
-    visitorNameFields.clear();
-    visitorControllers.clear();
-    List<String> visitorNames = [];
-    for (int i = 0; i < numberOfVisitors; i++) {
-      TextEditingController controller = TextEditingController();
-      visitorControllers.add(controller);
-      visitorNameFields.add(Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: 'Visitor ${i + 1} Name',
-              errorText: showVisitorError && controller.text.isEmpty
-                  ? "Please enter visitor's name"
-                  : null,
-            ),
-            onChanged: (_) {
-              setState(() {
-                visitorNames = visitorControllers
-                    .map((controller) => controller.text)
-                    .toList();
-              });
-            },
+  visitorNameFields.clear();
+  visitorControllers.clear();
+  List<String> visitorNames = [];
+  for (int i = 0; i < numberOfVisitors; i++) {
+    TextEditingController controller = TextEditingController();
+    visitorControllers.add(controller);
+    visitorNameFields.add(Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: 'Visitor ${i + 1} Name',
+            errorText: showVisitorError && controller.text.isEmpty
+                ? "Please enter visitor's name"
+                : null,
           ),
-        ],
-      ));
-    }
-    setState(() {});
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s\-\'\.,]+"))
+          ],
+          onChanged: (_) {
+            setState(() {
+              visitorNames = visitorControllers
+                  .map((controller) => controller.text)
+                  .toList();
+            });
+          },
+        ),
+      ],
+    ));
   }
+  setState(() {});
+}
 
   void updatePlateNumberFields() {
     plateNumberFields.clear();
@@ -412,6 +416,7 @@ void updatePossessionCheckboxes() {
                       ],
                     ),
                   ),
+                  
                   const SizedBox(width: 16.0),
                   Expanded(
                     child: Column(

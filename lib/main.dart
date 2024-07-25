@@ -13,7 +13,7 @@ import 'package:vma_frontend/src/screens/login.dart';
 import 'package:vma_frontend/src/screens/securityDivision/security_screen.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/settings_page.dart';
-import 'package:vma_frontend/src/providers/socket_service.dart';
+import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:vma_frontend/src/screens/admin/plate_numbers.dart';
 import 'package:vma_frontend/src/screens/admin/possessions.dart';
 import 'package:vma_frontend/src/screens/admin/user_count.dart';
