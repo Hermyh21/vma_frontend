@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vma_frontend/src/services/possessions_service.dart';
+
 import 'package:vma_frontend/src/constants/constants.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
 class AllowedPossessionsPage extends StatefulWidget {
   @override
   _AllowedPossessionsPageState createState() => _AllowedPossessionsPageState();
@@ -8,19 +9,17 @@ class AllowedPossessionsPage extends StatefulWidget {
 
 class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
   final TextEditingController _possessionController = TextEditingController();
-  final PossessionsService _service = PossessionsService();
+ 
   List<Map<String, dynamic>> possessions = [];
   bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
     _fetchPossessions();
   }
-
   Future<void> _fetchPossessions() async {
     try {
-      final data = await _service.getAllPossessions();
+      final data = await ApiService().getAllPossessions();
       setState(() {
         possessions = data.map((item) => Map<String, dynamic>.from(item)).toList();
         isLoading = false;
@@ -32,11 +31,10 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
       });
     }
   }
-
   Future<void> _addPossession() async {
     if (_possessionController.text.isNotEmpty) {
       try {
-        await _service.createPossession(_possessionController.text, false);
+        await ApiService().createPossession(_possessionController.text, false);
         _possessionController.clear();
         _fetchPossessions();
       } catch (e) {
@@ -48,7 +46,7 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
 
   Future<void> _updatePossession(int index, String newValue) async {
     try {
-      await _service.updatePossession(possessions[index]['_id'], newValue, possessions[index]['checked']);
+      await ApiService().updatePossession(possessions[index]['_id'], newValue, possessions[index]['checked']);
       _fetchPossessions();
     } catch (e) {
       // Handle error
@@ -57,7 +55,7 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
 
   Future<void> _deletePossession(int index) async {
     try {
-      await _service.deletePossession(possessions[index]['_id']);
+      await ApiService().deletePossession(possessions[index]['_id']);
       _fetchPossessions();
     } catch (e) {
       // Handle error
@@ -105,7 +103,7 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
           'Allowed Possessions',
           style: TextStyle(color: Colors.white), // Set text color to white
         ),
-        backgroundColor: Constants.customColor, // Use Constants.customColor for app bar background color
+        backgroundColor: Constants.customColor, 
         leading: IconButton(
           icon: const Icon(
             Icons.chevron_left,

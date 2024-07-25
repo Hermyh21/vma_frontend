@@ -123,7 +123,7 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
                     height: MediaQuery.of(context).size.height - 120, // Adjust the height as necessary
                     decoration:const  BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.only(
+                      borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30.0),
                         topRight: Radius.circular(30.0),
                       ),
@@ -146,7 +146,7 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
                                 "${DateFormat('yyyy-MM-dd').format(DateTime.now())} ",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Color.fromARGB(255, 25, 25, 112),
                                   fontSize: 22.0,
                                 ),
                               ),
@@ -155,13 +155,13 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
                                   Navigator.pushNamed(context, '/manage_visitors');
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white, // Background color
+                                  backgroundColor: Colors.white, 
                                 ),
                                 child: const Text(
                                   "Add Visitors",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 25, 25, 112), // Text color
+                                    color: Color.fromARGB(255, 25, 25, 112), 
                                     fontSize: 14.0,
                                   ),
                                 ),

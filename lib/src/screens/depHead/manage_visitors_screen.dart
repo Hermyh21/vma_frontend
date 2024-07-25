@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
-
+import 'package:vma_frontend/src/models/plate_region.dart';
+import 'package:vma_frontend/src/models/plate_code.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
 class ManageVisitorsScreen extends StatefulWidget {
  
   final List<Map<String, dynamic>>? visitorLogs;
@@ -54,7 +56,9 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 }
 
   List<bool> possessionCheckedState = [false, false, false, false, false];
-  
+  late List<PlateCode> _plateCodes = [];
+late List<PlateRegion> _plateRegions = [];
+
   final TextEditingController _flashDriveController = TextEditingController();
   final TextEditingController _hardDiskController = TextEditingController();
   final TextEditingController _laptopController = TextEditingController();
@@ -166,17 +170,32 @@ void updatePossessionCheckboxes() {
                 padding: const EdgeInsets.only(left: 75.0),
                 child: Row(
                   children: [
-                    DropdownButton<String>(
-                      value: plateCodes.isNotEmpty ? plateCodes[0] : null,
+                    DropdownButton<PlateCode>(
+                      value: _plateCodes.isNotEmpty ? _plateCodes[0] : null,
                       onChanged: (newValue) {
                         setState(() {
-                          plateCodes[i] = newValue ?? '';
+                          _plateCodes[i] = newValue ?? PlateCode(id: '0', code: '', description: '');
                         });
                       },
-                      items: plateCodes
-                          .map((value) => DropdownMenuItem<String>(
+                      items: _plateCodes
+                          .map((value) => DropdownMenuItem<PlateCode>(
                                 value: value,
-                                child: Text(value),
+                                child: Text(value.code),
+                              ))
+                          .toList(),
+                    ),
+                    const SizedBox(width: 8.0),
+                    DropdownButton<PlateRegion>(
+                      value: _plateRegions.isNotEmpty ? _plateRegions[0] : null,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _plateRegions[i] = newValue ?? PlateRegion(id: '0', region: '');
+                        });
+                      },
+                      items: _plateRegions
+                          .map((value) => DropdownMenuItem<PlateRegion>(
+                                value: value,
+                                child: Text(value.region),
                               ))
                           .toList(),
                     ),
@@ -218,7 +237,6 @@ void updatePossessionCheckboxes() {
       );
     }
   }
-
   void addVisitor({Visitor? visitor}) async {
     try {
       final visitorService = VisitorService();
