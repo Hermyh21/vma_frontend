@@ -45,7 +45,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
     startDate = visitor.startDate;
     endDate = visitor.endDate;
     numberOfVisitors = visitor.numberOfVisitors;
-    // visitorNames = visitor.names;
+    visitorNames = visitor.names;
     purposeController.text = visitor.purpose ?? '';
     bringCar = visitor.bringCar;
     selectedPlateNumbers = visitor.selectedPlateNumbers;

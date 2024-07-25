@@ -32,13 +32,38 @@ class ApiService {
       throw Exception('Failed to fetch visitor logs: $e');
     }
   }
-
+//fetch new requests
+ static Future<List<Visitor>> fetchNewRequests(DateTime date) async {
+    try {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      final response = await _dio.get(
+        '/api/newRequests',
+        queryParameters: {
+          'date': formattedDate,
+          'approved': false,
+          'declined': false,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load visitor logs');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch new requests: $e');
+    }
+  }
   // Fetch Approved Visitors
   static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
     try {
       final response = await _dio.get(
-        '/api/getapprovedVisitors',
-        queryParameters: {'approved': approved.toString()},
+        '/api/approvedVisitors',
+        queryParameters: {
+          
+          'approved': true,
+          'declined': false,
+        },
       );
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;

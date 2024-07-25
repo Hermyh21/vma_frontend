@@ -6,7 +6,6 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/visitors_detail.dart';
-import 'package:dio/dio.dart';
 
 class NewRequestsScreen extends StatefulWidget {
   @override
@@ -15,7 +14,9 @@ class NewRequestsScreen extends StatefulWidget {
 
 class _NewRequestsScreenState extends State<NewRequestsScreen> {
   final TextEditingController searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController(initialScrollOffset: 120.0 * 7,);
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 120.0 * 7,
+  );
   List<Visitor> visitors = [];
   late DateTime _selectedDate;
   final now = DateTime.now();
@@ -27,7 +28,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
 
   Future<void> _showVisitorLogs(DateTime day) async {
     try {
-      final logs = await ApiService.fetchVisitorLogs(day);
+      final logs = await ApiService.fetchNewRequests(day);
 
       setState(() {
         visitorLogs = logs.map((log) {
@@ -70,9 +71,9 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = now; 
+    _selectedDate = now;
     days = List.generate(15, (index) => now.subtract(Duration(days: 7 - index)));
-    _showVisitorLogs(_selectedDate); 
+    _showVisitorLogs(_selectedDate);
     searchController.addListener(_filterVisitors);
     final socketService = Provider.of<SocketService>(context, listen: false);
     socketService.socket?.on('visitorLogsUpdated', (data) {
@@ -92,33 +93,35 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
   void _onApproveVisitor(String visitorId) async {
     try {
       await ApiService.approveVisitor(visitorId);
-      // Handle success, such as showing a success message or updating the UI
+      setState(() {
+        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('Visitor approved successfully')),
+        const SnackBar(content: Text('Visitor approved successfully')),
       );
     } catch (error) {
-      // Handle error, such as showing an error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to approve visitor: $error')),
       );
     }
   }
 
-  // Function to decline a visitor
   void _onDeclineVisitor(String visitorId) async {
     try {
       await ApiService.declineVisitor(visitorId);
-      // Handle success, such as showing a success message or updating the UI
+      setState(() {
+        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Visitor declined successfully')),
       );
     } catch (error) {
-      // Handle error, such as showing an error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to decline visitor: $error')),
       );
     }
   }
+
   void _onVisitorNameTap(String visitorName) {
     print("Visitor name tapped: $visitorName");
     final visitor = visitors.firstWhere(
@@ -152,7 +155,6 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
     return Scaffold(
       body: Scrollbar(
         controller: _scrollController,
-        
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
@@ -231,6 +233,3 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
     );
   }
 }
-
-
-

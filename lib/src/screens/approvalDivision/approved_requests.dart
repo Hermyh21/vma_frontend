@@ -27,16 +27,16 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
       });
 
       setState(() {
-        fullVisitorLogs = logs.map((visitor) {
+        fullVisitorLogs = logs.map((log) {
           return {
-            'id': visitor.id.toString(),
-            'names': visitor.names.join(', '),
-            'purpose': visitor.purpose,
-            'startDate': visitor.startDate.toString(),
-            'endDate': visitor.endDate.toString(),
-            'bringCar': visitor.bringCar.toString(),
-            'plateNumbers': visitor.selectedPlateNumbers?.join(', '),
-            'possessions': visitor.possessions.map((p) => '${p.item}').join(', '),
+            'id': log.id.toString(),
+            'name': log.names.join(', '),
+            'purpose': log.purpose,
+            'startDate': log.startDate.toString(),
+            'endDate': log.endDate.toString(),
+            'bringCar': log.bringCar.toString(),
+            'plateNumbers': log.selectedPlateNumbers.toString(),
+            'possessions': log.possessions.join(', '),
           };
         }).toList();
       });
@@ -93,7 +93,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6.0),
                           decoration: BoxDecoration(
-                            color:Constants.customColor,
+                            color:Constants.customColor[100],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: ListTile(
@@ -111,7 +111,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                               ),
                             ),
                             subtitle: Text(
-                              "${log['startDate']} - ${log['endDate']}",
+                              "${log[ 'startDate']} - ${log['endDate']}",
                             ),
                           ),
                         );

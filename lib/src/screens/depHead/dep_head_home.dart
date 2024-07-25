@@ -147,10 +147,8 @@ print(editVisitorLogs);
           builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
         ),
       );
-return;
-      // Handle the edited visitor log if needed
+
       if (editedLog != null) {
-        // Refresh the visitor logs list
         _showVisitorLogs(_selectedDate);
       }
 
