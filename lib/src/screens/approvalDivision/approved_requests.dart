@@ -4,14 +4,17 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
+
 class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
 }
+
 class _ApprovedRequestsState extends State<ApprovedRequests> {
   List<Map<String, String?>> visitorLogs = [];
   List<Map<String, String?>> filteredVisitorLogs = [];
   List<Map<String, String?>> fullVisitorLogs = [];
+
   Future<void> _showApprovedVisitors(bool approved) async {
     try {
       final logs = await ApiService.fetchApprovedVisitors(approved);
@@ -56,6 +59,16 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
     print('Visitor name tapped: $names');
   }
 
+  String formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    } catch (e) {
+      print('Error parsing date: $e');
+      return dateString; // Return the original string if parsing fails
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final visitorProvider = context.watch<VisitorProvider>(); // Replace with your provider
@@ -93,7 +106,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6.0),
                           decoration: BoxDecoration(
-                            color:Constants.customColor[100],
+                            color: Constants.customColor[50],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: ListTile(
@@ -111,7 +124,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                               ),
                             ),
                             subtitle: Text(
-                              "${log[ 'startDate']} - ${log['endDate']}",
+                              "${formatDate(log['startDate']!)} - ${formatDate(log['endDate']!)}",
                             ),
                           ),
                         );

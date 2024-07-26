@@ -155,13 +155,13 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
                                   Navigator.pushNamed(context, '/manage_visitors');
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white, 
+                                  backgroundColor: const Color.fromARGB(255, 25, 25, 112), 
                                 ),
                                 child: const Text(
                                   "Add Visitors",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 25, 25, 112), 
+                                    color: Colors.white, 
                                     fontSize: 14.0,
                                   ),
                                 ),

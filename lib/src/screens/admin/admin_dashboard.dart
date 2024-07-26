@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../components/header.dart';
-import 'package:vma_frontend/src/screens/admin/analytics_screen.dart';
 import 'package:vma_frontend/src/screens/admin/create_users_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
@@ -14,9 +13,9 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-    TasksPage(),
+    const TasksPage(),
     const CreateUserScreen(),
-    AnalyticsScreen(),
+    
   ];
 
   void _onNavigate(String route) {

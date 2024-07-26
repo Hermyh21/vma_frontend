@@ -57,8 +57,8 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 }
 
   List<bool> possessionCheckedState = [false, false, false, false, false];
-  late List<PlateCode> _plateCodes = [];
-late List<PlateRegion> _plateRegions = [];
+  late final List<PlateCode> _plateCodes = [];
+  late final List<PlateRegion> _plateRegions = [];
 
   final TextEditingController _flashDriveController = TextEditingController();
   final TextEditingController _hardDiskController = TextEditingController();
