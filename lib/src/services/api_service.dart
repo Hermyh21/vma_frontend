@@ -153,19 +153,20 @@ class ApiService {
   }
 
   // Decline Visitor
-  static Future<void> declineVisitor(String visitorId, {String? declineReason}) async {
-    try {
-      final response = await _dio.put(
-        '${Constants.uri}/api/declineVisitor/$visitorId',
-        data: {'declineReason': declineReason ?? ''},
-      );
-     
-      return response.data;
-    } catch (error) {
-
-      throw Exception('Failed to decline visitor: $error');
+ static Future<void> declineVisitor(String visitorId, String declineReason) async {
+  try {
+    final response = await _dio.put(
+      '/api/declineVisitor/$visitorId',
+      data: {'declineReason': declineReason},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to decline visitor');
     }
+  } catch (e) {
+    throw Exception('Failed to decline visitor: $e');
   }
+}
+
   static Future<void> deleteVisitorById(String visitorId) async {
     try {
       final response = await _dio.delete(

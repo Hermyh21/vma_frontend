@@ -114,22 +114,6 @@ class _YetToArriveState extends State<YetToArrive> {
     }
   }
 
-  void _onDeclineVisitor(String visitorId) async {
-    try {
-      await ApiService.declineVisitor(visitorId);
-      setState(() {
-        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor declined successfully')),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to decline visitor: $error')),
-      );
-    }
-  }
-
   void _onVisitorNameTap(String visitorName) {
     print("Visitor name tapped: $visitorName");
     final visitor = visitors.firstWhere(
@@ -217,13 +201,7 @@ class _YetToArriveState extends State<YetToArrive> {
                                 ),
                                 onPressed: () => _onApproveVisitor(log['id']!),
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.cancel,
-                                  color: Color.fromARGB(255, 25, 25, 112),
-                                ),
-                                onPressed: () => _onDeclineVisitor(log['id']!),
-                              ),
+                              
                             ],
                           ),
                         ),

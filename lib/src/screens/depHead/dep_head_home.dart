@@ -167,7 +167,7 @@ print(editVisitorLogs);
   }
 
   void _requestStatus() {
-    // Implement your logic for request status here
+    
   }
 
   void _onDeleteVisitor(String visitorId) {
@@ -188,10 +188,9 @@ print(editVisitorLogs);
               child: const Text("Yes"),
               onPressed: () async {
                 try {
-                  // Call API to delete the visitor by ID
+
                   await ApiService.deleteVisitorById(visitorId);
 
-                  // Remove the visitor from local state
                   setState(() {
                     visitorLogs.removeWhere((log) => log['id'] == visitorId);
                   });

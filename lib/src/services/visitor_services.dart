@@ -132,20 +132,7 @@ class VisitorService {
     }
   }
 
-Future<void> deleteVisitorById(String visitorId) async {
-    final Dio _dio = Dio();
 
-    try {
-
-      final response = await _dio.delete('${Constants.uri}/visitors/$visitorId');
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to delete visitor');
-      }
-    } catch (error) {
-      throw Exception('Failed to delete visitor: $error');
-    }
-  }
   void handleDioError(BuildContext context, DioError e) {
     String errorMessage;
 

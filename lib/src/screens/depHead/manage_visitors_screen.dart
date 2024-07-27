@@ -6,7 +6,7 @@ import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
-import 'package:vma_frontend/src/services/api_service.dart';
+
 
 class ManageVisitorsScreen extends StatefulWidget {
  
@@ -38,23 +38,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<String> visitorNames = [];
   int numberOfCars = 0;
   List<Map<String, dynamic>>? editVisitorLogs; 
-//   void setVisitorData(Map<String, dynamic> visitorData) {
-//   Visitor visitor = Visitor.fromJson(visitorData);
 
-//   setState(() {
-//     startDate = visitor.startDate;
-//     endDate = visitor.endDate;
-//     numberOfVisitors = visitor.numberOfVisitors;
-//     visitorNames = visitor.names;
-//     purposeController.text = visitor.purpose ?? '';
-//     bringCar = visitor.bringCar;
-//     selectedPlateNumbers = visitor.selectedPlateNumbers;
-//     updateVisitorNameFields();
-//     updatePossessionCheckboxes();
-
-//     updatePlateNumberFields();
-//   });
-// }
 void setVisitorData(Map<String, dynamic> visitorData) {
     Visitor visitor = Visitor.fromJson22(visitorData);
 
@@ -113,6 +97,7 @@ void updatePossessionCheckboxes() {
         return '';
     }
   }
+  bool isEditMode = false;
   @override
   void initState() {
     super.initState();
@@ -121,8 +106,8 @@ void updatePossessionCheckboxes() {
     loadData();
    
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
-      
-      
+      setVisitorData(widget.visitorLogs![0]);
+    isEditMode = true;      
     }
     
   }
@@ -280,7 +265,7 @@ void updatePossessionCheckboxes() {
           .toList();
 
       final visitor = Visitor(
-        // id: "1234",
+        
         numberOfVisitors: numberOfVisitors,
         names: names,
         purpose: purposeController.text,
@@ -722,22 +707,21 @@ void updatePossessionCheckboxes() {
                 ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: addVisitor,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Constants.customColor,
-                  elevation: 3,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0), // Button padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(8.0), // Button border radius
-                  ),
-                ),
-                child: const Text(
-                  'Add Visitor',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+  onPressed: addVisitor,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Constants.customColor,
+    elevation: 3,
+    padding: const EdgeInsets.symmetric(vertical: 16.0),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8.0),
+    ),
+  ),
+  child: Text(
+    isEditMode ? 'Update Visitor' : 'Add Visitor',
+    style: const TextStyle(color: Colors.white),
+  ),
+),
+
             ],
           ),
         ),

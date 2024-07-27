@@ -105,22 +105,71 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
       );
     }
   }
+Future<String?> _showDeclineDialog() async {
+  TextEditingController reasonController = TextEditingController();
+
+  return showDialog<String>(
+    context: context,
+    barrierDismissible: false, // User must tap a button to dismiss the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Decline Visitor'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Please enter a reason for declining the visitor:'),
+              TextField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  hintText: 'Enter reason',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog without doing anything
+            },
+          ),
+          TextButton(
+            child: Text('Decline and Send Reason'),
+            onPressed: () {
+              Navigator.of(context).pop(reasonController.text); // Close the dialog and return the reason
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void _onDeclineVisitor(String visitorId) async {
+  String? declineReason = await _showDeclineDialog();
+  
+  if (declineReason != null && declineReason.isNotEmpty) {
     try {
-      await ApiService.declineVisitor(visitorId);
+      await ApiService.declineVisitor(visitorId, declineReason);
       setState(() {
         fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor declined successfully')),
+        SnackBar(content: Text('Visitor declined successfully')),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to decline visitor: $error')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Decline reason is required')),
+    );
   }
+}
+
 
   void _onVisitorNameTap(String visitorName) {
     print("Visitor name tapped: $visitorName");
