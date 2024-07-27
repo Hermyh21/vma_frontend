@@ -54,6 +54,7 @@ class ApiService {
       throw Exception('Failed to fetch new requests: $e');
     }
   }
+  
   // Fetch Approved Visitors
   static Future<List<Visitor>> fetchApprovedVisitors(bool approved) async {
     try {
@@ -73,6 +74,51 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Failed to fetch approved visitors: $e');
+    }
+  }
+    // Fetch Visitors Yet to arrive
+  static Future<List<Visitor>> visitorsYetToArrive(DateTime date) async {
+    try {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      final response = await _dio.get(
+        '/api/yetToArrive',
+        queryParameters: {
+          'date': formattedDate,
+          'approved': true,
+          'isInside': false,
+          'hasLeft': false,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load visitor logs');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch new requests: $e');
+    }
+  }
+ 
+  //fetch declined visitors
+  static Future<List<Visitor>> fetchDeclinedVisitors(bool declined) async {
+    try {
+      final response = await _dio.get(
+        '/api/declinedVisitors',
+        queryParameters: {
+          
+          'approved': false,
+          'declined': true,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load decline visitors');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch decline visitors: $e');
     }
   }
 
@@ -98,8 +144,7 @@ class ApiService {
     try {
       
       final response = await _dio.put('${Constants.uri}/api/approveVisitor/$visitorId');
-        print("uuuuuuuuuuuu");
-   print(response);
+      
       return response.data;
     } catch (error) {
       print('Error in approveVisitor: $error');
@@ -114,43 +159,13 @@ class ApiService {
         '${Constants.uri}/api/declineVisitor/$visitorId',
         data: {'declineReason': declineReason ?? ''},
       );
-      print('Response status: ${response.statusCode}');
-      print('Response data: ${response.data}');
+     
       return response.data;
     } catch (error) {
-      print('Error in declineVisitor: $error');
+
       throw Exception('Failed to decline visitor: $error');
     }
   }
-
-
-
-
-  // Update Visitor Status
-  static Future<void> updateVisitorStatus(String id,
-      {bool? approved, bool? declined, String? declineReason}) async {
-    try {
-      final response = await _dio.put(
-        '/api/updateVisitorStatus',
-        data: {
-          'id': id,
-          'approved': approved,
-          'declined': declined,
-          //'declineReason': declineReason,
-        },
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
-      if (response.statusCode != 200) {
-        throw Exception('Failed to update visitor status');
-      }
-    } catch (e) {
-      throw Exception('Failed to update visitor status: $e');
-    }
-  }
-
-  // Delete Visitor by ID
   static Future<void> deleteVisitorById(String visitorId) async {
     try {
       final response = await _dio.delete(

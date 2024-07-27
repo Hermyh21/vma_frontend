@@ -150,7 +150,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final visitorProvider = context.watch<VisitorProvider>();
+   
 
     return Scaffold(
       body: Scrollbar(
@@ -226,6 +226,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
                   ),
                 ),
               ),
+            
             ],
           ),
         ),

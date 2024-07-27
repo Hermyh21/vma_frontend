@@ -69,7 +69,7 @@ class Visitor {
     );
   }
 
-  factory Visitor.fromJson(Map<String, dynamic> json) {
+  factory Visitor.fromJson(Map<String, dynamic> json) {    
     return Visitor(
       id: json['_id'] as String?,
       names: List<String>.from(json['name']),
@@ -91,7 +91,28 @@ class Visitor {
       hasLeft: json['hasLeft'] ?? false,
     );
   }
+factory Visitor.fromJson22(Map<String, dynamic> json) {
+    String nameString = json['name'] as String;
+    List<String> nameList =
+        nameString.replaceAll("[", "").replaceAll("]", "").split(", ");
 
+    return Visitor(
+      id: json['_id'] as String?,
+      names: nameList,
+      purpose: json['purpose'],
+      startDate: DateTime.parse(json['startDate']),
+      endDate: DateTime.parse(json['endDate']),
+      numberOfVisitors: nameList.length,
+      bringCar: json['bringCar'] != null ? true : false,
+      selectedPlateNumbers: [],
+      possessions: [],
+      approved: json['approved'] ?? false,
+      declined: json['declined'] ?? false,
+      declineReason: "reson here", // Handle null value
+      isInside: json['isInside'] ?? false,
+      hasLeft: json['hasLeft'] ?? false,
+    );
+  }
   Map<String, dynamic> toJson() {
     final data = {
       'name': names,

@@ -38,24 +38,40 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<String> visitorNames = [];
   int numberOfCars = 0;
   List<Map<String, dynamic>>? editVisitorLogs; 
-  void setVisitorData(Map<String, dynamic> visitorData) {
-  Visitor visitor = Visitor.fromJson(visitorData);
+//   void setVisitorData(Map<String, dynamic> visitorData) {
+//   Visitor visitor = Visitor.fromJson(visitorData);
 
-  setState(() {
-    startDate = visitor.startDate;
-    endDate = visitor.endDate;
-    numberOfVisitors = visitor.numberOfVisitors;
-    visitorNames = visitor.names;
-    purposeController.text = visitor.purpose ?? '';
-    bringCar = visitor.bringCar;
-    selectedPlateNumbers = visitor.selectedPlateNumbers;
-    updateVisitorNameFields();
-    updatePossessionCheckboxes();
+//   setState(() {
+//     startDate = visitor.startDate;
+//     endDate = visitor.endDate;
+//     numberOfVisitors = visitor.numberOfVisitors;
+//     visitorNames = visitor.names;
+//     purposeController.text = visitor.purpose ?? '';
+//     bringCar = visitor.bringCar;
+//     selectedPlateNumbers = visitor.selectedPlateNumbers;
+//     updateVisitorNameFields();
+//     updatePossessionCheckboxes();
 
-    updatePlateNumberFields();
-  });
-}
+//     updatePlateNumberFields();
+//   });
+// }
+void setVisitorData(Map<String, dynamic> visitorData) {
+    Visitor visitor = Visitor.fromJson22(visitorData);
 
+    setState(() {
+      startDate = visitor.startDate;
+      endDate = visitor.endDate;
+      numberOfVisitors = visitor.numberOfVisitors;
+      visitorNames = visitor.names;
+      purposeController.text = visitor.purpose ?? '';
+      bringCar = visitor.bringCar;
+      selectedPlateNumbers = visitor.selectedPlateNumbers;
+      updateVisitorNameFields();
+      updatePossessionCheckboxes();
+
+      updatePlateNumberFields();
+    });
+  }
   List<bool> possessionCheckedState = [false, false, false, false, false];
   late final List<PlateCode> _plateCodes = [];
   late final List<PlateRegion> _plateRegions = [];
@@ -124,41 +140,41 @@ void updatePossessionCheckboxes() {
     }
   }
 
-  void updateVisitorNameFields() {
-  visitorNameFields.clear();
-  visitorControllers.clear();
-  List<String> visitorNames = [];
-  for (int i = 0; i < numberOfVisitors; i++) {
-    TextEditingController controller = TextEditingController();
-    visitorControllers.add(controller);
-    visitorNameFields.add(Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: 'Visitor ${i + 1} Name',
-            errorText: showVisitorError && controller.text.isEmpty
-                ? "Please enter visitor's name"
-                : null,
-          ),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s\-\'\.,]+"))
-          ],
-          onChanged: (_) {
-            setState(() {
-              visitorNames = visitorControllers
-                  .map((controller) => controller.text)
-                  .toList();
-            });
-          },
-        ),
-      ],
-    ));
-  }
-  setState(() {});
-}
+ void updateVisitorNameFields() {
+    visitorNameFields.clear();
+    visitorControllers.clear();
+    for (int i = 0; i < numberOfVisitors; i++) {
+      TextEditingController controller = TextEditingController();
+      controller.text = visitorNames[i];
 
+      visitorControllers.add(controller);
+      visitorNameFields.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: 'Visitor ${i + 1} Name',
+              errorText: showVisitorError && controller.text.isEmpty
+                  ? "Please enter visitor's name"
+                  : null,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s\-\'\.,]+"))
+            ],
+            onChanged: (_) {
+              setState(() {
+                visitorNames = visitorControllers
+                    .map((controller) => controller.text)
+                    .toList();
+              });
+            },
+          ),
+        ],
+      ));
+    }
+    setState(() {});
+  }
   void updatePlateNumberFields() {
     plateNumberFields.clear();
     for (int i = 0; i < numberOfCars; i++) {

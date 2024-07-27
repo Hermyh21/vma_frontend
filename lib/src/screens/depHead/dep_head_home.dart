@@ -112,10 +112,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
 
   void _onEditVisitor(String visitorId) async {    
     try {
-      final visitor = await ApiService.getVisitorById(visitorId);
-
-      
-        
+      final visitor = await ApiService.getVisitorById(visitorId);              
       setState(() {
         editVisitorLogs = [visitor].map((log) {
           final List<Map<String, dynamic>> possessions = log.possessions.map((possession) {
