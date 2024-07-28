@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
@@ -113,14 +112,14 @@ Future<String?> _showDeclineDialog() async {
     barrierDismissible: false, // User must tap a button to dismiss the dialog
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Decline Visitor'),
+        title: const Text('Decline Visitor'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('Please enter a reason for declining the visitor:'),
+             const Text('Please enter a reason for declining the visitor:'),
               TextField(
                 controller: reasonController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter reason',
                 ),
               ),
@@ -129,13 +128,13 @@ Future<String?> _showDeclineDialog() async {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog without doing anything
             },
           ),
           TextButton(
-            child: Text('Decline and Send Reason'),
+            child: const Text('Decline and Send Reason'),
             onPressed: () {
               Navigator.of(context).pop(reasonController.text); // Close the dialog and return the reason
             },
@@ -156,7 +155,7 @@ Future<String?> _showDeclineDialog() async {
         fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Visitor declined successfully')),
+        const SnackBar(content:  Text('Visitor declined successfully')),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -165,16 +164,16 @@ Future<String?> _showDeclineDialog() async {
     }
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Decline reason is required')),
+      const SnackBar(content: Text('Decline reason is required')),
     );
   }
 }
 
 
-  void _onVisitorNameTap(String visitorName) {
-    print("Visitor name tapped: $visitorName");
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
-      (visitor) => visitor.names.contains(visitorName),
+      (visitor) => visitor.id == visitorId, 
     );
     try {
       Navigator.push(

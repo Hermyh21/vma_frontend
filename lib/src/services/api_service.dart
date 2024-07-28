@@ -182,17 +182,23 @@ class ApiService {
     }
   }
 //let visitor inside
-  static Future<void> visitorsInside(String visitorId) async {
-
-  
-    try {
-      
-      final response = await _dio.put('${Constants.uri}/api/visitorsInside/$visitorId');
-      
+  static Future<void> visitorsInside(String visitorId) async {  
+    try {      
+      final response = await _dio.put('${Constants.uri}/api/visitorsInside/$visitorId');      
       return response.data;
     } catch (error) {
       print('Error in visitors inside: $error');
       throw Exception('Failed to let visitor inside: $error');
+    }
+  }
+  // let visitor leave
+  static Future<void> visitorLeft(String visitorId) async {  
+    try {      
+      final response = await _dio.put('${Constants.uri}/api/visitorLeft/$visitorId');      
+      return response.data;
+    } catch (error) {
+      print('Error in visitors left: $error');
+      throw Exception('Failed to let visitor leave: $error');
     }
   }
   // Decline Visitor

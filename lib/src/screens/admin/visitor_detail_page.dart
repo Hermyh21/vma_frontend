@@ -41,14 +41,17 @@ class VisitorDetailPage extends StatelessWidget {
               children: [
                 _buildDetailTile(Icons.person, 'Names', visitor.names.join(', ')),
                 _buildDetailTile(Icons.security, 'Purpose', visitor.purpose ?? 'N/A'),              
-                _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.startDate)),
-                _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.endDate)),
+                _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(visitor.startDate)),
+                _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(visitor.endDate)),
                 _buildDetailTile(Icons.directions_car, 'Bring Car', visitor.bringCar ? "Yes" : "No"),
+                if(visitor.bringCar)
                 _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', visitor.selectedPlateNumbers.join(', ')),
                 _buildDetailTile(Icons.inventory, 'Possessions', visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
                 _buildDetailTile(Icons.check, 'Approved', visitor.approved ? "Yes" : "No"),
                 if (visitor.declined)
                   _buildDetailTile(Icons.close, 'Decline Reason', visitor.declineReason ?? 'N/A'),
+                _buildDetailTile(Icons.directions_car, 'Has been let inside', visitor.isInside ? "Yes" : "No"),
+                _buildDetailTile(Icons.directions_car, 'Has Left', visitor.hasLeft ? "Yes" : "No"),
               ],
             ),
           ),

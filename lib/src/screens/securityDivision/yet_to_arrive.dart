@@ -100,10 +100,10 @@ class _YetToArriveState extends State<YetToArrive> {
     super.dispose();
   }
 
-  void _onVisitorNameTap(String visitorName) {
-    print("Visitor name tapped: $visitorName");
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
-      (visitor) => visitor.names.contains(visitorName),
+      (visitor) => visitor.id == visitorId, 
     );
     try {
       final result= Navigator.push(
@@ -172,7 +172,7 @@ class _YetToArriveState extends State<YetToArrive> {
                             color: Color.fromARGB(255, 25, 25, 112),
                           ),
                           title: GestureDetector(
-                            onTap: () => _onVisitorNameTap(log['name']!),
+                            onTap: () => _onVisitorNameTap(log['id']!),
                             child: Text(
                               log['name']!,
                               style: const TextStyle(

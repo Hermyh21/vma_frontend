@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
-import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
+import 'package:vma_frontend/src/screens/securityDivision/inside_visitor_detail.dart';
 class InsideTheCompound extends StatefulWidget {
 
 
@@ -27,11 +27,13 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
   List<Map<String, String?>> filteredVisitorLogs = [];
 
   Future<void> _showVisitorLogs(DateTime day) async {
+  print('Fetching visitor logs for date: $day'); 
   try {
     final logs = await ApiService.fetchVisitorsInside(day);
-
+    print('Fetched ${logs.length} logs'); 
     setState(() {
       visitorLogs = logs.map((log) {
+        print('Processing log ID: ${log.id}'); 
         return {
           'id': log.id.toString(),
           'name': log.names.join(', '),
@@ -39,6 +41,7 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
       }).toList();
 
       fullVisitorLogs = logs.map((log) {
+        print('Processing log ID: ${log.id}, Name: ${log.names.join(', ')}, isInside: ${log.isInside}'); 
         return {
           'id': log.id.toString(),
           'name': log.names.join(', '),
@@ -56,9 +59,10 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
       }).toList();
 
       // _filterVisitors();
+      print('Visitor logs and full visitor logs updated', ); 
     });
   } catch (e) {
-    print('Error fetching visitor logs: $e');
+    print('Error fetching visitor logs: $e'); 
   }
 }
 
@@ -100,16 +104,16 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
     super.dispose();
   }
 
-  void _onVisitorNameTap(String visitorName) {
-    print("Visitor name tapped: $visitorName");
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
-      (visitor) => visitor.names.contains(visitorName),
+      (visitor) => visitor.id == visitorId, 
     );
     try {
       final result= Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CheckVisitorScreen(visitor: visitor),
+          builder: (context) => InsideVisitorDetail(visitor: visitor),
         ),
       );
        if (result == true) {
@@ -159,7 +163,7 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
                 child: Container(
                   color: Colors.white,
                   child: Column(
-                    children: filteredVisitorLogs.map((log) {
+                    children: fullVisitorLogs.map((log) {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 6.0),
                         decoration: BoxDecoration(
@@ -172,7 +176,7 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
                             color: Color.fromARGB(255, 25, 25, 112),
                           ),
                           title: GestureDetector(
-                            onTap: () => _onVisitorNameTap(log['name']!),
+                            onTap: () => _onVisitorNameTap(log['id']!),
                             child: Text(
                               log['name']!,
                               style: const TextStyle(

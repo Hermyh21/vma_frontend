@@ -89,8 +89,8 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                   children: [
                     _buildDetailTile(Icons.person, 'Names', widget.visitor.names.join(', ')),
                     _buildDetailTile(Icons.security, 'Purpose', widget.visitor.purpose ?? 'N/A'),
-                    _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd HH:mm').format(widget.visitor.startDate)),
-                    _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd HH:mm').format(widget.visitor.endDate)),
+                    _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(widget.visitor.startDate)),
+                    _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(widget.visitor.endDate)),
                     _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
                     _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
                     _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => possession.item).join(', ')),

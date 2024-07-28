@@ -102,13 +102,13 @@ void _visitorStatus(){
     });
   }
 
-  void _onVisitorNameTap(String visitorName) {
-    print("Visitor name tapped: $visitorName");
-    // Find the visitor object by name
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
-    (visitor) => visitor.names.contains(visitorName),
+      (visitor) => visitor.id == visitorId, 
+    );
    
-  );
+
     try{
   Navigator.push(
     context,
@@ -126,6 +126,24 @@ void _visitorStatus(){
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.chevron_left,
+            color: Colors.white, // Set icon color to white
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text(
+          'Secure Gate',
+          style: TextStyle(color: Colors.white), // Set text color to white
+        ),
+        backgroundColor: Constants.customColor, // Use Constants.customColor for app bar background color
+        iconTheme: const IconThemeData(color: Colors.white), // Set icon colors to white
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -140,7 +158,7 @@ void _visitorStatus(){
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       const Text(
-                        "Visitor Logs",
+                        "Visitors Log",
                         style: TextStyle(
                             fontSize: 22.0,
                             color: Colors.white,
@@ -305,11 +323,9 @@ void _visitorStatus(){
                         ),
                         title: GestureDetector(
                           onTap: () {
-    // Assuming log['name'] contains multiple names separated by commas
-    final names = log['name']!.split(', ').map((name) => name.trim()).toList();
-    for (var name in names) {
-      _onVisitorNameTap(name);
-    }
+   
+      _onVisitorNameTap(log['id']!);
+    
   },
                           child: Text(
                             log['name']!,
