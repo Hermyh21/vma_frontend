@@ -37,26 +37,32 @@ class _InsideVisitorDetailState extends State<InsideVisitorDetail> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailTile(Icons.person, 'Names', widget.visitor.names.join(', ')),
-                _buildDetailTile(Icons.security, 'Purpose', widget.visitor.purpose ?? 'N/A'),
-                _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(widget.visitor.startDate)),
-                _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(widget.visitor.endDate)),
-                _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
-                if (widget.visitor.bringCar)
-                  _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
-                _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
-                _buildLetInsideButton(context),
-              ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDetailTile(Icons.person, 'Names', widget.visitor.names.join(', ')),
+                    _buildDetailTile(Icons.security, 'Purpose', widget.visitor.purpose ?? 'N/A'),
+                    _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(widget.visitor.startDate)),
+                    _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(widget.visitor.endDate)),
+                    _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
+                    if (widget.visitor.bringCar)
+                      _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
+                    _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
+                  ],
+                ),
+              ),
             ),
-          ),
+            const SizedBox(height: 20), // Space between card and button
+            _buildLetInsideButton(context),
+          ],
         ),
       ),
     );
@@ -67,12 +73,12 @@ class _InsideVisitorDetailState extends State<InsideVisitorDetail> {
       await ApiService.visitorLeft(visitorId);
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor let inside successfully')),
+        const SnackBar(content: Text('Visitor left the compound successfully')),
       );
       Navigator.of(context).pop(true);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to let visitor inside: $error')),
+        SnackBar(content: Text('Failed to let visitor leave: $error')),
       );
     }
   }

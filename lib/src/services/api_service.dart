@@ -127,9 +127,37 @@ class ApiService {
         throw Exception('Failed to load visitor logs');
       }
     } catch (e) {
-      throw Exception('Failed to fetch new requests: $e');
+      throw Exception('Failed to fetch visitors who left: $e');
     }
   }
+//fetch visitors inside
+ static Future<List<Visitor>> fetchVisitorsLeft(DateTime date) async {
+    try {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      print('Fetching visitors yet to arrive for date: $formattedDate');
+    
+      final response = await _dio.get(
+        '/api/fetchLeft',
+        queryParameters: {
+          'date': formattedDate,
+          'approved': true,
+          'isInside': true,
+          'hasLeft': true,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        print('Visitors left: $data');
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        print('Failed to load visitor logs with status code: ${response.statusCode}');
+        throw Exception('Failed to load visitor logs');
+      }
+    } catch (e) {
+      throw Exception('Failed to visitors left: $e');
+    }
+  }
+
   //fetch declined visitors
   static Future<List<Visitor>> fetchDeclinedVisitors(bool declined) async {
     try {

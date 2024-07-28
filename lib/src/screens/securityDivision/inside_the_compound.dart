@@ -148,7 +148,7 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "List visitors inside",
+                      "List of visitors inside the compound",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20.0,
