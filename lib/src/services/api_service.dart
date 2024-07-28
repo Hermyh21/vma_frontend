@@ -80,6 +80,8 @@ class ApiService {
   static Future<List<Visitor>> visitorsYetToArrive(DateTime date) async {
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      print('Fetching visitors yet to arrive for date: $formattedDate');
+    
       final response = await _dio.get(
         '/api/yetToArrive',
         queryParameters: {
@@ -91,15 +93,43 @@ class ApiService {
       );
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
+        print('Visitors fetched successfully: $data');
         return data.map((json) => Visitor.fromJson(json)).toList();
       } else {
+        print('Failed to load visitor logs with status code: ${response.statusCode}');
         throw Exception('Failed to load visitor logs');
       }
     } catch (e) {
       throw Exception('Failed to fetch new requests: $e');
     }
   }
- 
+ //fetch visitors inside
+ static Future<List<Visitor>> fetchVisitorsInside(DateTime date) async {
+    try {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+      print('Fetching visitors yet to arrive for date: $formattedDate');
+    
+      final response = await _dio.get(
+        '/api/fetchInside',
+        queryParameters: {
+          'date': formattedDate,
+          'approved': true,
+          'isInside': true,
+          'hasLeft': false,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        print('Visitors to arrive rfetched successfully: $data');
+        return data.map((json) => Visitor.fromJson(json)).toList();
+      } else {
+        print('Failed to load visitor logs with status code: ${response.statusCode}');
+        throw Exception('Failed to load visitor logs');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch new requests: $e');
+    }
+  }
   //fetch declined visitors
   static Future<List<Visitor>> fetchDeclinedVisitors(bool declined) async {
     try {
@@ -151,7 +181,7 @@ class ApiService {
       throw Exception('Failed to approve visitor: $error');
     }
   }
-// Is inside
+//let visitor inside
   static Future<void> visitorsInside(String visitorId) async {
 
   
@@ -265,26 +295,7 @@ class ApiService {
       throw Exception('Failed to fetch plate codes: $e');
     }
   }
-  static Future<void> markVisitorAsInside(String visitorId) async {
-    try {
-      final response = await Dio().put('${Constants.uri}/visitor/$visitorId/enter');
-      if (response.statusCode != 200) {
-        throw Exception('Failed to mark visitor as inside');
-      }
-    } catch (e) {
-      print('Error marking visitor as inside: $e');
-    }
-  }
-  static Future<void> markVisitorAsLeft(String visitorId) async {
-    try {
-      final response = await Dio().put('${Constants.uri}/visitor/$visitorId/leave');
-      if (response.statusCode != 200) {
-        throw Exception('Failed to mark visitor as left');
-      }
-    } catch (e) {
-      print('Error marking visitor as left: $e');
-    }
-  }
+ 
    Future<List<Map<String, dynamic>>> getAllPossessions() async {
     try {
       final response = await _dio.get('/possessions');

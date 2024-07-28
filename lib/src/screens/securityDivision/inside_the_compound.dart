@@ -1,75 +1,195 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vma_frontend/src/providers/visitor_provider.dart';
-
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:intl/intl.dart';
-class InsideTheCompound extends StatelessWidget {
+import 'package:vma_frontend/src/models/visitors.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
+import 'package:vma_frontend/src/services/socket_service.dart';
+import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
+class InsideTheCompound extends StatefulWidget {
+
+
   const InsideTheCompound({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final visitorProvider = context.watch<VisitorProvider>();
-    final visitorsInside = visitorProvider.visitorsInside;
+  _InsideTheCompoundState createState() => _InsideTheCompoundState();
+}
 
-    return Scaffold(
-      
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: visitorsInside.length,
-        itemBuilder: (context, index) {
-          final visitor = visitorsInside[index];
-          return Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDetailTile(Icons.person, 'Names', visitor.names.join(', ')),
-                  _buildDetailTile(Icons.security, 'Purpose', visitor.purpose ?? 'N/A'),
-                  _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.startDate)),
-                  _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.endDate)),
-                  _buildDetailTile(Icons.directions_car, 'Bring Car', visitor.bringCar ? "Yes" : "No"),
-                  _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', visitor.selectedPlateNumbers.join(', ')),
-                  _buildDetailTile(Icons.inventory, 'Possessions', visitor.possessions.map((possession) => possession.item).join(', ')),
-                  _buildDetailTile(Icons.check, 'Approved', visitor.approved ? "Yes" : "No"),
-                  if (visitor.declined)
-                    _buildDetailTile(Icons.close, 'Decline Reason', visitor.declineReason ?? 'N/A'),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+class _InsideTheCompoundState extends State<InsideTheCompound> {
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 120.0 * 7,
+  );
+  List<Visitor> visitors = [];
+  late DateTime _selectedDate;
+  final now = DateTime.now();
+  late List<DateTime> days;
+  List<Map<String, String>> visitorLogs = [];
+  List<Map<String, String?>> fullVisitorLogs = [];
+  List<Map<String, String?>> filteredVisitorLogs = [];
+
+  Future<void> _showVisitorLogs(DateTime day) async {
+  try {
+    final logs = await ApiService.fetchVisitorsInside(day);
+
+    setState(() {
+      visitorLogs = logs.map((log) {
+        return {
+          'id': log.id.toString(),
+          'name': log.names.join(', '),
+        };
+      }).toList();
+
+      fullVisitorLogs = logs.map((log) {
+        return {
+          'id': log.id.toString(),
+          'name': log.names.join(', '),
+          'purpose': log.purpose,
+          'startDate': log.startDate.toString(),
+          'endDate': log.endDate.toString(),
+          'bringCar': log.bringCar.toString(),
+          'plateNumbers': log.selectedPlateNumbers.toString(),
+          'possessions': log.possessions.join(', '),
+          'approved': log.approved.toString(),
+          'declined': log.declined.toString(),
+          'isInside': log.isInside.toString(),
+          'hasLeft': log.hasLeft.toString(),
+        };
+      }).toList();
+
+      // _filterVisitors();
+    });
+  } catch (e) {
+    print('Error fetching visitor logs: $e');
+  }
+}
+
+  // void _filterVisitors() {
+  //   final query = widget.searchQuery.toLowerCase();
+  //   setState(() {
+  //     filteredVisitorLogs = visitorLogs.where((log) {
+  //       final name = log['name']!.toLowerCase();
+  //       return name.contains(query);
+  //     }).toList();
+  //   });
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = now;
+    days = List.generate(15, (index) => now.subtract(Duration(days: 7 - index)));
+    _showVisitorLogs(_selectedDate);
+    final socketService = Provider.of<SocketService>(context, listen: false);
+    socketService.socket?.on('visitorLogsUpdated', (data) {
+      setState(() {
+        visitors = (data as List).map((json) => Visitor.fromJson(json)).toList();
+      });
+    });
   }
 
-  Widget _buildDetailTile(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: Constants.customColor),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  @override
+  // void didUpdateWidget(InsideTheCompound oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if (oldWidget.searchQuery != widget.searchQuery) {
+  //     _filterVisitors();
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onVisitorNameTap(String visitorName) {
+    print("Visitor name tapped: $visitorName");
+    final visitor = visitors.firstWhere(
+      (visitor) => visitor.names.contains(visitorName),
+    );
+    try {
+      final result= Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckVisitorScreen(visitor: visitor),
+        ),
+      );
+       if (result == true) {
+        _showVisitorLogs(_selectedDate); 
+      }
+    } catch (e, stackTrace) {
+      print("Error navigating to VisitorDetailPage: $e");
+      print(stackTrace);
+    }
+  }
+
+  bool isToday(String dateString) {
+    final now = DateTime.now();
+    final date = DateTime.parse(dateString);
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Scrollbar(
+        controller: _scrollController,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "List visitors inside",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Color.fromARGB(255, 25, 25, 112),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(fontSize: 16),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: filteredVisitorLogs.map((log) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6.0),
+                        decoration: BoxDecoration(
+                          color: Constants.customColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.person,
+                            color: Color.fromARGB(255, 25, 25, 112),
+                          ),
+                          title: GestureDetector(
+                            onTap: () => _onVisitorNameTap(log['name']!),
+                            child: Text(
+                              log['name']!,
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 25, 25, 112),
+                              ),
+                            ),
+                          ),
+                         
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

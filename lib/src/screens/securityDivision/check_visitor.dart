@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:dio/dio.dart';
-import 'package:vma_frontend/src/providers/visitor_provider.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
 
-class CheckVisitorScreen extends StatelessWidget {
+class CheckVisitorScreen extends StatefulWidget {
   final Visitor visitor;
 
   const CheckVisitorScreen({Key? key, required this.visitor}) : super(key: key);
 
+  @override
+  _CheckVisitorScreenState createState() => _CheckVisitorScreenState();
+}
+
+class _CheckVisitorScreenState extends State<CheckVisitorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,17 +45,14 @@ class CheckVisitorScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailTile(Icons.person, 'Names', visitor.names.join(', ')),
-                _buildDetailTile(Icons.security, 'Purpose', visitor.purpose ?? 'N/A'),
-                _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.startDate)),
-                _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd HH:mm').format(visitor.endDate)),
-                _buildDetailTile(Icons.directions_car, 'Bring Car', visitor.bringCar ? "Yes" : "No"),
-                _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', visitor.selectedPlateNumbers.join(', ')),
-                _buildDetailTile(Icons.inventory, 'Possessions', visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
-                _buildDetailTile(Icons.check, 'Approved', visitor.approved ? "Yes" : "No"),
-                if (visitor.declined)
-                  _buildDetailTile(Icons.close, 'Decline Reason', visitor.declineReason ?? 'N/A'),
-                const SizedBox(height: 16),
+                _buildDetailTile(Icons.person, 'Names', widget.visitor.names.join(', ')),
+                _buildDetailTile(Icons.security, 'Purpose', widget.visitor.purpose ?? 'N/A'),
+                _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(widget.visitor.startDate)),
+                _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(widget.visitor.endDate)),
+                _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
+                if (widget.visitor.bringCar)
+                  _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
+                _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
                 _buildLetInsideButton(context),
               ],
             ),
@@ -60,6 +60,21 @@ class CheckVisitorScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onLetInside(String visitorId) async {
+    try {
+      await ApiService.visitorsInside(visitorId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Visitor let inside successfully')),
+      );
+      Navigator.of(context).pop(true);
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to let visitor inside: $error')),
+      );
+    }
   }
 
   Widget _buildDetailTile(IconData icon, String label, String value) {
@@ -93,52 +108,14 @@ class CheckVisitorScreen extends StatelessWidget {
   Widget _buildLetInsideButton(BuildContext context) {
     return Center(
       child: ElevatedButton(
-        onPressed: () async {
-          final updatedVisitor = visitor.copyWith(isInside: true);
-
-          
-          final visitorProvider = context.read<VisitorProvider>();
-          visitorProvider.setVisitorFromModel(updatedVisitor);
-
-          // Send the update to the backend
-          final success = await _updateVisitorStatus(updatedVisitor);
-
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Visitor has been let inside')),
-            );
-            // Optionally, close the screen
-            Navigator.of(context).pop();
-          } else {
-            // Revert the local update if backend update fails
-            visitorProvider.setVisitorFromModel(visitor);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to update visitor status on the server')),
-            );
-          }
-        },
-        child: const Text('Has been let inside'),
+        onPressed: () => _onLetInside(widget.visitor.id.toString()),
         style: ElevatedButton.styleFrom(
           backgroundColor: Constants.customColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textStyle: const TextStyle(fontSize: 16),
         ),
+        child: const Text('Has been let inside', style: TextStyle(color: Colors.white)),
       ),
     );
-  }
-
-  Future<bool> _updateVisitorStatus(Visitor updatedVisitor) async {
-    try {
-      final dio = Dio();
-      final response = await dio.put(
-        '${Constants.uri}/visitor/${updatedVisitor.id}',
-        data: updatedVisitor.toJson(),
-      );
-      return response.statusCode == 200;
-    } catch (e) {
-      // Handle error
-      print('Error updating visitor status: $e');
-      return false;
-    }
   }
 }

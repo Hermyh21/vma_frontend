@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
-import 'package:vma_frontend/src/screens/approvalDivision/visitors_detail.dart';
-
+import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
 class YetToArrive extends StatefulWidget {
   final String searchQuery;
 
@@ -29,41 +27,40 @@ class _YetToArriveState extends State<YetToArrive> {
   List<Map<String, String?>> filteredVisitorLogs = [];
 
   Future<void> _showVisitorLogs(DateTime day) async {
-    try {
-      final logs = await ApiService.visitorsYetToArrive(day);
+  try {
+    final logs = await ApiService.visitorsYetToArrive(day);
 
-      setState(() {
-        visitorLogs = logs.map((log) {
-          return {
-            'id': log.id.toString(),
-            'name': log.names.join(', '),
-          };
-        }).toList();
-        _filterVisitors();
-      });
-      setState(() {
-        fullVisitorLogs = logs.map((log) {
-          return {
-            'id': log.id.toString(),
-            'name': log.names.join(', '),
-            'purpose': log.purpose,
-            'startDate': log.startDate.toString(),
-            'endDate': log.endDate.toString(),
-            'bringCar': log.bringCar.toString(),
-            'plateNumbers': log.selectedPlateNumbers.toString(),
-            'possessions': log.possessions.join(', '),
-            'approved': log.bringCar.toString(),
-            'declined': log.bringCar.toString(),
-            'isInside': log.bringCar.toString(),
-            'hasLeft': log.bringCar.toString(), 
+    setState(() {
+      visitorLogs = logs.map((log) {
+        return {
+          'id': log.id.toString(),
+          'name': log.names.join(', '),
+        };
+      }).toList();
 
-          };
-        }).toList();
-      });
-    } catch (e) {
-      print('Error fetching visitor logs: $e');
-    }
+      fullVisitorLogs = logs.map((log) {
+        return {
+          'id': log.id.toString(),
+          'name': log.names.join(', '),
+          'purpose': log.purpose,
+          'startDate': log.startDate.toString(),
+          'endDate': log.endDate.toString(),
+          'bringCar': log.bringCar.toString(),
+          'plateNumbers': log.selectedPlateNumbers.toString(),
+          'possessions': log.possessions.join(', '),
+          'approved': log.approved.toString(),
+          'declined': log.declined.toString(),
+          'isInside': log.isInside.toString(),
+          'hasLeft': log.hasLeft.toString(),
+        };
+      }).toList();
+
+      _filterVisitors();
+    });
+  } catch (e) {
+    print('Error fetching visitor logs: $e');
   }
+}
 
   void _filterVisitors() {
     final query = widget.searchQuery.toLowerCase();
@@ -103,34 +100,21 @@ class _YetToArriveState extends State<YetToArrive> {
     super.dispose();
   }
 
-  void _onLetInside(String visitorId) async {
-    try {
-      await ApiService.visitorsInside(visitorId);
-      setState(() {
-        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor approved successfully')),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to approve visitor: $error')),
-      );
-    }
-  }
-
   void _onVisitorNameTap(String visitorName) {
     print("Visitor name tapped: $visitorName");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.names.contains(visitorName),
     );
     try {
-      Navigator.push(
+      final result= Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VisitorDetailScreen(visitor: visitor),
+          builder: (context) => CheckVisitorScreen(visitor: visitor),
         ),
       );
+       if (result == true) {
+        _showVisitorLogs(_selectedDate); 
+      }
     } catch (e, stackTrace) {
       print("Error navigating to VisitorDetailPage: $e");
       print(stackTrace);
@@ -196,19 +180,7 @@ class _YetToArriveState extends State<YetToArrive> {
                               ),
                             ),
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.check,
-                                  color: Color.fromARGB(255, 25, 25, 112),
-                                ),
-                                onPressed: () => _onLetInside(log['id']!),
-                              ),
-                              
-                            ],
-                          ),
+                         
                         ),
                       );
                     }).toList(),
