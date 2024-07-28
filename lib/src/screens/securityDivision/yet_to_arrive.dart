@@ -52,6 +52,11 @@ class _YetToArriveState extends State<YetToArrive> {
             'bringCar': log.bringCar.toString(),
             'plateNumbers': log.selectedPlateNumbers.toString(),
             'possessions': log.possessions.join(', '),
+            'approved': log.bringCar.toString(),
+            'declined': log.bringCar.toString(),
+            'isInside': log.bringCar.toString(),
+            'hasLeft': log.bringCar.toString(), 
+
           };
         }).toList();
       });
@@ -98,9 +103,9 @@ class _YetToArriveState extends State<YetToArrive> {
     super.dispose();
   }
 
-  void _onApproveVisitor(String visitorId) async {
+  void _onLetInside(String visitorId) async {
     try {
-      await ApiService.approveVisitor(visitorId);
+      await ApiService.visitorsInside(visitorId);
       setState(() {
         fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
       });
@@ -199,7 +204,7 @@ class _YetToArriveState extends State<YetToArrive> {
                                   Icons.check,
                                   color: Color.fromARGB(255, 25, 25, 112),
                                 ),
-                                onPressed: () => _onApproveVisitor(log['id']!),
+                                onPressed: () => _onLetInside(log['id']!),
                               ),
                               
                             ],

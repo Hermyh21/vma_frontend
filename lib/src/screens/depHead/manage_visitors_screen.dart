@@ -358,9 +358,10 @@ void updatePossessionCheckboxes() {
   }
 
   Widget build(BuildContext context) {
-  if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
-    setVisitorData(widget.visitorLogs![0]);
-  }
+   if (isEditMode && widget.visitorLogs != null) {
+      final visitorData = widget.visitorLogs![0];
+      _visitorLog = visitorData;
+    }
 
   return Scaffold(
     appBar: AppBar(

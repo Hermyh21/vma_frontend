@@ -151,7 +151,20 @@ class ApiService {
       throw Exception('Failed to approve visitor: $error');
     }
   }
+// Is inside
+  static Future<void> visitorsInside(String visitorId) async {
 
+  
+    try {
+      
+      final response = await _dio.put('${Constants.uri}/api/visitorsInside/$visitorId');
+      
+      return response.data;
+    } catch (error) {
+      print('Error in visitors inside: $error');
+      throw Exception('Failed to let visitor inside: $error');
+    }
+  }
   // Decline Visitor
  static Future<void> declineVisitor(String visitorId, String declineReason) async {
   try {

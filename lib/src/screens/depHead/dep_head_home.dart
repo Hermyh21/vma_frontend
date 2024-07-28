@@ -102,6 +102,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
             'bringCar': log.bringCar.toString(),
             'plateNumbers': log.selectedPlateNumbers.toString(),
             'possessions': log.possessions.join(', '),
+            'approved': log.approved.toString(),
+          'declined': log.declined.toString(),
+          'declineReason': log.declineReason,
           };
         }).toList();
       });
@@ -166,9 +169,66 @@ print(editVisitorLogs);
     });
   }
 
-  void _requestStatus() {
-    
+  void _requestStatus(String visitorId, bool approved, bool declined, String? declineReason) {
+  
+  if (approved) {
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Status"),
+          content: const Text("Visitor is approved."),
+          actions: [
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } else if (declined) {
+    // Change icon to cancel and show decline reason
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Decline Reason"),
+          content: Text(declineReason ?? "No reason provided."),
+          actions: [
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Pending..."),
+          content: Text(declineReason ?? "Request hasn't been approved yet."),
+          actions: [
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
+}
 
   void _onDeleteVisitor(String visitorId) {
     showDialog(
@@ -447,12 +507,22 @@ print(editVisitorLogs);
                               onPressed: () => _onDeleteVisitor(log['id']!),
                             ),
                             IconButton(
-                              icon: const Icon(
-                                Icons.pending_actions,
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
-                              onPressed: () => _requestStatus(),
-                            ),
+      icon: Icon(
+                    log['approved'] == 'true'
+                        ? Icons.check
+                        : log['declined'] == 'true'
+                            ? Icons.cancel
+                            : Icons.pending_actions,
+                    color: const Color.fromARGB(255, 25, 25, 112),
+                  ),onPressed: () {
+        _requestStatus(
+          log['id']!,
+          log['approved'] == 'true',  // Convert to boolean if needed
+          log['declined'] == 'true',  // Convert to boolean if needed
+          log['declineReason'],
+        );
+      },
+    ),
                           ],
                         ),
                       ),

@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:vma_frontend/src/screens/approvalDivision/new_requests.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:dio/dio.dart';
