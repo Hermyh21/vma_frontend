@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:intl/intl.dart';
-import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
-import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/components/header.dart';
 import 'package:vma_frontend/src/screens/securityDivision/yet_to_arrive.dart';
 import 'package:vma_frontend/src/screens/securityDivision/already_left.dart';
@@ -157,7 +155,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     ),
                   ),
                   Container(
-                    height: 500, // Example height for the list of visitors
+                    height: 500, 
                     child: IndexedStack(
                       index: _selectedIndex,
                       children: [

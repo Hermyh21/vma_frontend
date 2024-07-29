@@ -257,18 +257,20 @@ class ApiService {
     }
   }
 
-  // Fetch Regions
+  // Add Regions
   static Future<PlateRegion> addRegion(String region) async {
-    try {
-      final response = await _dio.post(
-        '/api/Plate/PlateRegion',
-        data: {'region': region},
-      );
-      return PlateRegion.fromJson(response.data);
-    } catch (e) {
-      throw Exception('Failed to add region: $e');
-    }
+  try {
+    print('Sending region: $region'); // Debug log
+    final response = await _dio.post(
+      '/api/Plate/PlateRegion',
+      data: {'region': region},
+    );
+    return PlateRegion.fromJson(response.data);
+  } catch (e) {
+    throw Exception('Failed to add region: $e');
   }
+}
+
 
   static Future<PlateCode> addPlateCode(String code, String description) async {
     try {

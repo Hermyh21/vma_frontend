@@ -50,7 +50,7 @@ class VisitorDetailPage extends StatelessWidget {
                 _buildDetailTile(Icons.check, 'Approved', visitor.approved ? "Yes" : "No"),
                 if (visitor.declined)
                   _buildDetailTile(Icons.close, 'Decline Reason', visitor.declineReason ?? 'N/A'),
-                _buildDetailTile(Icons.directions_car, 'Has been let inside', visitor.isInside ? "Yes" : "No"),
+                _buildDetailTile(Icons.directions_car, 'Is inside', visitor.isInside ? "Yes" : "No"),
                 _buildDetailTile(Icons.directions_car, 'Has Left', visitor.hasLeft ? "Yes" : "No"),
               ],
             ),

@@ -135,6 +135,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
             'bringCar': log.bringCar.toString(),
             'selectedPlateNumbers': log.selectedPlateNumbers.toString(),
             'possessions': possessions.join(', '),
+            'approved': log.approved.toString(),
+            'declined': log.declined.toString(),
+
           };
         }).toList();
       });
@@ -170,66 +173,52 @@ print(editVisitorLogs);
   }
 
   void _requestStatus(String visitorId, bool approved, bool declined, String? declineReason) {
-  
-  if (approved) {
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Status"),
-          content: const Text("Visitor is approved."),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } else if (declined) {
-    // Change icon to cancel and show decline reason
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Decline Reason"),
-          content: Text(declineReason ?? "No reason provided."),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } else {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Pending..."),
-          content: Text(declineReason ?? "Request hasn't been approved yet."),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+        if (approved) {
+          return AlertDialog(
+            title: const Text("Status"),
+            content: const Text("Visitor is approved."),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        } else if (declined) {
+          return AlertDialog(
+            title: const Text("Decline Reason"),
+            content: Text(declineReason ?? "No reason provided."),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            title: const Text("Pending..."),
+            content: const Text("Request hasn't been approved yet."),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        }
       },
     );
   }
-}
-
   void _onDeleteVisitor(String visitorId) {
     showDialog(
       context: context,
@@ -383,63 +372,48 @@ print(editVisitorLogs);
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 150.0,
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: days.length,
-                      itemBuilder: (context, index) {
-                        final day = days[index];
-                        final isSelected = day.day == _selectedDate.day &&
-                            day.month == _selectedDate.month &&
-                            day.year == _selectedDate.year;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedDate = day;
-                            });
-                            _showVisitorLogs(day);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: 120.0,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color.fromARGB(255, 25, 25, 112)
-                                    : null,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    DateFormat('MMMM').format(day),
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSelected ? Colors.white : null,
-                                    ),
-                                  ),
-                                  Text(
-                                    DateFormat('d').format(day),
-                                    style: TextStyle(
-                                      fontSize: 24.0,
-                                      color: isSelected ? Colors.white : null,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: days.map((day) {
+                  final isSelected = day == _selectedDate;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedDate = day;
+                        _showVisitorLogs(day);
+                      });
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          DateFormat('E').format(day),
+                          style: TextStyle(
+                              color: isSelected ? Constants.customColor : Colors.grey),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Container(
+                          width: 30.0,
+                          height: 30.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: isSelected ? Constants.customColor : Colors.transparent,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: Text(
+                            day.day.toString(),
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  ),
-                ),
+                  );
+                }).toList(),
+              ),
+            ),
               ],
             ),
             const Padding(
@@ -459,76 +433,80 @@ print(editVisitorLogs);
             ),
 
             Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  children: filteredVisitorLogs.map((log) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6.0),
-                      decoration: BoxDecoration(
-                        color: Constants.customColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.person,
-                          color: Color.fromARGB(255, 25, 25, 112),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: filteredVisitorLogs.map((log) {
+                  return Container(
+                    padding: const EdgeInsets.all(10.0),
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4.0,
+                          spreadRadius: 2.0,
                         ),
-                        title: GestureDetector(
-                          onTap: () {
-   
-    final names = log['names']!.split(',').map((name) => name.trim()).toList();
-    _onVisitorNameTap(names);
-  },
-                          child: Text(
-                            log['name']!,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 25, 25, 112),
-                            ),
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit,
-                                color: Color.fromARGB(255, 25, 25, 112),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => _onVisitorNameTap([log['name']!]),
+                              child: Text(
+                                log['name']!,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Constants.customColor,
+                                ),
                               ),
-                              onPressed: () { _onEditVisitor(log['id']!);}
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
-                              onPressed: () => _onDeleteVisitor(log['id']!),
+                            Row(
+                              children: <Widget>[
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.blue),
+                                  onPressed: () {
+                                    _onEditVisitor(log['id']!);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    _onDeleteVisitor(log['id']!);
+                                  },
+                                ),
+                              ],
                             ),
-                            IconButton(
-      icon: Icon(
-                    log['approved'] == 'true'
-                        ? Icons.check
-                        : log['declined'] == 'true'
-                            ? Icons.cancel
-                            : Icons.pending_actions,
-                    color: const Color.fromARGB(255, 25, 25, 112),
-                  ),onPressed: () {
-        _requestStatus(
-          log['id']!,
-          log['approved'] == 'true',  // Convert to boolean if needed
-          log['declined'] == 'true',  // Convert to boolean if needed
-          log['declineReason'],
-        );
-      },
-    ),
                           ],
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                        const SizedBox(height: 8.0),
+                        Row(
+                          children: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                final fullLog = fullVisitorLogs.firstWhere(
+                                    (visitorLog) => visitorLog['id'] == log['id']);
+                                _requestStatus(
+                                  fullLog['id']!,
+                                  fullLog['approved'] == 'true',
+                                  fullLog['declined'] == 'true',
+                                  fullLog['declineReason'],
+                                );
+                              },
+                              child: const Text("Status"),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ],

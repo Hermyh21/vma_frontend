@@ -49,6 +49,7 @@ class _VisitorsInfoState extends State<VisitorsInfo> {
   void dispose() {
     final socketService = Provider.of<SocketService>(context, listen: false);
     socketService.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -334,18 +335,7 @@ void _visitorStatus(){
                             ),
                           ),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.pending_actions,
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
-                              onPressed: () => _visitorStatus(),
-                            ),
-                          ],
-                        ),
+                        
                       ),
                     );
                   }).toList(),
