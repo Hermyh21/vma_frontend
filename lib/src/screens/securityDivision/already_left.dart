@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
-import 'package:vma_frontend/src/screens/securityDivision/inside_visitor_detail.dart';
+import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.dart';
 class AlreadyLeft extends StatefulWidget {
 
 
@@ -113,7 +113,7 @@ class _AlreadyLeftState extends State<AlreadyLeft> {
       final result= Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => InsideVisitorDetail(visitor: visitor),
+          builder: (context) => LeftVisitorDetail(visitor: visitor),
         ),
       );
        if (result == true) {

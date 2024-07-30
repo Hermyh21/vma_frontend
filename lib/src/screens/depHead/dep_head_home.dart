@@ -135,8 +135,8 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
             'bringCar': log.bringCar.toString(),
             'selectedPlateNumbers': log.selectedPlateNumbers.toString(),
             'possessions': possessions.join(', '),
-            'approved': log.approved.toString(),
-            'declined': log.declined.toString(),
+            // 'approved': log.approved.toString(),
+            // 'declined': log.declined.toString(),
 
           };
         }).toList();

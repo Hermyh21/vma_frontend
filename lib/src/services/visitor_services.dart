@@ -106,7 +106,7 @@ class VisitorService {
       );
       Dio dio = Dio();
       Response response = await dio.put(
-        '${Constants.uri}/api/visitors/$visitorId',
+        '${Constants.uri}/api/updatevisitors/$visitorId',
         data: visitor.toJson(),
         options: Options(
           headers: {

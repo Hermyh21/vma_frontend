@@ -14,12 +14,14 @@ class ManageVisitorsScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? visitorLogs;
 
   const ManageVisitorsScreen({super.key, this.visitorLogs});
+ 
   @override
   ManageVisitorsScreenState createState() => ManageVisitorsScreenState();
 }
 
 class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
-  
+  late String? id;
+  late String v_id;
   late DateTime startDate;
   late DateTime endDate;
   int numberOfVisitors = 1;
@@ -27,36 +29,44 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   List<Widget> visitorNameFields = [];
   Map<String, dynamic>? _visitorLog;
   bool bringCar = false;
+  bool approved = false;
   String? errorMessage;
   late List<String> selectedPlateNumbers = List.filled(numberOfCars, '');
   TextEditingController purposeController = TextEditingController();
   bool showVisitorError = false;
   bool showPurposeError = false;
- 
+  
   List<String> plateRegions = [];
   List<String> plateCodes = [];
   List<Widget> plateNumberFields = [];
   List<String> visitorNames = [];
   int numberOfCars = 0;
   List<Map<String, dynamic>>? editVisitorLogs; 
+  late Visitor visitor;
 
-void setVisitorData(Map<String, dynamic> visitorData) {
-    Visitor visitor = Visitor.fromJson22(visitorData);
+void  setVisitorData(Map<String, dynamic> visitorData) {
 
+    visitor = Visitor.fromJson22(visitorData);
+   print("objecttttt");
+    print(visitor.id);
+    //v_id = visitorData.id;
+    print(visitor.names);
     setState(() {
+      id = visitor.id;
       startDate = visitor.startDate;
       endDate = visitor.endDate;
       numberOfVisitors = visitor.numberOfVisitors;
       visitorNames = visitor.names;
       purposeController.text = visitor.purpose ?? '';
       bringCar = visitor.bringCar;
+      approved = visitor.approved;
       selectedPlateNumbers = visitor.selectedPlateNumbers;
       updateVisitorNameFields();
       updatePossessionCheckboxes();
-
       updatePlateNumberFields();
     });
   }
+  
   List<bool> possessionCheckedState = [false, false, false, false, false];
   late final List<PlateCode> _plateCodes = [];
   late final List<PlateRegion> _plateRegions = [];
@@ -244,119 +254,116 @@ void updatePossessionCheckboxes() {
     }
   }
   void addVisitor({Visitor? visitor}) async {
-    try {
-      final visitorService = VisitorService();
-      final List<String> items = [
-        'Flash Drive',
-        'Hard Disk',
-        'Laptop',
-        'Tablet',
-        'Mobile Phones'
-      ];
-      final List<String> names =
-          visitorControllers.map((controller) => controller.text).toList();
-      final List<Possession> possessions = possessionCheckedState
-          .asMap()
-          .entries
-          .where((entry) => entry.value)
-          .map((entry) => Possession(
-                item: items[entry.key],
-                
-              ))
-          .toList();
+  print("visitor names: ..");
+  print(visitor?.names);
+  try {
+    final visitorService = VisitorService();
+    final List<String> items = [
+      'Flash Drive',
+      'Hard Disk',
+      'Laptop',
+      'Tablet',
+      'Mobile Phones'
+    ];
+    final List<String> names =
+        visitorControllers.map((controller) => controller.text).toList();
+    final List<Possession> possessions = possessionCheckedState
+        .asMap()
+        .entries
+        .where((entry) => entry.value)
+        .map((entry) => Possession(
+              item: items[entry.key],
+            ))
+        .toList();
 
-      final visitor = Visitor(
-        
-        numberOfVisitors: numberOfVisitors,
+    final visitor = Visitor(
+      numberOfVisitors: numberOfVisitors,
+      names: names,
+      purpose: purposeController.text,
+      startDate: startDate,
+      endDate: endDate,
+      bringCar: bringCar,
+      selectedPlateNumbers: selectedPlateNumbers,
+      possessions: possessions,
+      approved: approved,
+      declined: false,
+      declineReason: ' ',
+      isInside: false,
+      hasLeft: false,
+    );
+  
+    print("Updating visitor of id before c: ${visitor.id}");
+    if (visitor.id != null) {
+      print("Updating visitor of id: ${visitor.id}");
+      // Update existing visitor
+      await visitorService.updateVisitor(
+        context: context,
+        visitorId: visitor.id!,
         names: names,
         purpose: purposeController.text,
-
         startDate: startDate,
         endDate: endDate,
         bringCar: bringCar,
         selectedPlateNumbers: selectedPlateNumbers,
         possessions: possessions,
-        approved: false,
-        declined: false,
-        declineReason: ' ',
-        isInside: false,
-        hasLeft: false,
+        numberOfVisitors: numberOfVisitors,
+        approved: approved,
+        declined: visitor.declined,
+        declineReason: visitor.declineReason,
+        isInside: visitor.isInside,
+        hasLeft: visitor.hasLeft,
       );
-        var vid = visitor.id;
-        print("visitorID: , $vid");
-      if (visitor.id != null) {
-        print("visitor: , $visitor");
-        // Update existing visitor
-        await visitorService.updateVisitor(
-          context: context,
-          visitorId: visitor.id as String,
-          names: names,
-          purpose: purposeController.text,
-          
-          startDate: startDate,
-          endDate: endDate,
-          bringCar: bringCar,
-          selectedPlateNumbers: selectedPlateNumbers,
-          possessions: possessions,
-          numberOfVisitors: numberOfVisitors,
-          approved: visitor.approved,
-          declined: visitor.declined,
-          declineReason: visitor.declineReason,
-          isInside: visitor.isInside,
-          hasLeft: visitor.hasLeft,
-        );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Visitor updated')),
-        );
-      } else {
-        // Add new visitor
-        await visitorService.createVisitor(
-          context: context,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Visitor updated')),
+      );
+    } else {
+      print("Adding new visitor");
+      // Add new visitor
+      await visitorService.createVisitor(
+        context: context,
+        names: names,
+        purpose: purposeController.text,
+        startDate: startDate,
+        endDate: endDate,
+        bringCar: bringCar,
+        selectedPlateNumbers: selectedPlateNumbers,
+        possessions: possessions,
+        numberOfVisitors: numberOfVisitors,
+        approved: false, // Default value for approved
+        declined: false,
+        declineReason: '',
+        hasLeft: false,
+        isInside: false,
+      );
 
-          names: names,
-          purpose: purposeController.text,
-
-          startDate: startDate,
-          endDate: endDate,
-          bringCar: bringCar,
-          selectedPlateNumbers: selectedPlateNumbers,
-          possessions: possessions,
-          numberOfVisitors: numberOfVisitors,
-          approved: false, // Default value for approved
-          declined: false,
-          declineReason: '',
-          hasLeft: false,
-          isInside: false
-        );
-
-        print("visitorsss: , $visitor");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Request sent')),
-        );
-      }
-      // Clear form fields
-      setState(() {
-        showVisitorError = false;
-
-        startDate = DateTime.now();
-        endDate = DateTime.now();
-        numberOfVisitors = 1;
-        bringCar = false;
-        possessionCheckedState = List.filled(5, false);
-        
-        visitorControllers.forEach((controller) => controller.clear());
-        _flashDriveController.clear();
-        _hardDiskController.clear();
-        _laptopController.clear();
-        _tabletController.clear();
-        _mobilePhonesController.clear();
-        selectedPlateNumbers.clear();
-      });
-    } catch (e) {
-      print('Failed to send request: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request sent')),
+      );
     }
+
+    // Clear form fields
+    setState(() {
+      showVisitorError = false;
+
+      startDate = DateTime.now();
+      endDate = DateTime.now();
+      numberOfVisitors = 1;
+      bringCar = false;
+      possessionCheckedState = List.filled(5, false);
+
+      visitorControllers.forEach((controller) => controller.clear());
+      _flashDriveController.clear();
+      _hardDiskController.clear();
+      _laptopController.clear();
+      _tabletController.clear();
+      _mobilePhonesController.clear();
+      selectedPlateNumbers.clear();
+    });
+  } catch (e) {
+    print('Failed to send request: $e');
   }
+}
 
   Widget build(BuildContext context) {
    if (isEditMode && widget.visitorLogs != null) {

@@ -32,7 +32,7 @@ class TasksPage extends StatelessWidget {
             TaskCard(
               title: 'Visitors Log',
               icon: Icons.group,
-              color: Colors.white,
+              color: Color.fromARGB(255, 139, 139, 204),
               onTap: () => _onNavigate(context, '/visitorsInfo'),
             ),
             TaskCard(

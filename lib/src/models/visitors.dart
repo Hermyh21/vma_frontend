@@ -31,6 +31,8 @@ class Visitor {
     required this.hasLeft,
   });
 
+  Object? get name => null;
+
   // get declineReason => null;
 
   Visitor copyWith({
@@ -71,7 +73,7 @@ class Visitor {
 
   factory Visitor.fromJson(Map<String, dynamic> json) {    
     return Visitor(
-      id: json['_id'] as String?,
+      id: json['_id'] ?? json['id'] as String?,
       names: List<String>.from(json['name']),
       purpose: json['purpose'],
       startDate: DateTime.parse(json['startDate']),
@@ -97,7 +99,7 @@ factory Visitor.fromJson22(Map<String, dynamic> json) {
         nameString.replaceAll("[", "").replaceAll("]", "").split(", ");
 
     return Visitor(
-      id: json['_id'] as String?,
+      id: json['_id'] ?? json['id'] as String?,
       names: nameList,
       purpose: json['purpose'],
       startDate: DateTime.parse(json['startDate']).toLocal(),
@@ -115,6 +117,7 @@ factory Visitor.fromJson22(Map<String, dynamic> json) {
   }
   Map<String, dynamic> toJson() {
     final data = {
+      'id': id,
       'name': names,
       'purpose': purpose,
       'startDate': DateTime(startDate.year, startDate.month, startDate.day).toIso8601String(),

@@ -131,137 +131,84 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
   }
 
   void _onApproveVisitor(String visitorId) async {
-    final visitorProvider = context.read<VisitorProvider>();
-    Visitor? visitor;
-
     try {
-      visitor = visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
-    } catch (e) {
-      visitor = null;
-    }
-
-    if (visitor == null) {
+      await ApiService.approveVisitor(visitorId);
+      setState(() {
+        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor not found locally')),
+        const SnackBar(content: Text('Visitor approved successfully')),
       );
-      return;
-    }
-
-    try {
-      final dio = Dio();
-      final response = await dio.put(
-        '${Constants.uri}/approve/$visitorId',
-      );
-
-      if (response.statusCode == 200) {
-        visitorProvider.setVisitorFromModel(visitor.copyWith(
-          approved: true,
-          declined: false,
-          declineReason: '',
-        ));
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Visitor approved')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to approve visitor: ${response.statusMessage}')),
-        );
-      }
-    } catch (e) {
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Network error')),
+        SnackBar(content: Text('Failed to approve visitor: $error')),
       );
-      print('Network error: $e');
     }
   }
+  Future<String?> _showDeclineDialog() async {
+  TextEditingController reasonController = TextEditingController();
 
-  void _onDeclineVisitor( String visitorId) {
-    final visitorProvider = context.read<VisitorProvider>();
-    Visitor? visitor;
-    try {
-      visitor = visitorProvider.visitors.firstWhere((v) => v.id == visitorId);
-    } catch (e) {
-      visitor = null;
-    }
-
-    if (visitor == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor not found')),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        String declineReason = '';
-        return AlertDialog(
-          title: const Text('Reason to Decline'),
-          content: TextField(
-            onChanged: (value) {
-              declineReason = value;
-            },
-            decoration: const InputDecoration(
-              hintText: 'Enter reason for declining',
-            ),
+  return showDialog<String>(
+    context: context,
+    barrierDismissible: false, // User must tap a button to dismiss the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Decline Visitor'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+             const Text('Please enter a reason for declining the visitor:'),
+              TextField(
+                controller: reasonController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter reason',
+                ),
+              ),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Send'),
-              onPressed: () async {
-                if (declineReason.isNotEmpty) {
-                  try {
-                    final dio = Dio();
-                    final response = await dio.put(
-                      '${Constants.uri}/$visitorId',
-                      data: {
-                        'declineReason': declineReason,
-                      },
-                    );
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog without doing anything
+            },
+          ),
+          TextButton(
+            child: const Text('Decline and Send Reason'),
+            onPressed: () {
+              Navigator.of(context).pop(reasonController.text); // Close the dialog and return the reason
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
-                    if (response.statusCode == 200) {
-                      visitorProvider.setVisitorFromModel(visitor!.copyWith(
-                        declined: true,
-                        declineReason: declineReason,
-                      ));
-
-                      visitorProvider.declineVisitor(visitorId);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Visitor declined')),
-                      );
-
-                      Navigator.of(dialogContext).pop();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to decline visitor')),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Network error')),
-                    );
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Reason cannot be empty')),
-                  );
-                }
-              },
-            ),
-          ],
-        );
-      },
+  void _onDeclineVisitor(String visitorId) async {
+  String? declineReason = await _showDeclineDialog();
+  
+  if (declineReason != null && declineReason.isNotEmpty) {
+    try {
+      await ApiService.declineVisitor(visitorId, declineReason);
+      setState(() {
+        fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content:  Text('Visitor declined successfully')),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to decline visitor: $error')),
+      );
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Decline reason is required')),
     );
   }
-
+}
   Widget _buildDetailTile(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

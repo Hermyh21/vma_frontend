@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-
+import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.dart';
 class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
@@ -14,7 +14,7 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
   List<Map<String, String?>> visitorLogs = [];
   List<Map<String, String?>> filteredVisitorLogs = [];
   List<Map<String, String?>> fullVisitorLogs = [];
-
+List<Visitor> visitors = [];
   Future<void> _showApprovedVisitors(bool approved) async {
     try {
       final logs = await ApiService.fetchApprovedVisitors(approved);
@@ -52,12 +52,30 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
   void initState() {
     super.initState();
     _showApprovedVisitors(true); // Fetch approved visitors when the widget initializes
+   
   }
 
-  void _onVisitorNameTap(String names) {
-    // Implement the logic for what happens when a visitor name is tapped
-    print('Visitor name tapped: $names');
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor name tapped: $visitorId");
+    final visitor = visitors.firstWhere(
+      (visitor) => visitor.id == visitorId, 
+    );
+    
+    print("Visitor foundtapped: $visitor");
+    try {
+       Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LeftVisitorDetail(visitor: visitor),
+        ),
+      );
+     
+    } catch (e, stackTrace) {
+      print("Error navigating to VisitorDetailPage: $e");
+      print(stackTrace);
+    }
   }
+
 
   String formatDate(String dateString) {
     try {
@@ -109,22 +127,22 @@ class _ApprovedRequestsState extends State<ApprovedRequests> {
                             color: Constants.customColor[50],
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: ListTile(
-                            leading: const Icon(
-                              Icons.person,
-                              color: Color.fromARGB(255, 25, 25, 112),
-                            ),
-                            title: GestureDetector(
-                              onTap: () => _onVisitorNameTap(log['name']!),
-                              child: Text(
-                                log['name']!,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 25, 25, 112),
-                                ),
+                          child: GestureDetector(
+                            onTap: () => _onVisitorNameTap(log['id']!),
+                            child: ListTile(
+                              leading: const Icon(
+                                Icons.person,
+                                color: Color.fromARGB(255, 25, 25, 112),
                               ),
-                            ),
-                            subtitle: Text(
-                              "${formatDate(log['startDate']!)} - ${formatDate(log['endDate']!)}",
+                              title: Text(
+                                  log['name']!,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 25, 25, 112),
+                                  ),
+                                ),
+                              subtitle: Text(
+                                "${formatDate(log['startDate']!)} - ${formatDate(log['endDate']!)}",
+                              ),
                             ),
                           ),
                         );

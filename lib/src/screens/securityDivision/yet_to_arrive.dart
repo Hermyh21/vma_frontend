@@ -106,15 +106,15 @@ class _YetToArriveState extends State<YetToArrive> {
       (visitor) => visitor.id == visitorId, 
     );
     try {
-      final result= Navigator.push(
+     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => CheckVisitorScreen(visitor: visitor),
         ),
       );
-       if (result == true) {
-        _showVisitorLogs(_selectedDate); 
-      }
+      //  if (result == true) {
+      //   _showVisitorLogs(_selectedDate); 
+      // }
     } catch (e, stackTrace) {
       print("Error navigating to VisitorDetailPage: $e");
       print(stackTrace);
