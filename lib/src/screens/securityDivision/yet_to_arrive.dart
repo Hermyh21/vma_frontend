@@ -144,7 +144,7 @@ class _YetToArriveState extends State<YetToArrive> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "List of new requests",
+                      "List of visitors yet to arrive",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20.0,

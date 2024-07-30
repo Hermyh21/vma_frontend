@@ -6,6 +6,7 @@ import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
+import 'package:intl/intl.dart';
 
 
 class ManageVisitorsScreen extends StatefulWidget {
@@ -403,7 +404,7 @@ void updatePossessionCheckboxes() {
                             );
                             if (selectedDate != null) {
                               setState(() {
-                                startDate = selectedDate;
+                                startDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
                               });
                             }
                           },
@@ -411,7 +412,7 @@ void updatePossessionCheckboxes() {
                             backgroundColor: Constants.customColor,
                           ),
                           child: Text(
-                            '${startDate.year}-${startDate.month}-${startDate.day}',
+                            DateFormat('yyyy-MM-dd').format(startDate),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
@@ -435,7 +436,7 @@ void updatePossessionCheckboxes() {
                             );
                             if (selectedDate != null) {
                               setState(() {
-                                endDate = selectedDate;
+                                endDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
                               });
                             }
                           },
@@ -443,7 +444,7 @@ void updatePossessionCheckboxes() {
                             backgroundColor: Constants.customColor,
                           ),
                           child: Text(
-                            '${endDate.year}-${endDate.month}-${endDate.day}',
+                            DateFormat('yyyy-MM-dd').format(endDate),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),

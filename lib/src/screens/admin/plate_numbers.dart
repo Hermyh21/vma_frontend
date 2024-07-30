@@ -21,6 +21,7 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
     _fetchData();
   }
 
+  // Fetch data from the backend
   Future<void> _fetchData() async {
     try {
       final regions = await ApiService.fetchRegions();
@@ -62,7 +63,6 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                
                 ElevatedButton(
                   onPressed: () => _showAddCodeDialog(context),
                   style: ElevatedButton.styleFrom(
@@ -73,7 +73,6 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                
                 const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () => _showAddRegionDialog(context),
@@ -85,7 +84,6 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                
               ],
             ),
             const SizedBox(height: 20),

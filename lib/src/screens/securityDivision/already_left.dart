@@ -27,10 +27,10 @@ class _AlreadyLeftState extends State<AlreadyLeft> {
   List<Map<String, String?>> filteredVisitorLogs = [];
 
   Future<void> _showVisitorLogs(DateTime day) async {
-  print('Fetching visitor logs for date: $day'); 
+  print('Fetching visitor logs who left for date: $day'); 
   try {
     final logs = await ApiService.fetchVisitorsLeft(day);
-    print('Fetched ${logs.length} logs'); 
+    print('Fetched ${logs.length} visitor logs'); 
     setState(() {
       visitorLogs = logs.map((log) {
         print('Processing log ID: ${log.id}'); 
@@ -41,7 +41,7 @@ class _AlreadyLeftState extends State<AlreadyLeft> {
       }).toList();
 
       fullVisitorLogs = logs.map((log) {
-        print('Processing log ID: ${log.id}, Name: ${log.names.join(', ')}, isInside: ${log.isInside}'); 
+        print('Visitor left ID: ${log.id}, Name: ${log.names.join(', ')}, isInside: ${log.isInside}'); 
         return {
           'id': log.id.toString(),
           'name': log.names.join(', '),

@@ -130,7 +130,7 @@ class ApiService {
       throw Exception('Failed to fetch visitors who left: $e');
     }
   }
-//fetch visitors inside
+//fetch visitors who left
  static Future<List<Visitor>> fetchVisitorsLeft(DateTime date) async {
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(date);
@@ -141,7 +141,7 @@ class ApiService {
         queryParameters: {
           'date': formattedDate,
           'approved': true,
-          'isInside': true,
+          'isInside': false,
           'hasLeft': true,
         },
       );
@@ -150,11 +150,11 @@ class ApiService {
         print('Visitors left: $data');
         return data.map((json) => Visitor.fromJson(json)).toList();
       } else {
-        print('Failed to load visitor logs with status code: ${response.statusCode}');
+        print('Failed to load visitors who left: ${response.statusCode}');
         throw Exception('Failed to load visitor logs');
       }
     } catch (e) {
-      throw Exception('Failed to visitors left: $e');
+      throw Exception('Failed to fetch visitors who left: $e');
     }
   }
 
@@ -311,6 +311,7 @@ class ApiService {
       throw Exception('Failed to delete plate code: $error');
     }
   }
+// Fetch all plate regions
   static Future<List<PlateRegion>> fetchRegions() async {
     try {
       final response = await _dio.get('/api/Plate/PlateRegion');
