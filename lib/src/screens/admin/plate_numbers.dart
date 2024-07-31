@@ -35,6 +35,30 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
     }
   }
 
+  // Delete a plate region
+  Future<void> _deleteRegion(String id) async {
+    try {
+      await ApiService.deleteRegion(id);
+      setState(() {
+        _plateRegions.removeWhere((region) => region.id == id);
+      });
+    } catch (e) {
+      print('Failed to delete region: $e');
+    }
+  }
+
+  // Delete a plate code
+  Future<void> _deleteCode(String id) async {
+    try {
+      await ApiService.deletePlateCode(id);
+      setState(() {
+        _plateCodes.removeWhere((code) => code.id == id);
+      });
+    } catch (e) {
+      print('Failed to delete code: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,62 +79,137 @@ class _AllowedPlateNumbersPageState extends State<AllowedPlateNumbersPage> {
           },
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 70),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _showAddCodeDialog(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.customColor,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0), // Padding for the entire content
+          child: Column(
+            children: [
+              const SizedBox(height: 70),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _showAddCodeDialog(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.customColor,
+                    ),
+                    child: const Text(
+                      'Add Code',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  child: const Text(
-                    'Add Code',
-                    style: TextStyle(color: Colors.white),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () => _showAddRegionDialog(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.customColor,
+                    ),
+                    child: const Text(
+                      'Add Region',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () => _showAddRegionDialog(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.customColor,
-                  ),
-                  child: const Text(
-                    'Add Region',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Here are the inserted plate numbers',
-              style: TextStyle(color: Color.fromARGB(255, 25, 25, 112)),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _plateRegions.length + _plateCodes.length,
-                itemBuilder: (context, index) {
-                  if (index < _plateRegions.length) {
-                    final region = _plateRegions[index];
-                    return ListTile(
-                      title: Text('Region: ${region.region}'),
-                    );
-                  } else {
-                    final code = _plateCodes[index - _plateRegions.length];
-                    return ListTile(
-                      title: Text('Code: ${code.code}'),
-                      subtitle: Text('Description: ${code.description}'),
-                    );
-                  }
-                },
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const Text(
+                'Below are the allowed plate codes and regions',
+                style: TextStyle(color: Color.fromARGB(255, 25, 25, 112)),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0), // Padding between containers
+                      child: Container(
+                        color: Constants.customColor[50], // Set the background color
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Plate Codes',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 25, 25, 112),
+                                ),
+                              ),
+                            ),
+                            // Ensure the ListView has constraints
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height as needed
+                              ),
+                              child: ListView.builder(
+                                itemCount: _plateCodes.length,
+                                itemBuilder: (context, index) {
+                                  final code = _plateCodes[index];
+                                  return ListTile(
+                                    title: Text('Code: ${code.code}'),
+                                    subtitle: Text('Description: ${code.description}'),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete, color: Color.fromARGB(255, 25, 25, 112)),
+                                      onPressed: () => _deleteCode(code.id),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0), // Padding between containers
+                      child: Container(
+                        color: Constants.customColor[50], // Set the background color
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Plate Regions',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 25, 25, 112),
+                                ),
+                              ),
+                            ),
+                            // Ensure the ListView has constraints
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height as needed
+                              ),
+                              child: ListView.builder(
+                                itemCount: _plateRegions.length,
+                                itemBuilder: (context, index) {
+                                  final region = _plateRegions[index];
+                                  return ListTile(
+                                    title: Text('Region: ${region.region}'),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete, color: Color.fromARGB(255, 25, 25, 112)),
+                                      onPressed: () => _deleteRegion(region.id),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

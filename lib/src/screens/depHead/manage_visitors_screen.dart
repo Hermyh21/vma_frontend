@@ -137,12 +137,17 @@ void updatePossessionCheckboxes() {
   }
 
  void updateVisitorNameFields() {
+  print("Main field called");
+  print(numberOfVisitors);
     visitorNameFields.clear();
     visitorControllers.clear();
     for (int i = 0; i < numberOfVisitors; i++) {
       TextEditingController controller = TextEditingController();
+      print(visitorNames);
+      if(visitorNames.isNotEmpty){
       controller.text = visitorNames[i];
-
+      }
+      controller.text = i.toString();
       visitorControllers.add(controller);
       visitorNameFields.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,13 +297,16 @@ void updatePossessionCheckboxes() {
       hasLeft: false,
     );
   
-    print("Updating visitor of id before c: ${visitor.id}");
-    if (visitor.id != null) {
-      print("Updating visitor of id: ${visitor.id}");
+  if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
+      Visitor  vis = Visitor.fromJson22(widget.visitorLogs![0]);
+      print("Updating visitor of id before check: ${vis.id}");
+
+    if (vis.id != null) {
+      print("Updating visitor of id: ${vis.id}");
       // Update existing visitor
       await visitorService.updateVisitor(
         context: context,
-        visitorId: visitor.id!,
+        visitorId: vis.id!,
         names: names,
         purpose: purposeController.text,
         startDate: startDate,
@@ -317,7 +325,7 @@ void updatePossessionCheckboxes() {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Visitor updated')),
       );
-    } else {
+    }} else {
       print("Adding new visitor");
       // Add new visitor
       await visitorService.createVisitor(
@@ -348,7 +356,7 @@ void updatePossessionCheckboxes() {
 
       startDate = DateTime.now();
       endDate = DateTime.now();
-      numberOfVisitors = 1;
+      numberOfVisitors = numberOfVisitors;
       bringCar = false;
       possessionCheckedState = List.filled(5, false);
 

@@ -257,19 +257,25 @@ class ApiService {
     }
   }
 
-  // Add Regions
+  // Add Region
   static Future<PlateRegion> addRegion(String region) async {
-  try {
-    print('Sending region: $region'); // Debug log
-    final response = await _dio.post(
-      '/api/Plate/PlateRegion',
-      data: {'region': region},
-    );
-    return PlateRegion.fromJson(response.data);
-  } catch (e) {
-    throw Exception('Failed to add region: $e');
+    try {
+      print('Sending region: $region'); // Debug log
+      final response = await _dio.post(
+        '/api/Plate/PlateRegion',
+        data: {'region': region},
+      );
+      print('Received response: ${response.data}'); // Debug log
+      if (response.data == null) {
+        throw Exception('API response is null');
+      }
+      print('Response JSON: ${response.data}'); // Debug log
+      return PlateRegion.fromJson(response.data);
+    } catch (e) {
+      print('Exception: $e'); // Debug log
+      throw Exception('Failed to add region: $e');
+    }
   }
-}
 
 
   static Future<PlateCode> addPlateCode(String code, String description) async {
@@ -285,32 +291,40 @@ class ApiService {
   }
 
   // Delete Region
-  static Future<void> deleteRegion(String id, String token) async {
-    try {
-      await _dio.delete(
-        '/api/Plate/plate-regions/$id',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
-      );
-    } catch (error) {
-      throw Exception('Failed to delete region: $error');
+static Future<void> deleteRegion(String id) async {
+  try {
+    print('Attempting to delete region with id: $id'); // Debug log
+    final response = await _dio.delete('/api/Plate/plate-regions/$id');
+    print('Delete region response status code: ${response.statusCode}'); // Debug log
+    if (response.statusCode == 204) {
+      print('Region deleted successfully.');
+    } else {
+      print('Failed to delete region. Status code: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Failed to delete region: $error'); // Debug log
+    throw Exception('Failed to delete region: $error');
   }
+}
 
-  // Delete Plate Code
-  static Future<void> deletePlateCode(String id, String token) async {
-    try {
-      await _dio.delete(
-        '/api/Plate/plate-code/$id',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
-      );
-    } catch (error) {
-      throw Exception('Failed to delete plate code: $error');
+
+ // Delete Plate Code
+static Future<void> deletePlateCode(String id) async {
+  try {
+    print('Attempting to delete plate code with id: $id'); // Debug log
+    final response = await _dio.delete('/api/Plate/plate-code/$id');
+    print('Delete plate code response status code: ${response.statusCode}'); // Debug log
+    if (response.statusCode == 204) {
+      print('Plate code deleted successfully.');
+    } else {
+      print('Failed to delete plate code. Status code: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Failed to delete plate code: $error'); // Debug log
+    throw Exception('Failed to delete plate code: $error');
   }
+}
+
 // Fetch all plate regions
   static Future<List<PlateRegion>> fetchRegions() async {
     try {

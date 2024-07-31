@@ -6,8 +6,8 @@ class PlateRegion {
 
   factory PlateRegion.fromJson(Map<String, dynamic> json) {
     return PlateRegion(
-      id: json['_id'],
-      region: json['region'],
+      id: json['_id'] ?? '', 
+      region: json['name'] ?? '', 
     );
   }
 }
