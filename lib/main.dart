@@ -70,8 +70,8 @@ class _MyAppState extends State<MyApp> {
         '/create_users': (context) => const CreateUserScreen(),
         '/security': (context) => SecurityScreen(),
                      
-      '/allowedPlateNumbers': (context) => AllowedPlateNumbersPage(),
-      '/allowedPossessions': (context) => AllowedPossessionsPage(),
+      '/allowedPlateNumbers': (context) => const AllowedPlateNumbersPage(),
+      '/allowedPossessions': (context) => const AllowedPossessionsPage(),
       '/visitorsInfo': (context) => VisitorsInfo(),
       '/userCount': (context) =>  UserCount(),
       },

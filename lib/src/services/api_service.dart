@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
-
+import 'package:vma_frontend/src/models/possessions.dart';
 class ApiService {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -347,49 +347,66 @@ static Future<void> deletePlateCode(String id) async {
     }
   }
  
-   Future<List<Map<String, dynamic>>> getAllPossessions() async {
-    try {
-      final response = await _dio.get('/possessions');
-      return List<Map<String, dynamic>>.from(response.data);
-    } catch (e) {
-      print("Error fetching possessions: $e");
-      throw e;
+   // Fetch possessions from the backend
+  static Future<List<Possession>> fetchPossessions() async {
+  try {
+    print('Fetching possessions from the backend...');
+    final response = await _dio.get('/possessions');
+    
+    print('Response status code: ${response.statusCode}');
+    
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      print('Data received: $data');
+      return data.map((possessionJson) => Possession.fromJson(possessionJson)).toList();
+    } else {
+      throw Exception('Failed to load possessions');
     }
+  } catch (e) {
+    print('Error fetching possessions: $e');
+    throw Exception('Failed to load possessions: $e');
   }
+}
 
-  Future<void> createPossession(String name, bool checked) async {
-    try {
-      final response = await _dio.post('/possessions', data: {
-        'name': name,
-        'checked': checked,
-      });
-      return response.data;
-    } catch (e) {
-      print("Error creating possession: $e");
-      throw e;
-    }
-  }
 
-  Future<void> updatePossession(String id, String name, bool checked) async {
-    try {
-      final response = await _dio.put('/possessions/$id', data: {
-        'name': name,
-        'checked': checked,
-      });
-      return response.data;
-    } catch (e) {
-      print("Error updating possession: $e");
-      throw e;
+  // Add a new possession to the backend
+  static Future<Possession> addPossession(String item) async {
+  try {
+    print('Adding possession with item: $item');
+    final response = await _dio.post('/possessions', data: {'item': item});
+    
+    print('Response status code for possession: ${response.statusCode}');
+    
+    if (response.statusCode == 201) {
+      print('Possession added successfully: ${response.data}');
+      return Possession.fromJson(response.data);
+    } else {
+      throw Exception('Failed to add possession');
     }
+  } catch (e) {
+    print('Error adding possession: $e');
+    throw Exception('Failed to add possession: $e');
   }
+}
 
-  Future<void> deletePossession(String id) async {
-    try {
-      final response = await _dio.delete('/possessions/$id');
-      return response.data;
-    } catch (e) {
-      print("Error deleting possession: $e");
-      throw e;
+
+  // Delete a possession from the backend
+  static Future<void> deletePossession(String id) async {
+  try {
+    print('Deleting possession with id: $id');
+    final response = await _dio.delete('/possessions/$id');
+    
+    print('Response status code: ${response.statusCode}');
+    
+    if (response.statusCode == 200) {
+      print('Possession deleted successfully');
+    } else {
+      throw Exception('Failed to delete possession');
     }
+  } catch (e) {
+    print('Error deleting possession: $e');
+    throw Exception('Failed to delete possession: $e');
   }
+}
+
 }

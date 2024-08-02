@@ -7,8 +7,8 @@ import 'package:vma_frontend/src/services/visitor_services.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:intl/intl.dart';
-
-
+import 'package:vma_frontend/src/services/api_service.dart';
+import 'package:vma_frontend/src/models/possessions.dart';
 class ManageVisitorsScreen extends StatefulWidget {
  
   final List<Map<String, dynamic>>? visitorLogs;
@@ -67,15 +67,14 @@ void  setVisitorData(Map<String, dynamic> visitorData) {
     });
   }
   
-  List<bool> possessionCheckedState = [false, false, false, false, false];
-  late final List<PlateCode> _plateCodes = [];
-  late final List<PlateRegion> _plateRegions = [];
+  List<bool> possessionCheckedState = [];
+ 
 
-  final TextEditingController _flashDriveController = TextEditingController();
-  final TextEditingController _hardDiskController = TextEditingController();
-  final TextEditingController _laptopController = TextEditingController();
-  final TextEditingController _tabletController = TextEditingController();
-  final TextEditingController _mobilePhonesController = TextEditingController();
+  // final TextEditingController _flashDriveController = TextEditingController();
+  // final TextEditingController _hardDiskController = TextEditingController();
+  // final TextEditingController _laptopController = TextEditingController();
+  // final TextEditingController _tabletController = TextEditingController();
+  // final TextEditingController _mobilePhonesController = TextEditingController();
 List<Possession> possessions = [];
   void handlePossessionCheckboxChange(int index, bool newValue) {
     setState(() {
@@ -88,32 +87,35 @@ void updatePossessionCheckboxes() {
     possessions = [];
     for (int i = 0; i < possessionCheckedState.length; i++) {
       if (possessionCheckedState[i]) {
-        possessions.add(Possession(item: getPossessionName(i)));
+        possessions.add(Possession(id: '', item: possessions[i].item));
       }
     }
   }
-  String getPossessionName(int index) {
-    switch (index) {
-      case 0:
-        return 'Flash Drive';
-      case 1:
-        return 'Hard Disk';
-      case 2:
-        return 'Laptop';
-      case 3:
-        return 'Tablet';
-      case 4:
-        return 'Mobile Phones';
-      default:
-        return '';
-    }
-  }
+  
+  // String getPossessionName(int index) {
+  //   switch (index) {
+  //     case 0:
+  //       return 'Flash Drive';
+  //     case 1:
+  //       return 'Hard Disk';
+  //     case 2:
+  //       return 'Laptop';
+  //     case 3:
+  //       return 'Tablet';
+  //     case 4:
+  //       return 'Mobile Phones';
+  //     default:
+  //       return '';
+  //   }
+  // }
+  
   bool isEditMode = false;
   @override
   void initState() {
     super.initState();
     startDate = DateTime.now();
     endDate = DateTime.now();
+    selectedPlateNumbers = List.filled(numberOfCars, '');
     loadData();
    
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
@@ -122,21 +124,28 @@ void updatePossessionCheckboxes() {
     }
     
   }
-
-  Future<void> loadData() async {
-    try {
-      final regions = await fetchPlateRegions();
-      final codes = await fetchPlateCodes();
-      setState(() {
-        plateRegions = regions;
-        plateCodes = codes;
-      });
-    } catch (e) {
-      print('Failed to load data: $e');
-    }
+List<PlateRegion> _plateRegions = [];
+  List<PlateCode> _plateCodes = [];
+ Future<void> loadData() async {
+  try {
+    final regions = await ApiService.fetchRegions();
+    final codes = await ApiService.fetchPlateCodes();
+    final fetchedPossessions = await ApiService.fetchPossessions();
+    setState(() {
+     _plateRegions = regions;
+        _plateCodes = codes;
+        possessions = fetchedPossessions;
+        possessionCheckedState = List.filled(possessions.length, false);
+    });
+  } catch (e) {
+    print('Failed to load data: $e');
+    // Optionally show an error message to the user
+    
   }
+}
 
- void updateVisitorNameFields() {
+
+    void updateVisitorNameFields() {
   print("Main field called");
   print(numberOfVisitors);
     visitorNameFields.clear();
@@ -147,7 +156,7 @@ void updatePossessionCheckboxes() {
       if(visitorNames.isNotEmpty){
       controller.text = visitorNames[i];
       }
-      controller.text = i.toString();
+      // controller.text = i.toString();
       visitorControllers.add(controller);
       visitorNameFields.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,6 +188,10 @@ void updatePossessionCheckboxes() {
   void updatePlateNumberFields() {
     plateNumberFields.clear();
     for (int i = 0; i < numberOfCars; i++) {
+      TextEditingController numberController = TextEditingController();
+      PlateCode selectedCode = _plateCodes.isNotEmpty ? _plateCodes[0] : PlateCode(id: '0', code: '', description: '');
+      PlateRegion selectedRegion = _plateRegions.isNotEmpty ? _plateRegions[0] : PlateRegion(id: '0', region: '');
+
       plateNumberFields.add(
         Padding(
           padding: const EdgeInsets.only(left: 75.0),
@@ -192,10 +205,11 @@ void updatePossessionCheckboxes() {
                 child: Row(
                   children: [
                     DropdownButton<PlateCode>(
-                      value: _plateCodes.isNotEmpty ? _plateCodes[0] : null,
+                      value: selectedCode,
                       onChanged: (newValue) {
                         setState(() {
-                          _plateCodes[i] = newValue ?? PlateCode(id: '0', code: '', description: '');
+                          selectedCode = newValue ?? PlateCode(id: '0', code: '', description: '');
+                          updateSelectedPlateNumbers(i, selectedCode, selectedRegion, numberController.text);
                         });
                       },
                       items: _plateCodes
@@ -207,10 +221,11 @@ void updatePossessionCheckboxes() {
                     ),
                     const SizedBox(width: 8.0),
                     DropdownButton<PlateRegion>(
-                      value: _plateRegions.isNotEmpty ? _plateRegions[0] : null,
+                      value: selectedRegion,
                       onChanged: (newValue) {
                         setState(() {
-                          _plateRegions[i] = newValue ?? PlateRegion(id: '0', region: '');
+                          selectedRegion = newValue ?? PlateRegion(id: '0', region: '');
+                          updateSelectedPlateNumbers(i, selectedCode, selectedRegion, numberController.text);
                         });
                       },
                       items: _plateRegions
@@ -229,6 +244,7 @@ void updatePossessionCheckboxes() {
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         child: TextFormField(
+                          controller: numberController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -236,7 +252,7 @@ void updatePossessionCheckboxes() {
                           ],
                           onChanged: (value) {
                             setState(() {
-                              // Here you can handle the onChanged logic if needed
+                              updateSelectedPlateNumbers(i, selectedCode, selectedRegion, value);
                             });
                           },
                           decoration: const InputDecoration(
@@ -258,29 +274,43 @@ void updatePossessionCheckboxes() {
       );
     }
   }
+
+  void updateSelectedPlateNumbers(int index, PlateCode code, PlateRegion region, String number) {
+    if (index < selectedPlateNumbers.length) {
+      selectedPlateNumbers[index] = '${code.code}-${region.region}-$number';
+    } else {
+      selectedPlateNumbers.add('${code.code}-${region.region}-$number');
+    }
+  }
   void addVisitor({Visitor? visitor}) async {
   print("visitor names: ..");
   print(visitor?.names);
   try {
     final visitorService = VisitorService();
-    final List<String> items = [
-      'Flash Drive',
-      'Hard Disk',
-      'Laptop',
-      'Tablet',
-      'Mobile Phones'
-    ];
+    // final List<String> items = [
+    //   'Flash Drive',
+    //   'Hard Disk',
+    //   'Laptop',
+    //   'Tablet',
+    //   'Mobile Phones'
+    // ];
+    final List<Possession> fetchedPossessions = await ApiService.fetchPossessions();
     final List<String> names =
         visitorControllers.map((controller) => controller.text).toList();
-    final List<Possession> possessions = possessionCheckedState
+     final List<Possession> possessions = possessionCheckedState
         .asMap()
         .entries
         .where((entry) => entry.value)
-        .map((entry) => Possession(
-              item: items[entry.key],
-            ))
-        .toList();
-
+        .map((entry) {
+          final item = fetchedPossessions[entry.key].item;
+          final existingPossession = fetchedPossessions.firstWhere(
+              (possession) => possession.item == item,
+              orElse: () => Possession(id: '', item: item));
+          return Possession(
+            id: existingPossession.id,
+            item: item,
+          );
+        }).toList();
     final visitor = Visitor(
       numberOfVisitors: numberOfVisitors,
       names: names,
@@ -358,14 +388,9 @@ void updatePossessionCheckboxes() {
       endDate = DateTime.now();
       numberOfVisitors = numberOfVisitors;
       bringCar = false;
-      possessionCheckedState = List.filled(5, false);
+      possessionCheckedState = List.filled(possessions.length, false);
 
       visitorControllers.forEach((controller) => controller.clear());
-      _flashDriveController.clear();
-      _hardDiskController.clear();
-      _laptopController.clear();
-      _tabletController.clear();
-      _mobilePhonesController.clear();
       selectedPlateNumbers.clear();
     });
   } catch (e) {
@@ -531,111 +556,39 @@ void updatePossessionCheckboxes() {
               ),
               const SizedBox(height: 16.0),
               Center(
-                child: Row(
+      child: possessions.isEmpty
+          ? const Text("Sorry, no possessions allowed for today") 
+          : Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Possessions:',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: possessionCheckedState[0],
-                                  onChanged: (newValue) {
-                                    handlePossessionCheckboxChange(
-                                        0, newValue ?? false);
-                                  },
-                                ),
-                                const Text('Flash drive'),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: possessionCheckedState[1],
-                                  onChanged: (newValue) {
-                                    handlePossessionCheckboxChange(
-                                        1, newValue ?? false);
-                                  },
-                                ),
-                                const Text('Hard Disk'),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: possessionCheckedState[4],
-                                  onChanged: (newValue) {
-                                    handlePossessionCheckboxChange(
-                                        4, newValue ?? false);
-                                  },
-                                ),
-                                const Text('Mobile Phones'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                    const Text(
+                      'Possessions:',
+                      style: TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(width: 32.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      children: List.generate(possessions.length, (index) {
+                        return Row(
                           children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: possessionCheckedState[3],
-                                  onChanged: (newValue) {
-                                    handlePossessionCheckboxChange(
-                                        3, newValue ?? false);
-                                  },
-                                ),
-                                const Text('Tablet'),
-                              ],
+                            Checkbox(
+                              value: possessionCheckedState[index],
+                              onChanged: (newValue) {
+                                handlePossessionCheckboxChange(index, newValue ?? false);
+                              },
                             ),
+                            Text(possessions[index].item),
                           ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: possessionCheckedState[2],
-                                  onChanged: (newValue) {
-                                    handlePossessionCheckboxChange(
-                                        2, newValue ?? false);
-                                  },
-                                ),
-                                const Text('Laptop'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                        );
+                      }),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(width: 32.0),
+              ],
+            ),
+    ),
               const SizedBox(height: 16.0),
               const Padding(
                 padding: EdgeInsets.only(left: 20.0),

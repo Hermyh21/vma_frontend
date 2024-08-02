@@ -1,98 +1,46 @@
 import 'package:flutter/material.dart';
-
 import 'package:vma_frontend/src/constants/constants.dart';
+import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
+import 'package:vma_frontend/src/models/possessions.dart';
 class AllowedPossessionsPage extends StatefulWidget {
+  const AllowedPossessionsPage({Key? key}) : super(key: key);
+
   @override
   _AllowedPossessionsPageState createState() => _AllowedPossessionsPageState();
 }
 
 class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
-  final TextEditingController _possessionController = TextEditingController();
- 
-  List<Map<String, dynamic>> possessions = [];
-  bool isLoading = true;
+  List<Possession> _possessions = [];
+
   @override
   void initState() {
     super.initState();
-    _fetchPossessions();
+    _fetchData();
   }
-  Future<void> _fetchPossessions() async {
+
+  // Fetch data from the backend
+  Future<void> _fetchData() async {
     try {
-      final data = await ApiService().getAllPossessions();
+      final possessions = await ApiService.fetchPossessions();
       setState(() {
-        possessions = data.map((item) => Map<String, dynamic>.from(item)).toList();
-        isLoading = false;
+        _possessions = possessions;
       });
     } catch (e) {
-      // Handle error
+      print('Failed to fetch data: $e');
+    }
+  }
+
+  // Delete a possession
+  Future<void> _deletePossession(String id) async {
+    try {
+      await ApiService.deletePossession(id);
       setState(() {
-        isLoading = false;
+        _possessions.removeWhere((possession) => possession.id == id);
       });
-    }
-  }
-  Future<void> _addPossession() async {
-    if (_possessionController.text.isNotEmpty) {
-      try {
-        await ApiService().createPossession(_possessionController.text, false);
-        _possessionController.clear();
-        _fetchPossessions();
-      } catch (e) {
-        print("not successful");
-        print(e);
-      }
-    }
-  }
-
-  Future<void> _updatePossession(int index, String newValue) async {
-    try {
-      await ApiService().updatePossession(possessions[index]['_id'], newValue, possessions[index]['checked']);
-      _fetchPossessions();
     } catch (e) {
-      // Handle error
+      print('Failed to delete possession: $e');
     }
-  }
-
-  Future<void> _deletePossession(int index) async {
-    try {
-      await ApiService().deletePossession(possessions[index]['_id']);
-      _fetchPossessions();
-    } catch (e) {
-      // Handle error
-    }
-  }
-
-  void _showUpdateDialog(int index) {
-    TextEditingController _updateController = TextEditingController();
-    _updateController.text = possessions[index]['name'];
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Update Possession'),
-          content: TextField(
-            controller: _updateController,
-            decoration: const InputDecoration(hintText: 'Enter new value'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _updatePossession(index, _updateController.text);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Update'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -100,10 +48,10 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Allowed Possessions',
-          style: TextStyle(color: Colors.white), // Set text color to white
+          'Possessions',
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Constants.customColor, 
+        backgroundColor: Constants.customColor,
         leading: IconButton(
           icon: const Icon(
             Icons.chevron_left,
@@ -111,54 +59,141 @@ class _AllowedPossessionsPageState extends State<AllowedPossessionsPage> {
             size: 30,
           ),
           onPressed: () {
-            // Handle back button press if needed
             Navigator.pop(context);
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _possessionController,
-              decoration: InputDecoration(
-                labelText: 'Add Possession',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: _addPossession,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 70),
+              ElevatedButton(
+                onPressed: () => _showAddPossessionDialog(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Constants.customColor,
+                ),
+                child: const Text(
+                  'Add Possession',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-            ),
-            isLoading
-                ? const CircularProgressIndicator()
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: possessions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(possessions[index]['name']),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () => _showUpdateDialog(index),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () => _deletePossession(index),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+              const SizedBox(height: 20),
+              const Text(
+                'Below are the allowed possessions',
+                style: TextStyle(color: Color.fromARGB(255, 25, 25, 112)),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                color: Constants.customColor[50],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Possessions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 25, 25, 112),
+                        ),
+                      ),
                     ),
-                  ),
-          ],
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      child: ListView.builder(
+                        itemCount: _possessions.length,
+                        itemBuilder: (context, index) {
+                          final possession = _possessions[index];
+                          return ListTile(
+                            title: Text('Item: ${possession.item}'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Color.fromARGB(255, 25, 25, 112)),
+                              onPressed: () => _deletePossession(possession.id),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  void _showAddPossessionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return _AddPossessionDialog(
+          onPossessionAdded: (possession) {
+            setState(() {
+              _possessions.add(possession);
+            });
+          },
+        );
+      },
+    );
+  }
 }
 
+class _AddPossessionDialog extends StatefulWidget {
+  final Function(Possession) onPossessionAdded;
+
+  const _AddPossessionDialog({required this.onPossessionAdded});
+
+  @override
+  _AddPossessionDialogState createState() => _AddPossessionDialogState();
+}
+
+class _AddPossessionDialogState extends State<_AddPossessionDialog> {
+  final TextEditingController _itemController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add Possession'),
+      content: TextField(
+        controller: _itemController,
+        decoration: const InputDecoration(
+          labelText: 'Enter Possession',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final item = _itemController.text;
+            try {
+              final newPossession = await ApiService.addPossession(item);
+              widget.onPossessionAdded(newPossession);
+              Navigator.of(context).pop();
+            } catch (e) {
+              print('Failed to add possession: $e');
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Constants.customColor,
+          ),
+          child: const Text(
+            'Add Possession',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}

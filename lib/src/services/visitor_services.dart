@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/utils/utils.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-
+import 'package:vma_frontend/src/models/possessions.dart';
 class VisitorService {
   Future<void> createVisitor({
     required BuildContext context,

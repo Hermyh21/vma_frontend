@@ -1,3 +1,4 @@
+import 'package:vma_frontend/src/models/possessions.dart';
 class Visitor {
   final String? id; 
   final List<String> names;
@@ -110,7 +111,7 @@ factory Visitor.fromJson22(Map<String, dynamic> json) {
       possessions: [],
       approved: json['approved'] ?? false,
       declined: json['declined'] ?? false,
-      declineReason: "reson here", // Handle null value
+      declineReason: "reason here", // Handle null value
       isInside: json['isInside'] ?? false,
       hasLeft: json['hasLeft'] ?? false,
     );
@@ -139,24 +140,24 @@ factory Visitor.fromJson22(Map<String, dynamic> json) {
   }
 }
 
-class Possession {
-  final String item;
-  
+// class Possession {
+//   final String id;
+//   final String item;
 
-  Possession({required this.item});
+//   Possession({required this.id, required this.item});
 
-  Map<String, dynamic> toJson() => {
-        'item': item,
-        
-      };
+//   Map<String, dynamic> toJson() => {
+//         'id': id,
+//         'item': item,
+//       };
 
-  factory Possession.fromJson(Map<String, dynamic> json) {
-    return Possession(
-      item: json['item'],
-      
-    );
-  }
-}
+//   factory Possession.fromJson(Map<String, dynamic> json) {
+//     return Possession(
+//       id: json['id'] as String,
+//       item: json['item'] as String,
+//     );
+//   }
+// }
 
 
 
