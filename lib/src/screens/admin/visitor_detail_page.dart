@@ -46,7 +46,7 @@ class VisitorDetailPage extends StatelessWidget {
                 _buildDetailTile(Icons.directions_car, 'Bring Car', visitor.bringCar ? "Yes" : "No"),
                 if(visitor.bringCar)
                 _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', visitor.selectedPlateNumbers.join(', ')),
-                _buildDetailTile(Icons.inventory, 'Possessions', visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
+                _buildDetailTile(Icons.inventory, 'Possessions', visitor.possessions.map((possession) => '${possession.item} ').join(', ')),
                 _buildDetailTile(Icons.check, 'Approved', visitor.approved ? "Yes" : "No"),
                 if (visitor.declined)
                   _buildDetailTile(Icons.close, 'Decline Reason', visitor.declineReason ?? 'N/A'),

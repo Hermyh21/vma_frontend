@@ -20,6 +20,7 @@ class VisitorService {
     required String declineReason,
     required bool isInside,
     required bool hasLeft,
+    required String requestedBy,
   }) async {
     try {
       Visitor visitor = Visitor(
@@ -37,6 +38,7 @@ class VisitorService {
         declineReason: declineReason,
         isInside: isInside,
         hasLeft: hasLeft,
+        requestedBy: requestedBy,
       );
 
       Dio dio = Dio();
@@ -85,7 +87,7 @@ class VisitorService {
     required String declineReason,
     required bool isInside,
     required bool hasLeft,
-    required 
+    required String requestedBy,
   }) async {
     try {
       Visitor visitor = Visitor(
@@ -103,6 +105,7 @@ class VisitorService {
         declineReason: declineReason,
         isInside: isInside,
         hasLeft: hasLeft,
+        requestedBy: requestedBy,
       );
       Dio dio = Dio();
       Response response = await dio.put(

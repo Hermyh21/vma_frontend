@@ -4,7 +4,8 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-
+import 'package:vma_frontend/src/services/socket_service.dart';
+import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.dart';
 class DeclinedRequestsScreen extends StatefulWidget {
   @override
   _DeclinedRequestsScreenState createState() => _DeclinedRequestsScreenState();
@@ -14,7 +15,7 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
   List<Map<String, String?>> visitorLogs = [];
   List<Map<String, String?>> filteredVisitorLogs = [];
   List<Map<String, String?>> fullVisitorLogs = [];
-
+  List<Visitor> visitors = [];
   Future<void> _showDeclinedVisitors(bool declined) async {
     try {
       final logs = await ApiService.fetchDeclinedVisitors(declined);
@@ -44,7 +45,7 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
         }).toList();
       });
     } catch (e) {
-      print('Error fetching approved visitors: $e');
+      print('Error fetching declined visitors: $e');
     }
   }
 
@@ -52,12 +53,35 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
   void initState() {
     super.initState();
     _showDeclinedVisitors(true); // Fetch declined visitors when the widget initializes
+  
+  final socketService = Provider.of<SocketService>(context, listen: false);
+    socketService.socket?.on('visitorLogsUpdated', (data) {
+      setState(() {
+        visitors = (data as List).map((json) => Visitor.fromJson(json)).toList();
+      });
+    }); }
+
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor id tapped: $visitorId");
+    final visitor = visitors.firstWhere(
+      (visitor) => visitor.id == visitorId, 
+    );
+    
+    print("Visitor foundtapped: $visitor");
+    try {
+       Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LeftVisitorDetail(visitor: visitor),
+        ),
+      );
+     
+    } catch (e, stackTrace) {
+      print("Error navigating to VisitorDetailPage: $e");
+      print(stackTrace);
+    }
   }
 
-  void _onVisitorNameTap(String names) {
-    // Implement the logic for what happens when a visitor name is tapped
-    print('Visitor name tapped: $names');
-  }
 
   String formatDate(String dateString) {
     try {
@@ -82,7 +106,7 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "List of approved requests",
+                  "List of declined requests",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
@@ -95,7 +119,7 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
           Expanded(
             child: visitorLogs.isEmpty
                 ? const Center(
-                    child: Text('No approved requests'),
+                    child: Text('No declined requests'),
                   )
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
@@ -115,7 +139,7 @@ class _DeclinedRequestsScreenState extends State<DeclinedRequestsScreen> {
                               color: Color.fromARGB(255, 25, 25, 112),
                             ),
                             title: GestureDetector(
-                              onTap: () => _onVisitorNameTap(log['name']!),
+                              onTap: () => _onVisitorNameTap(log['id']!),
                               child: Text(
                                 log['name']!,
                                 style: const TextStyle(

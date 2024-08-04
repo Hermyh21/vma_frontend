@@ -10,13 +10,17 @@ class UserCount extends StatefulWidget {
 
 class _UserCountState extends State<UserCount> {
   late Future<List<User>> _futureUsers;
-
+  
   @override
   void initState() {
     super.initState();
-    _futureUsers = FetchUsers().fetchUsers();
+    _fetchUsers();
   }
-
+  void _fetchUsers() {
+    setState(() {
+      _futureUsers = FetchUsers().fetchUsers();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,13 +67,16 @@ class _UserCountState extends State<UserCount> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(user.role),
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => UserDetailPage(user: user),
                         ),
                       );
+                      if (result == true) {
+                        _fetchUsers(); 
+                      }
                     },
                   ),
                 );

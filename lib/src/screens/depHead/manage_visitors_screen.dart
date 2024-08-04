@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:vma_frontend/src/models/visitors.dart';
-import 'package:vma_frontend/src/services/plate_services.dart';
 import 'package:vma_frontend/src/services/visitor_services.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:intl/intl.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/models/possessions.dart';
+import 'package:vma_frontend/src/providers/user_provider.dart';
+import 'package:vma_frontend/src/models/user.dart';
+import 'package:vma_frontend/src/services/auth_services.dart';
+import 'package:provider/provider.dart';
 class ManageVisitorsScreen extends StatefulWidget {
  
   final List<Map<String, dynamic>>? visitorLogs;
@@ -30,12 +33,17 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   Map<String, dynamic>? _visitorLog;
   bool bringCar = false;
   bool approved = false;
+  String requestedBy='';
   String? errorMessage;
   late List<String> selectedPlateNumbers = List.filled(numberOfCars, '');
   TextEditingController purposeController = TextEditingController();
   bool showVisitorError = false;
   bool showPurposeError = false;
-  
+//   final userProvider = Provider.of<UserProvider>(context, listen: false);
+// final user = userProvider.user;
+// final requestedBy = '${user.fname} ${user.lname}, ${user.department}';
+
+
   List<String> plateRegions = [];
   List<String> plateCodes = [];
   List<Widget> plateNumberFields = [];
@@ -297,7 +305,7 @@ List<PlateRegion> _plateRegions = [];
     final List<Possession> fetchedPossessions = await ApiService.fetchPossessions();
     final List<String> names =
         visitorControllers.map((controller) => controller.text).toList();
-     final List<Possession> possessions = possessionCheckedState
+    final List<Possession> possessions = possessionCheckedState
         .asMap()
         .entries
         .where((entry) => entry.value)
@@ -325,6 +333,7 @@ List<PlateRegion> _plateRegions = [];
       declineReason: ' ',
       isInside: false,
       hasLeft: false,
+      requestedBy: requestedBy,
     );
   
   if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
@@ -350,6 +359,7 @@ List<PlateRegion> _plateRegions = [];
         declineReason: visitor.declineReason,
         isInside: visitor.isInside,
         hasLeft: visitor.hasLeft,
+        requestedBy: visitor.requestedBy!,
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -368,16 +378,18 @@ List<PlateRegion> _plateRegions = [];
         selectedPlateNumbers: selectedPlateNumbers,
         possessions: possessions,
         numberOfVisitors: numberOfVisitors,
-        approved: false, // Default value for approved
+        approved: false, 
         declined: false,
         declineReason: '',
         hasLeft: false,
         isInside: false,
+        requestedBy: requestedBy,
+
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request sent')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Request sent')),
+      // );
     }
 
     // Clear form fields

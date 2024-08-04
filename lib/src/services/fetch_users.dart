@@ -18,5 +18,18 @@ class FetchUsers {
     } catch (e) {
       throw Exception('Failed to load users: $e');
     }
+    
+  }
+  Future<void> deleteUser(String userId) async {
+    try {
+      final response = await _dio.delete('${Constants.uri}/api/users/$userId');
+      if (response.statusCode == 200) {
+        print('User deleted successfully');
+      } else {
+        throw Exception('Failed to delete user');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete user: $e');
+    }
   }
 }

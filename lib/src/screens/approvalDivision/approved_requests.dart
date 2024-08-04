@@ -5,6 +5,7 @@ import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.dart';
+import 'package:vma_frontend/src/services/socket_service.dart';
 class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
@@ -51,12 +52,17 @@ List<Visitor> visitors = [];
   @override
   void initState() {
     super.initState();
-    _showApprovedVisitors(true); // Fetch approved visitors when the widget initializes
-   
+    _showApprovedVisitors(true); 
+    final socketService = Provider.of<SocketService>(context, listen: false);
+    socketService.socket?.on('visitorLogsUpdated', (data) {
+      setState(() {
+        visitors = (data as List).map((json) => Visitor.fromJson(json)).toList();
+      });
+    });  
   }
 
   void _onVisitorNameTap(String visitorId) {
-    print("Visitor name tapped: $visitorId");
+    print("Visitor id tapped: $visitorId");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.id == visitorId, 
     );

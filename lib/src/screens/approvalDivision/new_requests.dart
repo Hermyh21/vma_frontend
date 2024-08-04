@@ -49,6 +49,7 @@ class _NewRequestsScreenState extends State<NewRequestsScreen> {
             'bringCar': log.bringCar.toString(),
             'plateNumbers': log.selectedPlateNumbers.toString(),
             'possessions': log.possessions.join(', '),
+            'requestedBy': log.requestedBy.toString(),
           };
         }).toList();
       });
@@ -242,11 +243,24 @@ Future<String?> _showDeclineDialog() async {
                           ),
                           title: GestureDetector(
                             onTap: () => _onVisitorNameTap(log['id']!),
-                            child: Text(
-                              log['name']!,
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 25, 25, 112),
-                              ),
+                            child:  Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  log['name']!,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 25, 25, 112),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4.0), // Space between name and requestedBy
+                                Text(
+                                  'Requested By: ${log['requestedBy']}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           trailing: Row(

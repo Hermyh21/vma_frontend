@@ -14,6 +14,7 @@ class Visitor {
   final String declineReason;
   final bool isInside;
   final bool hasLeft;
+  final String? requestedBy;
   Visitor({
     
     this.id,
@@ -30,6 +31,7 @@ class Visitor {
     required this.declineReason,
     required this.isInside,
     required this.hasLeft,
+    required this.requestedBy,
   });
 
   Object? get name => null;
@@ -52,6 +54,7 @@ class Visitor {
     String? declineReason,
     bool? isInside,
     bool? hasLeft,
+    String? requestedBy,
   }) {
     return Visitor(
       id: id ?? this.id,
@@ -69,6 +72,7 @@ class Visitor {
       declineReason: declineReason ?? this.declineReason,
       isInside: isInside ?? this.isInside,
       hasLeft: hasLeft ?? this.hasLeft,
+      requestedBy: requestedBy ?? this.requestedBy,
     );
   }
 
@@ -92,6 +96,7 @@ class Visitor {
       declineReason: json['declineReason'],
       isInside: json['isInside'] ?? false,
       hasLeft: json['hasLeft'] ?? false,
+      requestedBy: json['requestedBy'],
     );
   }
 factory Visitor.fromJson22(Map<String, dynamic> json) {
@@ -114,6 +119,7 @@ factory Visitor.fromJson22(Map<String, dynamic> json) {
       declineReason: "reason here", // Handle null value
       isInside: json['isInside'] ?? false,
       hasLeft: json['hasLeft'] ?? false,
+      requestedBy: json['requestedBy'],
     );
   }
   Map<String, dynamic> toJson() {

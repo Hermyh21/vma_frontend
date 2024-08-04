@@ -55,7 +55,7 @@ class _InsideVisitorDetailState extends State<InsideVisitorDetail> {
                     _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
                     if (widget.visitor.bringCar)
                       _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
-                    _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => '${possession.item}: ').join(', ')),
+                    _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => '${possession.item} ').join(', ')),
                   ],
                 ),
               ),

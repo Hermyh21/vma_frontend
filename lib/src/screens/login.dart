@@ -94,6 +94,7 @@ class SignInScreen extends StatelessWidget {
                             ),
                             actions: <Widget>[
                               TextButton(
+                                
                                 onPressed: () {
                                   final email = emailTextController.text;
                                   if (email.isNotEmpty) {
@@ -107,7 +108,7 @@ class SignInScreen extends StatelessWidget {
                                   }
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Submit'),
+                                child: const Text('Submit', style: TextStyle(color: Colors.white),),
                               ),
                             ],
                           ),

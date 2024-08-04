@@ -467,6 +467,7 @@ print(editVisitorLogs);
                                 ),
                               ),
                             ),
+                            
                             Row(
                               children: <Widget>[
                                 IconButton(
@@ -499,7 +500,7 @@ print(editVisitorLogs);
                                   fullLog['declineReason'],
                                 );
                               },
-                              child: const Text("Status"),
+                              child: const Text("Check Status"),
                             ),
                           ],
                         ),

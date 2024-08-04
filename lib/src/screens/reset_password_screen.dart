@@ -27,10 +27,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           children: [
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: 'New Password'),
+              decoration: const InputDecoration(labelText: 'New Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 authService.resetPassword(
@@ -39,7 +39,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   newPassword: passwordController.text,
                 );
               },
-              child: Text('Reset Password'),
+              child: const Text('Reset Password'),
             ),
           ],
         ),

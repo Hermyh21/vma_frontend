@@ -59,7 +59,7 @@ class AuthService {
           context: context,
           response: response,
           onSuccess: () {
-            showSnackBar(context, "Account Created!");
+            showSnackBar(context, "User Created successfully!");
           },
         );
         return response.data;
@@ -107,7 +107,8 @@ class AuthService {
             final userRole = data['role'].toLowerCase();
 
             print("extracted user data: token=$token, userId=$userId, userRole=$userRole");
-
+// Update user provider with fetched user details
+          userProvider.setUser(data);
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.setString('token', data['token']);
             await prefs.setString('user', json.encode(data));
