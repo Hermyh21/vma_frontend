@@ -31,9 +31,9 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
       case '/about':
         Navigator.pushNamed(context, route);
         break;
-      case '/settings':
-        Navigator.pushNamed(context, route);
-        break;
+      //case '/settings':
+        // Navigator.pushNamed(context, route);
+        // break;
       case '/logout':
         // Handle logout here
         break;

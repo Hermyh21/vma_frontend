@@ -62,9 +62,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
         _setSelectedIndex(0);
         break;
       case '/about':
-      case '/settings':
-        Navigator.pushNamed(context, route);
-        break;
+      //case '/settings':
+        //Navigator.pushNamed(context, route);
+        //break;
       case '/logout':
       // Handle logout here
         break;

@@ -43,7 +43,9 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
 // final user = userProvider.user;
 // final requestedBy = '${user.fname} ${user.lname}, ${user.department}';
 
-
+List<PlateCode> currentCodes = [];
+List<PlateRegion> currentRegions = [];
+List<TextEditingController> numberControllers = [];
   List<String> plateRegions = [];
   List<String> plateCodes = [];
   List<Widget> plateNumberFields = [];
@@ -69,6 +71,10 @@ void  setVisitorData(Map<String, dynamic> visitorData) {
       bringCar = visitor.bringCar;
       approved = visitor.approved;
       selectedPlateNumbers = visitor.selectedPlateNumbers;
+      possessions = visitor.possessions;
+      possessionCheckedState = possessions
+      .map((possession) => true) // Set to true or false based on visitor's possessions
+      .toList();
       updateVisitorNameFields();
       updatePossessionCheckboxes();
       updatePlateNumberFields();
@@ -76,7 +82,7 @@ void  setVisitorData(Map<String, dynamic> visitorData) {
   }
   
   List<bool> possessionCheckedState = [];
- 
+  
 
   // final TextEditingController _flashDriveController = TextEditingController();
   // final TextEditingController _hardDiskController = TextEditingController();
@@ -91,6 +97,30 @@ List<Possession> possessions = [];
       
     });
   }
+
+void onPlateCodeChanged(int index, PlateCode newCode) {
+  setState(() {
+    currentCodes[index] = newCode;
+    updateSelectedPlateNumbers(index, newCode, currentRegions[index], numberControllers[index].text);
+    print("onPlateCodeChanged called for Car $index: new code ${newCode.code}");
+  });
+}
+
+void onPlateRegionChanged(int index, PlateRegion newRegion) {
+  setState(() {
+    currentRegions[index] = newRegion;
+    updateSelectedPlateNumbers(index, currentCodes[index], newRegion, numberControllers[index].text);
+    print("onPlateRegionChanged called for Car $index: new region ${newRegion.region}");
+  });
+}
+
+void onPlateNumberChanged(int index, String newNumber) {
+  setState(() {
+    updateSelectedPlateNumbers(index, currentCodes[index], currentRegions[index], newNumber);
+    print("onPlateNumberChanged called for Car $index: new number $newNumber");
+  });
+}
+
 void updatePossessionCheckboxes() {
     possessions = [];
     for (int i = 0; i < possessionCheckedState.length; i++) {
@@ -116,15 +146,24 @@ void updatePossessionCheckboxes() {
   //       return '';
   //   }
   // }
-  
+  void initializePlateNumberFields() {
+  for (int i = 0; i < numberOfCars; i++) {
+    currentCodes.add(_plateCodes.isNotEmpty ? _plateCodes[0] : PlateCode(id: '0', code: '', description: ''));
+    currentRegions.add(_plateRegions.isNotEmpty ? _plateRegions[0] : PlateRegion(id: '0', region: ''));
+    numberControllers.add(TextEditingController());
+    print("Initialized code: ${currentCodes[i].code}, region: ${currentRegions[i].region}");
+  }
+}
   bool isEditMode = false;
   @override
   void initState() {
     super.initState();
     startDate = DateTime.now();
     endDate = DateTime.now();
+    
     selectedPlateNumbers = List.filled(numberOfCars, '');
     loadData();
+    // initializePlateNumberFields();
    
     if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
       setVisitorData(widget.visitorLogs![0]);
@@ -193,115 +232,131 @@ List<PlateRegion> _plateRegions = [];
     }
     setState(() {});
   }
+  
   void updatePlateNumberFields() {
-    plateNumberFields.clear();
-    for (int i = 0; i < numberOfCars; i++) {
-      TextEditingController numberController = TextEditingController();
-      PlateCode selectedCode = _plateCodes.isNotEmpty ? _plateCodes[0] : PlateCode(id: '0', code: '', description: '');
-      PlateRegion selectedRegion = _plateRegions.isNotEmpty ? _plateRegions[0] : PlateRegion(id: '0', region: '');
+  plateNumberFields.clear();
+  numberControllers.clear();
+  currentCodes.clear();
+  currentRegions.clear();
 
-      plateNumberFields.add(
-        Padding(
-          padding: const EdgeInsets.only(left: 75.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16.0),
-              const Text('Plate Number:'),
-              Padding(
-                padding: const EdgeInsets.only(left: 75.0),
-                child: Row(
-                  children: [
-                    DropdownButton<PlateCode>(
-                      value: selectedCode,
-                      onChanged: (newValue) {
+  print("Updating Plate Number Fields");
+  for (int i = 0; i < numberOfCars; i++) {
+    TextEditingController numberController = TextEditingController();
+    numberControllers.add(numberController);
+
+    PlateCode selectedCode = _plateCodes.isNotEmpty ? _plateCodes[0] : PlateCode(id: '0', code: '', description: '');
+    PlateRegion selectedRegion = _plateRegions.isNotEmpty ? _plateRegions[0] : PlateRegion(id: '0', region: '');
+    currentCodes.add(selectedCode);
+    currentRegions.add(selectedRegion);
+
+    numberController.addListener(() {
+      onPlateNumberChanged(i, numberController.text);
+    });
+
+    print("Adding Field for Car $i with code: ${selectedCode.code}, region: ${selectedRegion.region}");
+    plateNumberFields.add(
+      Padding(
+        padding: const EdgeInsets.only(left: 75.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16.0),
+            const Text('Plate Number:'),
+            Padding(
+              padding: const EdgeInsets.only(left: 75.0),
+              child: Row(
+                children: [
+                  DropdownButton<PlateCode>(
+                    value: currentCodes[i],
+                    onChanged: (PlateCode? newValue) {
+                      if (newValue != null) {
                         setState(() {
-                          selectedCode = newValue ?? PlateCode(id: '0', code: '', description: '');
-                          updateSelectedPlateNumbers(i, selectedCode, selectedRegion, numberController.text);
+                          currentCodes[i] = newValue;
+                          onPlateCodeChanged(i, newValue);
                         });
-                      },
-                      items: _plateCodes
-                          .map((value) => DropdownMenuItem<PlateCode>(
-                                value: value,
-                                child: Text(value.code),
-                              ))
-                          .toList(),
-                    ),
-                    const SizedBox(width: 8.0),
-                    DropdownButton<PlateRegion>(
-                      value: selectedRegion,
-                      onChanged: (newValue) {
+                        print("Code changed to ${newValue.code} for Car $i");
+                      }
+                    },
+                    items: _plateCodes.map((value) => DropdownMenuItem<PlateCode>(
+                      value: value,
+                      child: Text(value.code),
+                    )).toList(),
+                  ),
+                  const SizedBox(width: 8.0),
+                  DropdownButton<PlateRegion>(
+                    value: currentRegions[i],
+                    onChanged: (PlateRegion? newValue) {
+                      if (newValue != null) {
                         setState(() {
-                          selectedRegion = newValue ?? PlateRegion(id: '0', region: '');
-                          updateSelectedPlateNumbers(i, selectedCode, selectedRegion, numberController.text);
+                          currentRegions[i] = newValue;
+                          onPlateRegionChanged(i, newValue);
                         });
-                      },
-                      items: _plateRegions
-                          .map((value) => DropdownMenuItem<PlateRegion>(
-                                value: value,
-                                child: Text(value.region),
-                              ))
-                          .toList(),
-                    ),
-                    const SizedBox(width: 8.0),
-                    SizedBox(
-                      width: 100.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        child: TextFormField(
-                          controller: numberController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                            LengthLimitingTextInputFormatter(7),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              updateSelectedPlateNumbers(i, selectedCode, selectedRegion, value);
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 8.0,
-                              horizontal: 12.0,
-                            ),
-                            border: InputBorder.none,
+                        print("Region changed to ${newValue.region} for Car $i");
+                      }
+                    },
+                    items: _plateRegions.map((value) => DropdownMenuItem<PlateRegion>(
+                      value: value,
+                      child: Text(value.region),
+                    )).toList(),
+                  ),
+                  const SizedBox(width: 8.0),
+                  SizedBox(
+                    width: 100.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                      child: TextFormField(
+                        controller: numberController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          LengthLimitingTextInputFormatter(7),
+                        ],
+                        onChanged: (String value) {
+                          setState(() {
+                            updateSelectedPlateNumbers(i, currentCodes[i], currentRegions[i], value);
+                          });
+                          print("Number changed to $value for Car $i");
+                        },
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 8.0,
+                            horizontal: 12.0,
                           ),
+                          border: InputBorder.none,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
-
+}
   void updateSelectedPlateNumbers(int index, PlateCode code, PlateRegion region, String number) {
-    if (index < selectedPlateNumbers.length) {
-      selectedPlateNumbers[index] = '${code.code}-${region.region}-$number';
-    } else {
-      selectedPlateNumbers.add('${code.code}-${region.region}-$number');
-    }
+  final combinedPlateNumber = '${code.code}-${region.region}-$number';
+  if (index < selectedPlateNumbers.length) {
+    selectedPlateNumbers[index] = combinedPlateNumber;
+    print("Updated Plate Number for Car $index: $combinedPlateNumber");
+  } else {
+    selectedPlateNumbers.add(combinedPlateNumber);
+    print("Added Plate Number for Car $index: $combinedPlateNumber");
   }
+}
+
+
+
   void addVisitor({Visitor? visitor}) async {
   print("visitor names: ..");
   print(visitor?.names);
   try {
     final visitorService = VisitorService();
-    // final List<String> items = [
-    //   'Flash Drive',
-    //   'Hard Disk',
-    //   'Laptop',
-    //   'Tablet',
-    //   'Mobile Phones'
-    // ];
     final List<Possession> fetchedPossessions = await ApiService.fetchPossessions();
     final List<String> names =
         visitorControllers.map((controller) => controller.text).toList();
