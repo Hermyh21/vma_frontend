@@ -144,16 +144,27 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       print("datattttt");
 print(editVisitorLogs);
 
-      final editedLog = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
-        ),
-      );
+      // final editedLog = await Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
+      //   ),
+      // );
 
-      if (editedLog != null) {
-        _showVisitorLogs(_selectedDate);
-      }
+      // if (editedLog != null) {
+      //   _showVisitorLogs(_selectedDate);
+      // }
+      final bool? result = await Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ManageVisitorsScreen(visitorLogs: editVisitorLogs),
+  ),
+);
+
+if (result == true) {
+  _showVisitorLogs(_selectedDate); // Refresh the logs if the update was successful
+}
+
 
     } catch (e) {
       print('Failed to fetch visitor details: $e');

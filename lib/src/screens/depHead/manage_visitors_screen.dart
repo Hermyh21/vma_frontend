@@ -374,7 +374,7 @@ List<PlateRegion> _plateRegions = [];
             item: item,
           );
         }).toList();
-    final visitor = Visitor(
+    final newVisitor = Visitor(
       numberOfVisitors: numberOfVisitors,
       names: names,
       purpose: purposeController.text,
@@ -391,36 +391,38 @@ List<PlateRegion> _plateRegions = [];
       requestedBy: requestedBy,
     );
   
-  if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
-      Visitor  vis = Visitor.fromJson22(widget.visitorLogs![0]);
+    if (widget.visitorLogs != null && widget.visitorLogs!.isNotEmpty) {
+      Visitor vis = Visitor.fromJson22(widget.visitorLogs![0]);
       print("Updating visitor of id before check: ${vis.id}");
 
-    if (vis.id != null) {
-      print("Updating visitor of id: ${vis.id}");
-      // Update existing visitor
-      await visitorService.updateVisitor(
-        context: context,
-        visitorId: vis.id!,
-        names: names,
-        purpose: purposeController.text,
-        startDate: startDate,
-        endDate: endDate,
-        bringCar: bringCar,
-        selectedPlateNumbers: selectedPlateNumbers,
-        possessions: possessions,
-        numberOfVisitors: numberOfVisitors,
-        approved: approved,
-        declined: visitor.declined,
-        declineReason: visitor.declineReason,
-        isInside: visitor.isInside,
-        hasLeft: visitor.hasLeft,
-        requestedBy: visitor.requestedBy!,
-      );
+      if (vis.id != null) {
+        print("Updating visitor of id: ${vis.id}");
+        // Update existing visitor
+        await visitorService.updateVisitor(
+          context: context,
+          visitorId: vis.id!,
+          names: names,
+          purpose: purposeController.text,
+          startDate: startDate,
+          endDate: endDate,
+          bringCar: bringCar,
+          selectedPlateNumbers: selectedPlateNumbers,
+          possessions: possessions,
+          numberOfVisitors: numberOfVisitors,
+          approved: approved,
+          declined: newVisitor.declined,
+          declineReason: newVisitor.declineReason,
+          isInside: newVisitor.isInside,
+          hasLeft: newVisitor.hasLeft,
+          requestedBy: newVisitor.requestedBy!,
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor updated')),
-      );
-    }} else {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Visitor updated')),
+        // );
+        Navigator.pop(context, true);
+      }
+    } else {
       print("Adding new visitor");
       // Add new visitor
       await visitorService.createVisitor(
@@ -433,18 +435,18 @@ List<PlateRegion> _plateRegions = [];
         selectedPlateNumbers: selectedPlateNumbers,
         possessions: possessions,
         numberOfVisitors: numberOfVisitors,
-        approved: false, 
+        approved: false,
         declined: false,
         declineReason: '',
         hasLeft: false,
         isInside: false,
         requestedBy: requestedBy,
-
       );
 
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Request sent')),
-      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Visitor added')),
+      );
+      Navigator.pop(context, true);
     }
 
     // Clear form fields
@@ -464,6 +466,7 @@ List<PlateRegion> _plateRegions = [];
     print('Failed to send request: $e');
   }
 }
+
 
   Widget build(BuildContext context) {
    if (isEditMode && widget.visitorLogs != null) {
