@@ -104,13 +104,13 @@ class _InsideTheCompoundState extends State<InsideTheCompound> {
     super.dispose();
   }
 
-  void _onVisitorNameTap(String visitorId) {
+  void _onVisitorNameTap(String visitorId) async {
     print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.id == visitorId, 
     );
     try {
-      final result= Navigator.push(
+      final result= await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => InsideVisitorDetail(visitor: visitor),

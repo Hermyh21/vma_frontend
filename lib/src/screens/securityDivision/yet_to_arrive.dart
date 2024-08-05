@@ -100,21 +100,21 @@ class _YetToArriveState extends State<YetToArrive> {
     super.dispose();
   }
 
-  void _onVisitorNameTap(String visitorId) {
+  void _onVisitorNameTap(String visitorId) async {
     print("Visitor name tapped: $visitorId");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.id == visitorId, 
     );
     try {
-     Navigator.push(
+     final bool? result= await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => CheckVisitorScreen(visitor: visitor),
         ),
       );
-      //  if (result == true) {
-      //   _showVisitorLogs(_selectedDate); 
-      // }
+       if (result == true) {
+        _showVisitorLogs(_selectedDate); 
+      }
     } catch (e, stackTrace) {
       print("Error navigating to VisitorDetailPage: $e");
       print(stackTrace);

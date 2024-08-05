@@ -139,6 +139,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Visitor approved successfully')),
       );
+      Navigator.pop(context, true);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to approve visitor: $error')),
@@ -198,6 +199,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content:  Text('Visitor declined successfully')),
       );
+      Navigator.pop(context, true);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to decline visitor: $error')),

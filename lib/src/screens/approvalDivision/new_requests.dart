@@ -171,18 +171,23 @@ Future<String?> _showDeclineDialog() async {
 }
 
 
-  void _onVisitorNameTap(String visitorId) {
+  void _onVisitorNameTap(String visitorId) async {
     print("Visitor id tapped: $visitorId");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.id == visitorId, 
     );
     try {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VisitorDetailScreen(visitor: visitor),
-        ),
-      );
+      final bool? result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisitorDetailScreen(visitor: visitor),
+      ),
+    );
+
+    if (result == true) {
+      // Refresh the visitor logs if the result is true
+      _showVisitorLogs(_selectedDate);
+    }
     } catch (e, stackTrace) {
       print("Error navigating to VisitorDetailPage: $e");
       print(stackTrace);
@@ -254,12 +259,12 @@ Future<String?> _showDeclineDialog() async {
                                   ),
                                 ),
                                 const SizedBox(height: 4.0), // Space between name and requestedBy
-                                Text(
-                                  'Requested By: ${log['requestedBy']}',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
+                                // Text(
+                                //   'Requested By: ${log['requestedBy']}',
+                                //   style: const TextStyle(
+                                //     color: Colors.grey,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),

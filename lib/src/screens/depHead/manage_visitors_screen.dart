@@ -443,9 +443,9 @@ List<PlateRegion> _plateRegions = [];
         requestedBy: requestedBy,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Visitor added')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Visitor added')),
+      // );
       Navigator.pop(context, true);
     }
 

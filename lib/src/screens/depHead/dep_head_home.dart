@@ -190,7 +190,7 @@ if (result == true) {
         if (approved) {
           return AlertDialog(
             title: const Text("Status"),
-            content: const Text("Visitor is approved."),
+            content: const Text("Request has been approved."),
             actions: [
               TextButton(
                 child: const Text("OK"),
@@ -202,7 +202,8 @@ if (result == true) {
           );
         } else if (declined) {
           return AlertDialog(
-            title: const Text("Decline Reason"),
+            title: const Text("Sorry, request declined. /n Decline Reason"),
+        
             content: Text(declineReason ?? "No reason provided."),
             actions: [
               TextButton(
@@ -345,13 +346,17 @@ if (result == true) {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+
+                      final bool? feedback= await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ManageVisitorsScreen(visitorLogs: []),
                         ),
                       );
+                      if (feedback == true) {
+  _showVisitorLogs(_selectedDate); // Refresh the logs if the update was successful
+}
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
