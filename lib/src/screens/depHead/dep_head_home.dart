@@ -62,6 +62,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
         _setSelectedIndex(0);
         break;
       case '/about':
+        Navigator.pushNamed(context, route);
       //case '/settings':
         //Navigator.pushNamed(context, route);
         //break;
@@ -76,13 +77,16 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       _selectedIndex = index;
     });
   }
-
+bool approved = false;
+bool declined = false;
   Future<void> _showVisitorLogs(DateTime day) async {
     try {
       final logs = await ApiService.fetchVisitorLogs(day);
 
       setState(() {
         visitorLogs = logs.map((log) {
+          approved = log.approved; // Set the status here
+        declined = log.declined; 
           return {
             'id': log.id.toString(),
             'name': log.names.join(', '), //
@@ -134,7 +138,7 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
             'endDate': log.endDate.toString(),
             'bringCar': log.bringCar.toString(),
             'selectedPlateNumbers': log.selectedPlateNumbers.toString(),
-            'possessions': possessions.join(', '),
+            'possessions': possessions.map((possession) => possession['item']).join(', ').toString(),
             // 'approved': log.approved.toString(),
             // 'declined': log.declined.toString(),
 
@@ -202,9 +206,21 @@ if (result == true) {
           );
         } else if (declined) {
           return AlertDialog(
-            title: const Text("Sorry, request declined. /n Decline Reason"),
-        
-            content: Text(declineReason ?? "No reason provided."),
+  title: const Text("Sorry, request has been declined.", style: TextStyle(fontSize: 18,)),
+  content: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      const Text(
+        "Decline Reason:",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Text(declineReason ?? "No reason provided."),
+      const SizedBox(height: 8.0), // Add some space between the text and subtitle
+      
+    ],
+  ),
             actions: [
               TextButton(
                 child: const Text("OK"),
@@ -452,6 +468,11 @@ if (result == true) {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: filteredVisitorLogs.map((log) {
+                  // Retrieve `approved` and `declined` status from fullVisitorLogs
+                final fullLog = fullVisitorLogs.firstWhere(
+                    (visitorLog) => visitorLog['id'] == log['id']);
+                final bool isApproved = fullLog['approved'] == 'true';
+                final bool isDeclined = fullLog['declined'] == 'true';
                   return Container(
                     padding: const EdgeInsets.all(10.0),
                     margin: const EdgeInsets.symmetric(vertical: 4.0),
@@ -483,15 +504,17 @@ if (result == true) {
                                 ),
                               ),
                             ),
-                            
+                            if (!isApproved && !isDeclined)
                             Row(
                               children: <Widget>[
+                                if (!approved && !declined)
                                 IconButton(
                                   icon: const Icon(Icons.edit, color: Colors.blue),
                                   onPressed: () {
                                     _onEditVisitor(log['id']!);
                                   },
                                 ),
+                                if (!approved && !declined)
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () {
@@ -511,8 +534,8 @@ if (result == true) {
                                     (visitorLog) => visitorLog['id'] == log['id']);
                                 _requestStatus(
                                   fullLog['id']!,
-                                  fullLog['approved'] == 'true',
-                                  fullLog['declined'] == 'true',
+                                  isApproved,
+                                isDeclined,
                                   fullLog['declineReason'],
                                 );
                               },

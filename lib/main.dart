@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) =>const SignInApp(),             
         '/about': (context) => AboutPage(),
-        '/settings': (context) => const SettingsPage(),
+        // '/settings': (context) => const SettingsPage(),
         '/admin': (context) => AdminDashboard(),
         '/approval_div': (context) => ApprovalDivision(),
         '/dep_head': (context) => DepartmentHeadsPage(),

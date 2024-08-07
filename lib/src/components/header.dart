@@ -36,7 +36,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         if (MediaQuery.of(context).size.width > 600) ...[
           _buildTextButton('Home', () => onNavigate('/')),
           _buildTextButton('About', () => onNavigate('/about')),
-          _buildTextButton('Settings', () => onNavigate('/settings')),
+          // _buildTextButton('Settings', () => onNavigate('/settings')),
           TextButton(
             onPressed: () => signOutUser(context),
             child: const Text(
@@ -63,8 +63,8 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                 const PopupMenuItem<String>(value: '/', child: Text('Home')),
                 const PopupMenuItem<String>(
                     value: '/about', child: Text('About')),
-                const PopupMenuItem<String>(
-                    value: '/settings', child: Text('Settings')),
+                // const PopupMenuItem<String>(
+                //     value: '/settings', child: Text('Settings')),
                 const PopupMenuItem<String>(
                     value: '/logout', child: Text('Log Out')),
               ],

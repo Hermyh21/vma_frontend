@@ -30,6 +30,7 @@ class ManageVisitorsScreenState extends State<ManageVisitorsScreen> {
   int numberOfVisitors = 1;
   List<TextEditingController> visitorControllers = [];
   List<Widget> visitorNameFields = [];
+  List<String> possessionsList=[];
   Map<String, dynamic>? _visitorLog;
   bool bringCar = false;
   bool approved = false;
@@ -55,12 +56,40 @@ List<TextEditingController> numberControllers = [];
   late Visitor visitor;
 
 void  setVisitorData(Map<String, dynamic> visitorData) {
-
+  
     visitor = Visitor.fromJson22(visitorData);
    print("objecttttt");
-    print(visitor.id);
-    //v_id = visitorData.id;
-    print(visitor.names);
+   String split = visitorData['possessions'].toString(); // Use direct access to possessions field
+  print('split: $split');
+
+  if (split.isNotEmpty) {
+    possessionsList = split.split(',').map((item) => item.trim()).toList();
+  } else {
+    possessionsList = [];
+  }
+  print('possessionsList: $possessionsList');
+   // Initialize possessionCheckedState based on possessions in visitor data
+  possessionCheckedState = possessionsList.map((item) {
+    return visitor.possessions.any((possession) => possession.item == item);
+  }).toList();
+    // var split = visitorData.toString().split("possessions:")[1];
+    // if(split.isNotEmpty){
+    //   split = split.toString().split("}")[0];
+    // }    
+    // print('split: ${split}');
+    // possessionsList = split.split(',').map((item) => item.trim()).toList();
+    // //v_id = visitorData.id;
+    // print('possessionsList: ${possessionsList}');
+
+    //possessionCheckedState
+    for (int i = 0; i < possessionsList.length; i++) {
+      //possessionCheckedState[i] = true;
+    }
+// for (int i = 0; i < possessionCheckedState.length; i++) {
+//     if (possessionCheckedState[i]) {
+//       possessions.add(Possession(id: '', item: possessions[i].item));
+//     }
+//   }
     setState(() {
       id = visitor.id;
       startDate = visitor.startDate;
@@ -81,19 +110,22 @@ void  setVisitorData(Map<String, dynamic> visitorData) {
     });
   }
   
+  
   List<bool> possessionCheckedState = [];
   
-
-  // final TextEditingController _flashDriveController = TextEditingController();
-  // final TextEditingController _hardDiskController = TextEditingController();
-  // final TextEditingController _laptopController = TextEditingController();
-  // final TextEditingController _tabletController = TextEditingController();
-  // final TextEditingController _mobilePhonesController = TextEditingController();
 List<Possession> possessions = [];
+  
   void handlePossessionCheckboxChange(int index, bool newValue) {
+    print("handlePossessionCheckboxChange");
     setState(() {
       possessionCheckedState[index] = newValue;
-
+//  if (newValue) {
+//       // Add possession if checked
+//       possessions.add(Possession(id: '', item: possessionsList[index]));
+//     } else {
+//       // Remove possession if unchecked
+//       possessions.removeWhere((possession) => possession.item == possessionsList[index]);
+//     }
       
     });
   }
@@ -123,29 +155,23 @@ void onPlateNumberChanged(int index, String newNumber) {
 
 void updatePossessionCheckboxes() {
     possessions = [];
+    print("updatePossessionCheckboxes is called");
+    
     for (int i = 0; i < possessionCheckedState.length; i++) {
-      if (possessionCheckedState[i]) {
-        possessions.add(Possession(id: '', item: possessions[i].item));
-      }
+    if (possessionCheckedState[i]) {
+      possessions.add(Possession(id: '', item: possessions[i].item));
     }
+   
+  print("Final possessions: $possessions");
+
   }
-  
-  // String getPossessionName(int index) {
-  //   switch (index) {
-  //     case 0:
-  //       return 'Flash Drive';
-  //     case 1:
-  //       return 'Hard Disk';
-  //     case 2:
-  //       return 'Laptop';
-  //     case 3:
-  //       return 'Tablet';
-  //     case 4:
-  //       return 'Mobile Phones';
-  //     default:
-  //       return '';
+  //  for (int i = 0; i < possessionCheckedState.length; i++) {
+  //   if (possessionCheckedState[i]) {
+  //     possessions.add(Possession(id: '', item: possessionsList[i]));
   //   }
   // }
+  }
+  
   void initializePlateNumberFields() {
   for (int i = 0; i < numberOfCars; i++) {
     currentCodes.add(_plateCodes.isNotEmpty ? _plateCodes[0] : PlateCode(id: '0', code: '', description: ''));
@@ -349,9 +375,6 @@ List<PlateRegion> _plateRegions = [];
     print("Added Plate Number for Car $index: $combinedPlateNumber");
   }
 }
-
-
-
   void addVisitor({Visitor? visitor}) async {
   print("visitor names: ..");
   print(visitor?.names);
@@ -396,7 +419,7 @@ List<PlateRegion> _plateRegions = [];
       print("Updating visitor of id before check: ${vis.id}");
 
       if (vis.id != null) {
-        print("Updating visitor of id: ${vis.id}");
+        print("Updating visitor of id: ${vis.possessions}");
         // Update existing visitor
         await visitorService.updateVisitor(
           context: context,

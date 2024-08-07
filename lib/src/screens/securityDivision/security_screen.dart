@@ -40,7 +40,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         _setSelectedIndex(0);
         break;
       case '/about':
-      //case '/settings':
+        Navigator.pushNamed(context, route);
         //Navigator.pushNamed(context, route);
         //break;
       case '/logout':
