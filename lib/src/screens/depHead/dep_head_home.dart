@@ -7,7 +7,9 @@ import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
-
+import 'package:vma_frontend/src/screens/admin/visitor_detail_page.dart';
+import 'package:vma_frontend/src/about.dart';
+import 'package:vma_frontend/src/services/auth_services.dart';
 class DepartmentHeadsPage extends StatefulWidget {
   @override
   _DepartmentHeadsPageState createState() => _DepartmentHeadsPageState();
@@ -46,7 +48,9 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
       });
     });
   }
-
+ void logoutUser(BuildContext context) {
+    AuthService().logout(context);
+  }
   @override
   void dispose() {
     final socketService = Provider.of<SocketService>(context, listen: false);
@@ -62,12 +66,14 @@ class _DepartmentHeadsPageState extends State<DepartmentHeadsPage> {
         _setSelectedIndex(0);
         break;
       case '/about':
-        Navigator.pushNamed(context, route);
-      //case '/settings':
-        //Navigator.pushNamed(context, route);
-        //break;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AboutPage()), // Navigate to About screen
+        );
+        break;
+      
       case '/logout':
-      // Handle logout here
+        logoutUser(context);
         break;
     }
   }
@@ -212,6 +218,7 @@ if (result == true) {
     children: [
       
       Text(declineReason ?? "No reason provided."),
+
       const SizedBox(height: 8.0), // Add some space between the text and subtitle
       
     ],
@@ -280,9 +287,27 @@ if (result == true) {
     );
   }
 
-  void _onVisitorNameTap(List<String> visitorName) {
-    print("Visitor name tapped: $visitorName");
+  void _onVisitorNameTap(String visitorId) {
+    print("Visitor id tapped: $visitorId");
+    final visitor = visitors.firstWhere(
+      (visitor) => visitor.id == visitorId, 
+    );
+   
+
+    try{
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => VisitorDetailPage(visitor: visitor),
+    ),
+  );
+} catch (e, stackTrace) {
+  print("Error navigating to VisitorDetailPage: $e");
+  print(stackTrace);
+}
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -490,7 +515,7 @@ if (result == true) {
   children: <Widget>[
     Expanded(
       child: GestureDetector(
-        onTap: () => _onVisitorNameTap([log['name']!]),
+        onTap: () => _onVisitorNameTap(log['id']!),
         child: Text(
           log['name']!,
           style: TextStyle(

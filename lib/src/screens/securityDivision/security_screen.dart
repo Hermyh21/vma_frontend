@@ -5,7 +5,8 @@ import 'package:vma_frontend/src/components/header.dart';
 import 'package:vma_frontend/src/screens/securityDivision/yet_to_arrive.dart';
 import 'package:vma_frontend/src/screens/securityDivision/already_left.dart';
 import 'package:vma_frontend/src/screens/securityDivision/inside_the_compound.dart';
-
+import 'package:vma_frontend/src/about.dart';
+import 'package:vma_frontend/src/services/auth_services.dart';
 class SecurityScreen extends StatefulWidget {
   @override
   _SecurityScreenState createState() => _SecurityScreenState();
@@ -27,7 +28,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
   void initState() {
     super.initState();
   }
-
+void logoutUser(BuildContext context) {
+    AuthService().logout(context);
+  }
   void _setSelectedIndex(int index) {
     setState(() {
       _selectedIndex = index;
@@ -39,12 +42,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
       case '/':
         _setSelectedIndex(0);
         break;
-      case '/about':
-        Navigator.pushNamed(context, route);
-        //Navigator.pushNamed(context, route);
-        //break;
+     case '/about':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AboutPage()), // Navigate to About screen
+        );
+        break;
+      
       case '/logout':
-        // Handle logout here
+        logoutUser(context);
         break;
     }
   }

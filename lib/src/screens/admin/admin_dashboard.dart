@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../components/header.dart';
+import 'package:vma_frontend/src/components/header.dart';
 import 'package:vma_frontend/src/screens/admin/create_users_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/screens/admin/tasks.dart';
-
+import 'package:vma_frontend/src/about.dart';
+import 'package:vma_frontend/src/services/auth_services.dart';
 class AdminDashboard extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
@@ -17,20 +18,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const CreateUserScreen(),
     
   ];
-
+ void logoutUser(BuildContext context) {
+    AuthService().logout(context);
+  }
   void _onNavigate(String route) {
     switch (route) {
       case '/':
         _setSelectedIndex(0);
         break;
       case '/about':
-        Navigator.pushNamed(context, route);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AboutPage()), // Navigate to About screen
+        );
         break;
-      // case '/settings':
-      //   Navigator.pushNamed(context, route);
-      //   break;
+      
       case '/logout':
-        // Handle logout here
+        logoutUser(context);
         break;
     }
   }

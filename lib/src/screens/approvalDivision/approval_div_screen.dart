@@ -6,7 +6,8 @@ import 'package:vma_frontend/src/screens/approvalDivision/declined_requests.dart
 import 'package:vma_frontend/src/screens/approvalDivision/new_requests.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
+import 'package:vma_frontend/src/services/auth_services.dart';
+import 'package:vma_frontend/src/about.dart';
 class ApprovalDivision extends StatefulWidget {
   @override
   _ApprovalDivisionState createState() => _ApprovalDivisionState();
@@ -19,7 +20,9 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
     ApprovedRequests(),
     DeclinedRequestsScreen(),
   ];
-
+void logoutUser(BuildContext context) {
+    AuthService().logout(context);
+  }
   final TextEditingController searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -29,13 +32,14 @@ class _ApprovalDivisionState extends State<ApprovalDivision> {
         _setSelectedIndex(0);
         break;
       case '/about':
-        Navigator.pushNamed(context, route);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AboutPage()), // Navigate to About screen
+        );
         break;
-      //case '/settings':
-        // Navigator.pushNamed(context, route);
-        // break;
+      
       case '/logout':
-        // Handle logout here
+        logoutUser(context);
         break;
     }
   }

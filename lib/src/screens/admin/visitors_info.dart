@@ -104,7 +104,7 @@ void _visitorStatus(){
   }
 
   void _onVisitorNameTap(String visitorId) {
-    print("Visitor name tapped: $visitorId");
+    print("Visitor id tapped: $visitorId");
     final visitor = visitors.firstWhere(
       (visitor) => visitor.id == visitorId, 
     );

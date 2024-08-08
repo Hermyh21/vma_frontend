@@ -27,7 +27,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(
           Icons.chevron_left,
-          color: Colors.white,
+          color: Colors.transparent,
           size: 30,
         ),
         onPressed: () => Navigator.of(context).pop(),

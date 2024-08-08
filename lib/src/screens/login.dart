@@ -108,7 +108,7 @@ class SignInScreen extends StatelessWidget {
                                   }
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Submit', style: TextStyle(color: Colors.white),),
+                                child: const Text('Submit', style: TextStyle(color: Colors.black),),
                               ),
                             ],
                           ),
