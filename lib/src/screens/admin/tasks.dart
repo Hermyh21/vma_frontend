@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
-
+import 'package:vma_frontend/src/screens/admin/plate_numbers.dart';
+import 'package:vma_frontend/src/screens/admin/possessions.dart';
+import 'package:vma_frontend/src/screens/admin/user_count.dart';
+import 'package:vma_frontend/src/screens/admin/department.dart';
 class TasksPage extends StatelessWidget {
   const TasksPage({Key? key}) : super(key: key);
 
-  void _onNavigate(BuildContext context, String route) {
-    Navigator.pushNamed(context, route);
-  }
+  // void _onNavigate(BuildContext context, String route) {
+  //   Navigator.pushNamed(context, route);
+  // }
+void _onNavigate(BuildContext context, Widget page) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => page),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +30,25 @@ class TasksPage extends StatelessWidget {
               title: 'Allowed Plate Numbers',
               icon: Icons.car_rental,
               color: Colors.white,
-              onTap: () => _onNavigate(context, '/allowedPlateNumbers'),
+              onTap: () => _onNavigate(context, const AllowedPlateNumbersPage()),
             ),
             TaskCard(
               title: 'Allowed Possessions',
               icon: Icons.security,
               color: Colors.white,
-              onTap: () => _onNavigate(context, '/allowedPossessions'),
+              onTap: () => _onNavigate(context, const AllowedPossessionsPage()),
             ),
             TaskCard(
               title: 'Manage Departments',
               icon: Icons.business,
               color: const Color.fromARGB(255, 139, 139, 204),
-              onTap: () => _onNavigate(context, '/departments'),
+              onTap: () => _onNavigate(context, const DepartmentsPage()),
             ),
             TaskCard(
               title: 'Users Information',
               icon: Icons.person,
               color: Colors.white,
-              onTap: () => _onNavigate(context, '/userCount'),
+              onTap: () => _onNavigate(context, UserCount()),
             ),
           ],
         ),

@@ -242,9 +242,13 @@ class AuthService {
     final navigator = Navigator.of(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
-    // Clear the token from SharedPreferences
-    await prefs.remove('token');
-    await prefs.remove('user');
+    // Retrieve the token from SharedPreferences
+    String? token = prefs.getString('token');
+print('Token: $token');
+    if (token == null) {
+      showSnackBar(context, 'No token found, authorization denied');
+      return;
+    }
 
     // Optional: Make a request to the backend logout endpoint
     Response response = await dio.post(
@@ -252,12 +256,17 @@ class AuthService {
       options: Options(
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token,  // Include the token in the header
         },
       ),
     );
 
     // Check if the response is successful
     if (response.statusCode == 200) {
+      // Clear the token and user data from SharedPreferences
+      await prefs.remove('token');
+      await prefs.remove('user');
+
       // Clear the user data from UserProvider if needed
       var userProvider = Provider.of<UserProvider>(context, listen: false);
       userProvider.setUser(null);  // Update UserProvider with null

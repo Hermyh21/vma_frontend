@@ -198,7 +198,7 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
         fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content:  Text('Visitor declined successfully')),
+        const SnackBar(content:  Text('Request declined successfully')),
       );
       Navigator.pop(context, true);
     } catch (error) {

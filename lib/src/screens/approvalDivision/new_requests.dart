@@ -156,11 +156,11 @@ Future<String?> _showDeclineDialog() async {
         fullVisitorLogs.removeWhere((log) => log['id'] == visitorId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content:  Text('Visitor declined successfully')),
+        const SnackBar(content:  Text('Request declined successfully')),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to decline visitor: $error')),
+        SnackBar(content: Text('Failed to decline request: $error')),
       );
     }
   } else {
