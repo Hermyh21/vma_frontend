@@ -30,10 +30,10 @@ class TasksPage extends StatelessWidget {
               onTap: () => _onNavigate(context, '/allowedPossessions'),
             ),
             TaskCard(
-              title: 'Visitors Log',
-              icon: Icons.group,
-              color: Color.fromARGB(255, 139, 139, 204),
-              onTap: () => _onNavigate(context, '/visitorsInfo'),
+              title: 'Manage Departments',
+              icon: Icons.business,
+              color: const Color.fromARGB(255, 139, 139, 204),
+              onTap: () => _onNavigate(context, '/departments'),
             ),
             TaskCard(
               title: 'Users Information',

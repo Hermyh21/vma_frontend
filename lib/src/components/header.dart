@@ -9,8 +9,8 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
 
   Header({Key? key, required this.onNavigate}) : super(key: key);
 
-  void signOutUser(BuildContext context) {
-    AuthService().signOut(context);
+  void logoutUser(BuildContext context) {
+    AuthService().logout(context);
   }
 
   @override
@@ -38,7 +38,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           _buildTextButton('About', () => onNavigate('/about')),
           // _buildTextButton('Settings', () => onNavigate('/settings')),
           TextButton(
-            onPressed: () => signOutUser(context),
+            onPressed: () => logoutUser(context),
             child: const Text(
               'Log Out',
               style: TextStyle(
@@ -54,7 +54,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.menu, color: Colors.white),
               onSelected: (String value) {
                 if (value == '/logout') {
-                  signOutUser(context);
+                  logoutUser(context);
                 } else {
                   onNavigate(value);
                 }

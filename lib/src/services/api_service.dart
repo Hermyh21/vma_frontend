@@ -5,6 +5,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:vma_frontend/src/models/possessions.dart';
+import 'package:vma_frontend/src/models/departments.dart';
 class ApiService {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -408,5 +409,58 @@ static Future<void> deletePlateCode(String id) async {
     throw Exception('Failed to delete possession: $e');
   }
 }
+// Method to fetch all departments
+  static Future<List<Department>> fetchDepartments() async {
+    try {
+      final response = await _dio.get('/api/departments');
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => Department.fromMap(json)).toList();
+      } else {
+        throw Exception('Failed to load departments');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch departments: $e');
+    }
+  }
 
+  // Method to create a new department
+  static Future<Department> createDepartment(Department department) async {
+    try {
+      final response = await _dio.post('/api/departments', data: department.toMap());
+      if (response.statusCode == 201) {
+        return Department.fromMap(response.data);
+      } else {
+        throw Exception('Failed to create department');
+      }
+    } catch (e) {
+      throw Exception('Failed to create department: $e');
+    }
+  }
+
+  // Method to update an existing department
+  static Future<Department> updateDepartment(String id, Department department) async {
+    try {
+      final response = await _dio.put('/api/departments/$id', data: department.toMap());
+      if (response.statusCode == 200) {
+        return Department.fromMap(response.data);
+      } else {
+        throw Exception('Failed to update department');
+      }
+    } catch (e) {
+      throw Exception('Failed to update department: $e');
+    }
+  }
+
+  // Method to delete a department
+  static Future<void> deleteDepartment(String id) async {
+    try {
+      final response = await _dio.delete('/api/departments/$id');
+      if (response.statusCode != 204) {
+        throw Exception('Failed to delete department');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete department: $e');
+    }
+  }
 }

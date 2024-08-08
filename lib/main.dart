@@ -9,10 +9,9 @@ import 'package:vma_frontend/src/screens/approvalDivision/approval_div_screen.da
 import 'package:vma_frontend/src/screens/depHead/dep_head_home.dart';
 import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 import 'package:vma_frontend/src/screens/login.dart';
-
+import 'package:vma_frontend/src/screens/admin/department.dart';
 import 'package:vma_frontend/src/screens/securityDivision/security_screen.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
-import 'package:vma_frontend/src/settings_page.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:vma_frontend/src/screens/admin/plate_numbers.dart';
 import 'package:vma_frontend/src/screens/admin/possessions.dart';
@@ -69,7 +68,7 @@ class _MyAppState extends State<MyApp> {
         '/manage_visitors': (context) => const ManageVisitorsScreen(),
         '/create_users': (context) => const CreateUserScreen(),
         '/security': (context) => SecurityScreen(),
-                     
+      '/departments':(context) => const DepartmentsPage(),               
       '/allowedPlateNumbers': (context) => const AllowedPlateNumbersPage(),
       '/allowedPossessions': (context) => const AllowedPossessionsPage(),
       '/visitorsInfo': (context) => VisitorsInfo(),

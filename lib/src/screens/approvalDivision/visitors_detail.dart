@@ -8,7 +8,7 @@ import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:dio/dio.dart';
 
 class VisitorDetailScreen extends StatefulWidget {
-  final Visitor visitor;
+ final Visitor visitor;
 
   const VisitorDetailScreen({Key? key, required this.visitor}) : super(key: key);
 
@@ -92,7 +92,8 @@ class _VisitorDetailScreenState extends State<VisitorDetailScreen> {
                     _buildDetailTile(Icons.calendar_today, 'Start Date', DateFormat('yyyy-MM-dd').format(widget.visitor.startDate)),
                     _buildDetailTile(Icons.calendar_today, 'End Date', DateFormat('yyyy-MM-dd').format(widget.visitor.endDate)),
                     _buildDetailTile(Icons.directions_car, 'Bring Car', widget.visitor.bringCar ? "Yes" : "No"),
-                    _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
+                    if(widget.visitor.bringCar)
+                      _buildDetailTile(Icons.confirmation_number, 'Plate Numbers', widget.visitor.selectedPlateNumbers.join(', ')),
                     _buildDetailTile(Icons.inventory, 'Possessions', widget.visitor.possessions.map((possession) => possession.item).join(', ')),
                   ],
                 ),

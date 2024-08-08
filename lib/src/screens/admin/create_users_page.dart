@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-
+import 'package:vma_frontend/src/models/departments.dart';
+import 'package:vma_frontend/src/services/api_service.dart';
 class CreateUserScreen extends StatefulWidget {
   const CreateUserScreen({Key? key}) : super(key: key);
 
@@ -18,7 +19,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final TextEditingController _phonenumberController = TextEditingController();
   final TextEditingController _departmentController = TextEditingController();
   String? _selectedRole;
-
+  String? _selectedDepartment;
   final AuthService authService = AuthService();
   final List<String> _roles = [
     'Admin',
@@ -26,7 +27,22 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     'Approval Division',
     'Head of Department'
   ];
-
+ List<Department> _departments = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchDepartments();
+  }
+Future<void> _fetchDepartments() async {
+    try {
+      final departments = await ApiService.fetchDepartments();
+      setState(() {
+        _departments = departments;
+      });
+    } catch (e) {
+      print('Failed to fetch departments: $e');
+    }
+  }
   void _clearFormFields() {
     _emailController.clear();
     _passwordController.clear();
@@ -35,7 +51,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     _phonenumberController.clear();
     _departmentController.clear();
     setState(() {
-      _selectedRole = null;
+      _selectedDepartment = null;
+      _selectedRole=null;
     });
   }
 
@@ -134,19 +151,48 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                           },
                         ),
                         const SizedBox(height: 16.0),
-                        _buildTextFormField(
-                          controller: _departmentController,
-                          labelText: 'Department',
+                        DropdownButtonFormField<String>(
+                          value: _selectedDepartment,
+                          decoration: InputDecoration(
+                            labelText: 'Department',
+                            border: InputBorder.none,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                          items: _departments.map((Department department) {
+                            return DropdownMenuItem(
+                              value: department.name,
+                              child: Text(department.name),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedDepartment = newValue;
+                            });
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your department';
-                            } else if (!RegExp(r'^[a-zA-Z\s]+$')
-                                .hasMatch(value)) {
-                              return 'Department should contain only letters and spaces';
+                              return 'Please select a department';
                             }
                             return null;
                           },
                         ),
+                        // _buildTextFormField(
+                        //   controller: _departmentController,
+                        //   labelText: 'Department',
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please enter your department';
+                        //     } else if (!RegExp(r'^[a-zA-Z\s]+$')
+                        //         .hasMatch(value)) {
+                        //       return 'Department should contain only letters and spaces';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
                         const SizedBox(height: 16.0),
                         _buildTextFormField(
                           controller: _emailController,
@@ -193,7 +239,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     lname: _lnameController.text,
                                     role: _selectedRole!,
                                     phonenumber: _phonenumberController.text,
-                                    department: _departmentController.text,
+                                    department: _selectedDepartment!,
                                   );
                                   if (response != null) {
                                     print('Server response data: $response');

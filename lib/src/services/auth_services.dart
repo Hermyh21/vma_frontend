@@ -226,7 +226,7 @@ class AuthService {
     }
   }
 
-  void signOut(BuildContext context) async {
+  void signout(BuildContext context) async {
     final navigator = Navigator.of(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('x-auth-token', '');
@@ -236,6 +236,51 @@ class AuthService {
         ),
             (route) => false);
   }
+  void logout(BuildContext context) async {
+  try {
+    Dio dio = Dio();
+    final navigator = Navigator.of(context);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    // Clear the token from SharedPreferences
+    await prefs.remove('token');
+    await prefs.remove('user');
+
+    // Optional: Make a request to the backend logout endpoint
+    Response response = await dio.post(
+      '${Constants.uri}/logout',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ),
+    );
+
+    // Check if the response is successful
+    if (response.statusCode == 200) {
+      // Clear the user data from UserProvider if needed
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.setUser(null);  // Update UserProvider with null
+
+      // Navigate to the login screen
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const SignInApp(),
+        ),
+        (route) => false,
+      );
+    } else {
+      showSnackBar(context, 'Logout failed: ${response.statusMessage}');
+    }
+  } catch (e) {
+    if (e is DioError) {
+      handleDioError(context, e);
+    } else {
+      showSnackBar(context, 'Unexpected Error: $e');
+      print('Unexpected Error: $e');
+    }
+  }
+}
 
   void handleDioError(BuildContext context, DioError e) {
     String errorMessage;
@@ -256,16 +301,16 @@ class AuthService {
       case DioErrorType.response:
         if (e.response != null && e.response?.data != null) {
           errorMessage =
-          "Error: ${e.response?.statusCode} - ${e.response?.data['message'] ?? e.response?.statusMessage}";
+              "Error: ${e.response?.statusCode} - ${e.response?.data['message'] ?? e.response?.statusMessage}";
           print('Response data: ${e.response?.data}');
         } else {
           errorMessage =
-          "Received invalid status code: ${e.response?.statusCode}";
+              "Received invalid status code: ${e.response?.statusCode}";
         }
         break;
       case DioErrorType.other:
         errorMessage =
-        "Connection to server failed due to internet connection.";
+            "Connection to server failed due to internet connection.";
         break;
       default:
         errorMessage = "Unexpected error occurred.";
@@ -275,6 +320,7 @@ class AuthService {
     showSnackBar(context, errorMessage);
     print('Dio Error: $errorMessage');
   }
+  
 
   Future<void> forgotPassword({
     required BuildContext context,

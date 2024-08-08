@@ -206,16 +206,11 @@ if (result == true) {
           );
         } else if (declined) {
           return AlertDialog(
-  title: const Text("Sorry, request has been declined.", style: TextStyle(fontSize: 18,)),
+  title: const Text("Decline Reason:", style: TextStyle(fontSize: 18,)),
   content: Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      const Text(
-        "Decline Reason:",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      
       Text(declineReason ?? "No reason provided."),
       const SizedBox(height: 8.0), // Add some space between the text and subtitle
       
@@ -491,58 +486,114 @@ if (result == true) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () => _onVisitorNameTap([log['name']!]),
-                              child: Text(
-                                log['name']!,
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Constants.customColor,
-                                ),
-                              ),
-                            ),
-                            if (!isApproved && !isDeclined)
-                            Row(
-                              children: <Widget>[
-                                if (!approved && !declined)
-                                IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.blue),
-                                  onPressed: () {
-                                    _onEditVisitor(log['id']!);
-                                  },
-                                ),
-                                if (!approved && !declined)
-                                IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () {
-                                    _onDeleteVisitor(log['id']!);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: <Widget>[
+    Expanded(
+      child: GestureDetector(
+        onTap: () => _onVisitorNameTap([log['name']!]),
+        child: Text(
+          log['name']!,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Constants.customColor,
+          ),
+          overflow: TextOverflow.visible, // Ensures the text can wrap to the next line
+        ),
+      ),
+    ),
+    if (!isApproved && !isDeclined)
+    Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        if (!approved && !declined)
+        IconButton(
+          icon: const Icon(Icons.edit, color: Colors.blue),
+          onPressed: () {
+            _onEditVisitor(log['id']!);
+          },
+        ),
+        if (!approved && !declined)
+        IconButton(
+          icon: const Icon(Icons.delete, color: Colors.red),
+          onPressed: () {
+            _onDeleteVisitor(log['id']!);
+          },
+        ),
+      ],
+    ),
+  ],
+),
+
                         const SizedBox(height: 8.0),
                         Row(
-                          children: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                final fullLog = fullVisitorLogs.firstWhere(
-                                    (visitorLog) => visitorLog['id'] == log['id']);
-                                _requestStatus(
-                                  fullLog['id']!,
-                                  isApproved,
-                                isDeclined,
-                                  fullLog['declineReason'],
-                                );
-                              },
-                              child: const Text("Check Status"),
-                            ),
-                          ],
-                        ),
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Conditional text button rendering based on approval status
+                                          if (isApproved)
+                                            TextButton(
+                                              onPressed: () => _requestStatus(
+                                                log['id']!,
+                                                isApproved,
+                                                isDeclined,
+                                                log['declineReason'],
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.transparent,
+                                                
+                                              ),
+                                              child: const Text("Approved", style: TextStyle(color: Colors.green,),),
+                                            )
+                                          else if (isDeclined)
+                                            TextButton(
+                                              onPressed: () => _requestStatus(
+                                                log['id']!,
+                                                isApproved,
+                                                isDeclined,
+                                                log['declineReason'],
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.transparent,
+                                                
+                                              ),
+                                              child: const Text("Declined", style: TextStyle(color: Colors.red),),
+                                            )
+                                          else
+                                            TextButton(
+                                              onPressed: () => _requestStatus(
+                                                log['id']!,
+                                                isApproved,
+                                                isDeclined,
+                                                log['declineReason'],
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Constants.customColor[100],
+                                                
+                                              ),
+                                              child: const Text("Pending..", style: TextStyle(color: Colors.white),),
+                                            ),
+                                          
+                                        ],
+                                      ),
+                        
+                        // Row(
+                        //   children: <Widget>[
+                        //     TextButton(
+                        //       onPressed: () {
+                        //         final fullLog = fullVisitorLogs.firstWhere(
+                        //             (visitorLog) => visitorLog['id'] == log['id']);
+                        //         _requestStatus(
+                        //           fullLog['id']!,
+                        //           isApproved,
+                        //         isDeclined,
+                        //           fullLog['declineReason'],
+                        //         );
+                        //       },
+                        //       child: const Text("Check Status"),
+                        //     ),
+                        //   ],
+                        // ),
+
                       ],
                     ),
                   );
