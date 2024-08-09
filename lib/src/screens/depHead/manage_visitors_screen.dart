@@ -523,36 +523,36 @@ List<PlateRegion> _plateRegions = [];
               Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Start Date:'),
-                        TextButton(
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              initialDate: startDate,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                startDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-                              });
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Constants.customColor,
-                          ),
-                          child: Text(
-                            DateFormat('yyyy-MM-dd').format(startDate),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text('Start Date:'),
+      TextButton(
+        onPressed: () async {
+          final selectedDate = await showDatePicker(
+            context: context,
+            initialDate: startDate,
+            firstDate: DateTime.now(), // Ensure only dates from today onwards are selectable
+            lastDate: DateTime(2100),
+          );
+          if (selectedDate != null) {
+            setState(() {
+              startDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+            });
+          }
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: Constants.customColor,
+        ),
+        child: Text(
+          DateFormat('yyyy-MM-dd').format(startDate),
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    ],
+  ),
+),
+
                   const SizedBox(width: 16.0),
                   Expanded(
                     child: Column(

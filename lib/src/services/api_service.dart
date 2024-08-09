@@ -6,6 +6,7 @@ import 'package:vma_frontend/src/models/plate_region.dart';
 import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:vma_frontend/src/models/possessions.dart';
 import 'package:vma_frontend/src/models/departments.dart';
+import 'package:vma_frontend/src/models/user.dart';
 class ApiService {
   static final Dio _dio = Dio(
     BaseOptions(
@@ -31,6 +32,31 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Failed to fetch visitor logs: $e');
+    }
+  }
+// static Future<User> fetchUsers(String userId) async {
+   
+//       final response = await _dio.get('${Constants.uri}/api/users');
+//        if (response.statusCode == 200) {
+//       return User.fromJson(json.decode(response.body));
+//     } else {
+//       throw Exception('Failed to load user');
+//     }
+    
+  
+//   }
+static Future<User> fetchUser(String userId) async {
+    try {
+      final response = await _dio.get(
+        '/api/users/$userId',
+      );
+      if (response.statusCode == 200) {
+        return User.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load visitor');
+      }
+    } catch (e) {
+      throw Exception('Failed to load visitor: $e');
     }
   }
 //fetch new requests

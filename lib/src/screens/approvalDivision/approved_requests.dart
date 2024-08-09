@@ -4,8 +4,8 @@ import 'package:vma_frontend/src/models/visitors.dart';
 import 'package:vma_frontend/src/providers/visitor_provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
-import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
+import 'package:vma_frontend/src/screens/admin/visitor_detail_page.dart';
 class ApprovedRequests extends StatefulWidget {
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
@@ -72,7 +72,7 @@ List<Visitor> visitors = [];
        Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => LeftVisitorDetail(visitor: visitor),
+          builder: (context) => VisitorDetailPage(visitor: visitor),
         ),
       );
      

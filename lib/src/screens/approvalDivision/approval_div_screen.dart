@@ -8,6 +8,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/about.dart';
+import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 class ApprovalDivision extends StatefulWidget {
   @override
   _ApprovalDivisionState createState() => _ApprovalDivisionState();
@@ -119,7 +120,11 @@ void logoutUser(BuildContext context) {
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          Navigator.pushNamed(context, '/manage_visitors');
+                                          Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => const ManageVisitorsScreen()),
+);
+
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color.fromARGB(255, 25, 25, 112),
@@ -182,22 +187,23 @@ void logoutUser(BuildContext context) {
                                         fontSize: 22.0,
                                       ),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(context, '/manage_visitors');
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(255, 25, 25, 112),
-                                      ),
-                                      child: const Text(
-                                        "Add Visitors",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 14.0,
-                                        ),
-                                      ),
-                                    ),
+                                    // ElevatedButton(
+                                    //   onPressed: () {
+                                    //     Navigator.pushNamed(context, '/manage_visitors');
+                                    //   },
+                                    //   style: ElevatedButton.styleFrom(
+                                    //     backgroundColor: const Color.fromARGB(255, 25, 25, 112),
+                                    //   ),
+                                    //   child: const Text(
+                                    //     "Add Visitors",
+                                    //     style: TextStyle(
+                                    //       fontWeight: FontWeight.bold,
+                                    //       color: Colors.white,
+                                    //       fontSize: 14.0,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  
                                   ],
                                 ),
                               ),
