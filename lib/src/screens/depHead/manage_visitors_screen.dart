@@ -482,7 +482,9 @@ List<PlateRegion> _plateRegions = [];
       bringCar = false;
       possessionCheckedState = List.filled(possessions.length, false);
 
-      visitorControllers.forEach((controller) => controller.clear());
+      for (var controller in visitorControllers) {
+        controller.clear();
+      }
       selectedPlateNumbers.clear();
     });
   } catch (e) {
@@ -491,6 +493,7 @@ List<PlateRegion> _plateRegions = [];
 }
 
 
+  @override
   Widget build(BuildContext context) {
    if (isEditMode && widget.visitorLogs != null) {
       final visitorData = widget.visitorLogs![0];
@@ -747,7 +750,7 @@ List<PlateRegion> _plateRegions = [];
                                 onChanged: (value) {
                                   setState(() {
                                     numberOfCars = int.tryParse(value) ?? 0;
-                                    print("number of cars: ${numberOfCars}");
+                                    print("number of cars: $numberOfCars");
                                     updatePlateNumberFields();
                                   });
                                 },

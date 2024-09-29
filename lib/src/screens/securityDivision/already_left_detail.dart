@@ -7,7 +7,7 @@ import 'package:vma_frontend/src/services/api_service.dart';
 class LeftVisitorDetail extends StatefulWidget {
   final Visitor visitor;
 
-  const LeftVisitorDetail({Key? key, required this.visitor}) : super(key: key);
+  const LeftVisitorDetail({super.key, required this.visitor});
 
   @override
   _LeftVisitorDetailState createState() => _LeftVisitorDetailState();

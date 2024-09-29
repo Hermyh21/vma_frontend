@@ -10,6 +10,8 @@ import 'package:vma_frontend/src/services/auth_services.dart';
 import 'package:vma_frontend/src/about.dart';
 import 'package:vma_frontend/src/screens/depHead/manage_visitors_screen.dart';
 class ApprovalDivision extends StatefulWidget {
+  const ApprovalDivision({super.key});
+
   @override
   _ApprovalDivisionState createState() => _ApprovalDivisionState();
 }

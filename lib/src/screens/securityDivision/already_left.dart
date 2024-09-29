@@ -8,7 +8,7 @@ import 'package:vma_frontend/src/screens/securityDivision/already_left_detail.da
 class AlreadyLeft extends StatefulWidget {
 
 
-  const AlreadyLeft({Key? key}) : super(key: key);
+  const AlreadyLeft({super.key});
 
   @override
   _AlreadyLeftState createState() => _AlreadyLeftState();

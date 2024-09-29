@@ -11,6 +11,8 @@ import 'package:vma_frontend/src/screens/admin/visitor_detail_page.dart';
 import 'package:vma_frontend/src/about.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 class DepartmentHeadsPage extends StatefulWidget {
+  const DepartmentHeadsPage({super.key});
+
   @override
   _DepartmentHeadsPageState createState() => _DepartmentHeadsPageState();
 }
@@ -387,7 +389,7 @@ if (result == true) {
                       final bool? feedback= await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ManageVisitorsScreen(visitorLogs: []),
+                          builder: (context) => const ManageVisitorsScreen(visitorLogs: []),
                         ),
                       );
                       if (feedback == true) {

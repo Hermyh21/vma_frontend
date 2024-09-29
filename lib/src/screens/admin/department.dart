@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/models/departments.dart';
 
 class DepartmentsPage extends StatefulWidget {
-  const DepartmentsPage({Key? key}) : super(key: key);
+  const DepartmentsPage({super.key});
 
   @override
   _DepartmentsPageState createState() => _DepartmentsPageState();

@@ -224,7 +224,7 @@ class _SignInFormState extends State<SignInForm> {
               padding: const EdgeInsets.all(8),
               child: Text(
                 _loginError!,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           Padding(

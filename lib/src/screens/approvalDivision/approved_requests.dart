@@ -7,6 +7,8 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:vma_frontend/src/screens/admin/visitor_detail_page.dart';
 class ApprovedRequests extends StatefulWidget {
+  const ApprovedRequests({super.key});
+
   @override
   _ApprovedRequestsState createState() => _ApprovedRequestsState();
 }
@@ -96,7 +98,7 @@ List<Visitor> visitors = [];
   @override
   Widget build(BuildContext context) {
     final visitorProvider = context.watch<VisitorProvider>(); // Replace with your provider
-    print("check this out ${visitorLogs}");
+    print("check this out $visitorLogs");
     return Scaffold(
       body: Column(
         children: [

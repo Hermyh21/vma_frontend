@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 
 class VisitorsInfo extends StatefulWidget {
+  const VisitorsInfo({super.key});
+
   @override
   _VisitorsInfoState createState() => _VisitorsInfoState();
 }

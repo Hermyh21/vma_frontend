@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
@@ -14,7 +16,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -23,9 +25,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 authService.forgotPassword(
@@ -33,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   email: emailController.text,
                 );
               },
-              child: Text('Send Reset Email'),
+              child: const Text('Send Reset Email'),
             ),
           ],
         ),

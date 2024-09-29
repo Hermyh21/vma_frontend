@@ -7,7 +7,7 @@ typedef NavigationCallback = void Function(String route);
 class Header extends StatelessWidget implements PreferredSizeWidget {
   final NavigationCallback onNavigate;
 
-  Header({Key? key, required this.onNavigate}) : super(key: key);
+  const Header({super.key, required this.onNavigate});
 
   void logoutUser(BuildContext context) {
     AuthService().logout(context);

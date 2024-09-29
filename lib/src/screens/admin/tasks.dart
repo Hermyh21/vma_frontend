@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/screens/admin/possessions.dart';
 import 'package:vma_frontend/src/screens/admin/user_count.dart';
 import 'package:vma_frontend/src/screens/admin/department.dart';
 class TasksPage extends StatelessWidget {
-  const TasksPage({Key? key}) : super(key: key);
+  const TasksPage({super.key});
 
   // void _onNavigate(BuildContext context, String route) {
   //   Navigator.pushNamed(context, route);
@@ -64,12 +64,12 @@ class TaskCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const TaskCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.color,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

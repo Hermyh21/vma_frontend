@@ -7,7 +7,7 @@ import 'package:vma_frontend/src/services/api_service.dart';
 class CheckVisitorScreen extends StatefulWidget {
   final Visitor visitor;
 
-  const CheckVisitorScreen({Key? key, required this.visitor}) : super(key: key);
+  const CheckVisitorScreen({super.key, required this.visitor});
 
   @override
   _CheckVisitorScreenState createState() => _CheckVisitorScreenState();

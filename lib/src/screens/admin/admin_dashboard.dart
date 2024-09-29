@@ -7,6 +7,8 @@ import 'package:vma_frontend/src/screens/admin/tasks.dart';
 import 'package:vma_frontend/src/about.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({super.key});
+
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }

@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/services/auth_services.dart';
 class ResetPasswordScreen extends StatefulWidget {
   final String token;
 
-  ResetPasswordScreen({required this.token});
+  const ResetPasswordScreen({super.key, required this.token});
 
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();

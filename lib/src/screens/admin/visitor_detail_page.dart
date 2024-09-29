@@ -6,7 +6,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 class VisitorDetailPage extends StatelessWidget {
   final Visitor visitor;
 
-  const VisitorDetailPage({Key? key, required this.visitor}) : super(key: key);
+  const VisitorDetailPage({super.key, required this.visitor});
 
   @override
   Widget build(BuildContext context) {

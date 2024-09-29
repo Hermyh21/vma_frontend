@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/screens/login.dart';
 class DefaultScreen extends StatelessWidget {
-  const DefaultScreen({Key? key}) : super(key: key);
+  const DefaultScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

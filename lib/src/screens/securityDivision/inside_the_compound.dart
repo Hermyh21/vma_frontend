@@ -8,7 +8,7 @@ import 'package:vma_frontend/src/screens/securityDivision/inside_visitor_detail.
 class InsideTheCompound extends StatefulWidget {
 
 
-  const InsideTheCompound({Key? key}) : super(key: key);
+  const InsideTheCompound({super.key});
 
   @override
   _InsideTheCompoundState createState() => _InsideTheCompoundState();

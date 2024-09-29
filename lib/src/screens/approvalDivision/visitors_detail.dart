@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 class VisitorDetailScreen extends StatefulWidget {
  final Visitor visitor;
 
-  const VisitorDetailScreen({Key? key, required this.visitor}) : super(key: key);
+  const VisitorDetailScreen({super.key, required this.visitor});
 
   @override
   _VisitorDetailScreenState createState() => _VisitorDetailScreenState();

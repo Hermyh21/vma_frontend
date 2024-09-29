@@ -7,6 +7,8 @@ import 'package:vma_frontend/src/services/socket_service.dart';
 import 'package:vma_frontend/src/screens/approvalDivision/visitors_detail.dart';
 
 class NewRequestsScreen extends StatefulWidget {
+  const NewRequestsScreen({super.key});
+
   @override
   _NewRequestsScreenState createState() => _NewRequestsScreenState();
 }

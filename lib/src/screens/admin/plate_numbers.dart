@@ -5,7 +5,7 @@ import 'package:vma_frontend/src/models/plate_code.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 
 class AllowedPlateNumbersPage extends StatefulWidget {
-  const AllowedPlateNumbersPage({Key? key}) : super(key: key);
+  const AllowedPlateNumbersPage({super.key});
 
   @override
   _AllowedPlateNumbersPageState createState() => _AllowedPlateNumbersPageState();

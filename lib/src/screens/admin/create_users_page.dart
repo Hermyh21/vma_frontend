@@ -4,7 +4,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/models/departments.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 class CreateUserScreen extends StatefulWidget {
-  const CreateUserScreen({Key? key}) : super(key: key);
+  const CreateUserScreen({super.key});
 
   @override
   _CreateUserScreenState createState() => _CreateUserScreenState();

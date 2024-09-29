@@ -3,7 +3,7 @@ import 'package:vma_frontend/src/constants/constants.dart';
 import 'package:vma_frontend/src/services/api_service.dart';
 import 'package:vma_frontend/src/models/possessions.dart';
 class AllowedPossessionsPage extends StatefulWidget {
-  const AllowedPossessionsPage({Key? key}) : super(key: key);
+  const AllowedPossessionsPage({super.key});
 
   @override
   _AllowedPossessionsPageState createState() => _AllowedPossessionsPageState();

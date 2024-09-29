@@ -4,6 +4,8 @@ import 'package:vma_frontend/src/screens/admin/user_detail_page.dart';
 import 'package:vma_frontend/src/services/fetch_users.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 class UserCount extends StatefulWidget {
+  const UserCount({super.key});
+
   @override
   _UserCountState createState() => _UserCountState();
 }

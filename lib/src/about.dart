@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vma_frontend/src/constants/constants.dart';
 
 class AboutPage extends StatefulWidget {
+  const AboutPage({super.key});
+
   @override
   _AboutPageState createState() => _AboutPageState();
 }
@@ -135,7 +137,7 @@ class _AboutPageState extends State<AboutPage>
                   opacity: _visible ? 1.0 : 0.0,
                   duration: const Duration(seconds: 1),
                   child: const Text(
-                    'Email: info@aiethiopia.org\nPhone: +251 123 456 789',
+                    'Email: \nPhone: ',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

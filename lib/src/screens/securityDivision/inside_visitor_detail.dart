@@ -7,7 +7,7 @@ import 'package:vma_frontend/src/services/api_service.dart';
 class InsideVisitorDetail extends StatefulWidget {
   final Visitor visitor;
 
-  const InsideVisitorDetail({Key? key, required this.visitor}) : super(key: key);
+  const InsideVisitorDetail({super.key, required this.visitor});
 
   @override
   _InsideVisitorDetailState createState() => _InsideVisitorDetailState();

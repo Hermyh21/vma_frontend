@@ -8,7 +8,7 @@ import 'package:vma_frontend/src/screens/securityDivision/check_visitor.dart';
 class YetToArrive extends StatefulWidget {
   final String searchQuery;
 
-  const YetToArrive({Key? key, required this.searchQuery}) : super(key: key);
+  const YetToArrive({super.key, required this.searchQuery});
 
   @override
   _YetToArriveState createState() => _YetToArriveState();

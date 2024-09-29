@@ -8,6 +8,8 @@ import 'package:vma_frontend/src/screens/securityDivision/inside_the_compound.da
 import 'package:vma_frontend/src/about.dart';
 import 'package:vma_frontend/src/services/auth_services.dart';
 class SecurityScreen extends StatefulWidget {
+  const SecurityScreen({super.key});
+
   @override
   _SecurityScreenState createState() => _SecurityScreenState();
 }
@@ -160,7 +162,7 @@ void logoutUser(BuildContext context) {
                       ],
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     height: 500, 
                     child: IndexedStack(
                       index: _selectedIndex,

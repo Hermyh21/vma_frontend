@@ -5,7 +5,7 @@ import 'package:vma_frontend/src/services/fetch_users.dart';
 class UserDetailPage extends StatelessWidget {
   final User user;
 
-  const UserDetailPage({Key? key, required this.user}) : super(key: key);
+  const UserDetailPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
